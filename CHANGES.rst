@@ -9,7 +9,7 @@ all releases are available on `Anaconda.org <https://anaconda.org/pytask/pytask-
 0.0.2 - 2020-10-30
 ------------------
 
-- Make pytask-stata work with pytask v0.0.9.
+- :gh:`1` makes pytask-stata work with pytask v0.0.9.
 
 
 0.0.1 - 2020-10-04
