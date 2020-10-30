@@ -34,6 +34,7 @@ test:
     - pytask --help
     - pytask markers
     - pytask clean
+    - pytask collect
 
     - pytest tests
 
