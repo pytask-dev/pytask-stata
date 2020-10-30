@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from _pytask.mark import Mark
 from _pytask.nodes import FilePathNode
+from pytask_stata.collect import _get_node_from_dictionary
 from pytask_stata.collect import _merge_all_markers
 from pytask_stata.collect import _prepare_cmd_options
 from pytask_stata.collect import pytask_collect_task
@@ -63,14 +64,15 @@ def test_merge_all_markers(marks, expected):
         ["a", "b"],
     ],
 )
-def test_prepare_cmd_options(args):
+@pytest.mark.parametrize("stata_source_key", ["source", "do"])
+def test_prepare_cmd_options(args, stata_source_key):
     session = DummyClass()
-    session.config = {"stata": "stata"}
+    session.config = {"stata": "stata", "stata_source_key": stata_source_key}
 
     node = DummyClass()
     node.value = Path("script.do")
     task = DummyClass()
-    task.depends_on = [node]
+    task.depends_on = {stata_source_key: node}
     task.name = "task"
 
     result = _prepare_cmd_options(session, task, args)
@@ -115,11 +117,15 @@ def test_pytask_collect_task(name, expected):
 )
 def test_pytask_collect_task_teardown(depends_on, produces, expectation):
     session = DummyClass()
-    session.config = {"stata": "stata"}
+    session.config = {"stata": "stata", "stata_source_key": "source"}
 
     task = DummyClass()
-    task.depends_on = [FilePathNode(n.split(".")[0], Path(n)) for n in depends_on]
-    task.produces = [FilePathNode(n.split(".")[0], Path(n)) for n in produces]
+    task.depends_on = {
+        i: FilePathNode(n.split(".")[0], Path(n)) for i, n in enumerate(depends_on)
+    }
+    task.produces = {
+        i: FilePathNode(n.split(".")[0], Path(n)) for i, n in enumerate(produces)
+    }
     task.function = task_dummy
     task.name = "task_dummy"
 
@@ -129,3 +135,18 @@ def test_pytask_collect_task_teardown(depends_on, produces, expectation):
 
     with expectation:
         pytask_collect_task_teardown(session, task)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "obj, key, expected",
+    [
+        (1, "asds", 1),
+        (1, None, 1),
+        ({"a": 1}, "a", 1),
+        ({0: 1}, "a", 1),
+    ],
+)
+def test_get_node_from_dictionary(obj, key, expected):
+    result = _get_node_from_dictionary(obj, key)
+    assert result == expected

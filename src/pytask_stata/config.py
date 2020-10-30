@@ -36,6 +36,8 @@ def pytask_parse_config(config, config_from_cli, config_from_file):
         default=10,
     )
 
+    config["stata_source_key"] = config_from_file.get("stata_source_key", "source")
+
 
 def _nonnegative_nonzero_integer(x):
     """Check for nonnegative and nonzero integer."""

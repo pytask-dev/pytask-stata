@@ -33,21 +33,22 @@ def pytask_execute_task_teardown(session, task):
     or ``r(601)``.
 
     """
-    log_name = convert_task_id_to_name_of_log_file(task.name)
-    path_to_log = task.path.with_name(log_name).with_suffix(".log")
+    if get_specific_markers_from_task(task, "stata"):
+        log_name = convert_task_id_to_name_of_log_file(task.name)
+        path_to_log = task.path.with_name(log_name).with_suffix(".log")
 
-    n_lines = session.config["stata_check_log_lines"]
+        n_lines = session.config["stata_check_log_lines"]
 
-    log = path_to_log.read_text()
-    log_tail = log.split("\n")[-n_lines:]
-    for line in log_tail:
-        error_found = re.match(r"r\(([0-9]+)\)", line)
+        log = path_to_log.read_text()
+        log_tail = log.split("\n")[-n_lines:]
+        for line in log_tail:
+            error_found = re.match(r"r\(([0-9]+)\)", line)
 
-        if error_found:
-            if not session.config["stata_keep_log"]:
-                path_to_log.unlink()
+            if error_found:
+                if not session.config["stata_keep_log"]:
+                    path_to_log.unlink()
 
-            raise RuntimeError(
-                f"An error occurred. Here are the last {n_lines} lines of the log:\n\n"
-                + "\n".join(log_tail)
-            )
+                raise RuntimeError(
+                    f"An error occurred. Here are the last {n_lines} lines of the log:"
+                    "\n\n" + "\n".join(log_tail)
+                )

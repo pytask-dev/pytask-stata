@@ -57,20 +57,47 @@ Here is an example where you want to run ``script.do``.
     def task_run_do_file():
         pass
 
-Note that, you need to apply the ``@pytask.mark.stata`` marker so that pytask-stata
-handles the task. The do-file must be the first dependency. Other dependencies can be
-added after that.
+
+Multiple dependencies and products
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+What happens if a task has more dependencies? Using a list, the do-file which should be
+executed must be found in the first position of the list.
 
 .. code-block:: python
 
     @pytask.mark.stata
     @pytask.mark.depends_on(["script.do", "input.dta"])
-    @pytask.mark.produces("out.dta")
+    @pytask.mark.produces("output.dta")
     def task_run_do_file():
         pass
 
-If you are wondering why the function body is empty, know that pytask-stata replaces the
-body with a predefined internal function which will execute the do-file.
+If you use a dictionary to pass dependencies to the task, pytask-stata will, first, look
+for a ``"source"`` key in the dictionary and, secondly, under the key ``0``.
+
+.. code-block:: python
+
+    @pytask.mark.depends_on({"source": "script.do", "input": "input.dta"})
+    def task_run_do_file():
+        pass
+
+
+    # or
+
+
+    @pytask.mark.depends_on({0: "script.do", "input": "input.dta"})
+    def task_run_do_file():
+        pass
+
+
+    # or two decorators for the function, if you do not assign a name to the input.
+
+
+    @pytask.mark.depends_on({"source": "script.do"})
+    @pytask.mark.depends_on("input.dta")
+    def task_run_do_file():
+        pass
+
 
 
 Command Line Arguments
@@ -142,7 +169,7 @@ include the ``@pytask.mark.stata`` decorator in the parametrization just like wi
     @pytask.mark.depends_on("script.do")
     @pytask.mark.parametrize(
         "produces, stata",
-        [("output_1.dta", 1), ("output_2.dta", 2)],
+        [("output_1.dta", ("1",)), ("output_2.dta", ("2",))],
     )
     def task_execute_do_file():
         pass
@@ -179,6 +206,14 @@ stata_check_log_lines
     .. code-block:: console
 
         $ pytask build --stata-check-log-lines 10
+
+stata_source_key
+    If you want to change the name of the key which identifies the do file, change the
+    following default configuration in your pytask configuration file.
+
+    .. code-block:: ini
+
+        stata_source_key = source
 
 
 Changes

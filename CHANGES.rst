@@ -6,7 +6,13 @@ chronological order. Releases follow `semantic versioning <https://semver.org/>`
 all releases are available on `Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_.
 
 
-0.0.1 - 2020-xx-xx
+0.0.2 - 2020-10-30
+------------------
+
+- :gh:`1` makes pytask-stata work with pytask v0.0.9.
+
+
+0.0.1 - 2020-10-04
 ------------------
 
 - Release v0.0.1.
