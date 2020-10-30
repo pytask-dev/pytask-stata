@@ -2,6 +2,7 @@
 import copy
 import functools
 import subprocess
+from pathlib import Path
 from typing import Iterable
 from typing import Optional
 from typing import Union
@@ -56,13 +57,11 @@ def pytask_collect_task(session, path, name, obj):
 @hookimpl
 def pytask_collect_task_teardown(session, task):
     """Perform some checks and prepare the task function."""
-    if task is not None and get_specific_markers_from_task(task, "stata"):
-        if (len(task.depends_on) == 0) or (
-            not (
-                isinstance(task.depends_on[0], FilePathNode)
-                and task.depends_on[0].value.suffix == ".do"
-            )
-        ):
+    if get_specific_markers_from_task(task, "stata"):
+        source = _get_node_from_dictionary(
+            task.depends_on, session.config["stata_source_key"]
+        )
+        if not (isinstance(source, FilePathNode) and source.value.suffix == ".do"):
             raise ValueError(
                 "The first dependency of a Stata task must be the do-file."
             )
@@ -76,6 +75,14 @@ def pytask_collect_task_teardown(session, task):
         stata_function = functools.partial(stata_function, stata=options)
 
         task.function = stata_function
+
+
+def _get_node_from_dictionary(obj, key, fallback=0):
+    if isinstance(obj, Path):
+        pass
+    elif isinstance(obj, dict):
+        obj = obj.get(key) or obj.get(fallback)
+    return obj
 
 
 def _merge_all_markers(task):
@@ -94,12 +101,15 @@ def _prepare_cmd_options(session, task, args):
     is unique and does not cause any errors when parallelizing the execution.
 
     """
+    source = _get_node_from_dictionary(
+        task.depends_on, session.config["stata_source_key"]
+    )
     log_name = convert_task_id_to_name_of_log_file(task.name)
     return [
         session.config["stata"],
         "-e",
         "do",
-        task.depends_on[0].value.as_posix(),
+        source.value.as_posix(),
         *args,
         f"-{log_name}",
     ]

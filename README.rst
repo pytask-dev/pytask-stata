@@ -142,7 +142,7 @@ include the ``@pytask.mark.stata`` decorator in the parametrization just like wi
     @pytask.mark.depends_on("script.do")
     @pytask.mark.parametrize(
         "produces, stata",
-        [("output_1.dta", 1), ("output_2.dta", 2)],
+        [("output_1.dta", ("1",)), ("output_2.dta", ("2",))],
     )
     def task_execute_do_file():
         pass
@@ -179,6 +179,14 @@ stata_check_log_lines
     .. code-block:: console
 
         $ pytask build --stata-check-log-lines 10
+
+stata_source_key
+    If you want to change the name of the key which identifies the do file, change the
+    following default configuration in your pytask configuration file.
+
+    .. code-block:: ini
+
+        stata_source_key = source
 
 
 Changes
