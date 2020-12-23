@@ -121,11 +121,9 @@ def test_pytask_collect_task_teardown(depends_on, produces, expectation):
 
     task = DummyClass()
     task.depends_on = {
-        i: FilePathNode(n.split(".")[0], Path(n)) for i, n in enumerate(depends_on)
+        i: FilePathNode.from_path(Path(n)) for i, n in enumerate(depends_on)
     }
-    task.produces = {
-        i: FilePathNode(n.split(".")[0], Path(n)) for i, n in enumerate(produces)
-    }
+    task.produces = {i: FilePathNode.from_path(Path(n)) for i, n in enumerate(produces)}
     task.function = task_dummy
     task.name = "task_dummy"
 
