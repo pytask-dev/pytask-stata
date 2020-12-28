@@ -1,3 +1,4 @@
+"""Everything related to the CLI."""
 import click
 from _pytask.config import hookimpl
 

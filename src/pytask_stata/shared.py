@@ -1,3 +1,4 @@
+"""Shared functions and variables."""
 import sys
 
 if sys.platform == "darwin":
