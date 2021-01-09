@@ -2,6 +2,7 @@
 import copy
 import functools
 import subprocess
+import sys
 from pathlib import Path
 from typing import Iterable
 from typing import Optional
@@ -34,7 +35,10 @@ def stata(options: Optional[Union[str, Iterable[str]]] = None):
 
 def run_stata_script(stata):
     """Run an R script."""
-    subprocess.run(stata, check=True)
+    if sys.platform == "win32":
+        subprocess.run(stata, check=True)
+    else:
+        subprocess.run(stata[:-1], check=True)
 
 
 @hookimpl
