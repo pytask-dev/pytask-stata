@@ -54,7 +54,7 @@ def pytask_execute_task_teardown(session, task):
             source = get_node_from_dictionary(
                 task.depends_on, session.config["stata_source_key"]
             )
-            path_to_log = source.with_suffix(".log")
+            path_to_log = source.path.with_suffix(".log")
 
         n_lines = session.config["stata_check_log_lines"]
 
