@@ -1,4 +1,5 @@
 import os
+import sys
 import textwrap
 
 import pytest
@@ -68,5 +69,12 @@ def test_parametrize_command_line_options(tmp_path):
     assert tmp_path.joinpath("1.dta").exists()
 
     # Test that log files with different names are produced.
-    assert tmp_path.joinpath("task_dummy_py_task_execute_do_file[0_dta-0].log").exists()
-    assert tmp_path.joinpath("task_dummy_py_task_execute_do_file[1_dta-1].log").exists()
+    if sys.platform == "win32":
+        assert tmp_path.joinpath(
+            "task_dummy_py_task_execute_do_file[0_dta-0].log"
+        ).exists()
+        assert tmp_path.joinpath(
+            "task_dummy_py_task_execute_do_file[1_dta-1].log"
+        ).exists()
+    else:
+        assert tmp_path.joinpath("script.log").exists()

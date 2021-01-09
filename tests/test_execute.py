@@ -1,4 +1,5 @@
 import os
+import sys
 import textwrap
 from contextlib import ExitStack as does_not_raise  # noqa: N813
 
@@ -59,7 +60,10 @@ def test_run_do_file(tmp_path):
 
     assert session.exit_code == 0
     assert tmp_path.joinpath("auto.dta").exists()
-    assert tmp_path.joinpath("task_dummy_py_task_run_do_file.log").exists()
+    if sys.platform == "win32":
+        assert tmp_path.joinpath("task_dummy_py_task_run_do_file.log").exists()
+    else:
+        assert tmp_path.joinpath("script.log").exists()
 
 
 @pytest.mark.end_to_end
