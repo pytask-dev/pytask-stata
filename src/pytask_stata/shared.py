@@ -1,5 +1,6 @@
 """Shared functions and variables."""
 import sys
+from pathlib import Path
 
 
 if sys.platform == "darwin":
@@ -53,10 +54,13 @@ def convert_task_id_to_name_of_log_file(id_):
 
     """
     id_without_parent_directories = id_.rsplit("/")[-1]
-    if sys.platform == "win32":
-        converted_id = id_without_parent_directories.replace(".", "_").replace(
-            "::", "_"
-        )
-    else:
-        converted_id = id_without_parent_directories.split("::")[0]
+    converted_id = id_without_parent_directories.replace(".", "_").replace("::", "_")
     return converted_id
+
+
+def get_node_from_dictionary(obj, key, fallback=0):
+    if isinstance(obj, Path):
+        pass
+    elif isinstance(obj, dict):
+        obj = obj.get(key) or obj.get(fallback)
+    return obj

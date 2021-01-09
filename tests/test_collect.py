@@ -4,12 +4,12 @@ from pathlib import Path
 import pytest
 from _pytask.mark import Mark
 from _pytask.nodes import FilePathNode
-from pytask_stata.collect import _get_node_from_dictionary
 from pytask_stata.collect import _merge_all_markers
 from pytask_stata.collect import _prepare_cmd_options
 from pytask_stata.collect import pytask_collect_task
 from pytask_stata.collect import pytask_collect_task_teardown
 from pytask_stata.collect import stata
+from pytask_stata.shared import get_node_from_dictionary
 
 
 class DummyClass:
@@ -146,5 +146,5 @@ def test_pytask_collect_task_teardown(depends_on, produces, expectation):
     ],
 )
 def test_get_node_from_dictionary(obj, key, expected):
-    result = _get_node_from_dictionary(obj, key)
+    result = get_node_from_dictionary(obj, key)
     assert result == expected

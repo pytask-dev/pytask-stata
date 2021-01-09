@@ -5,6 +5,7 @@ import sys
 from _pytask.config import hookimpl
 from _pytask.mark import get_specific_markers_from_task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
+from pytask_stata.shared import get_node_from_dictionary
 from pytask_stata.shared import STATA_COMMANDS
 
 
@@ -46,8 +47,14 @@ def pytask_execute_task_teardown(session, task):
 
     """
     if get_specific_markers_from_task(task, "stata"):
-        log_name = convert_task_id_to_name_of_log_file(task.name)
-        path_to_log = task.path.with_name(log_name).with_suffix(".log")
+        if sys.platform == "win32":
+            log_name = convert_task_id_to_name_of_log_file(task.name)
+            path_to_log = task.path.with_name(log_name).with_suffix(".log")
+        else:
+            source = get_node_from_dictionary(
+                task.depends_on, session.config["stata_source_key"]
+            )
+            path_to_log = source.with_suffix(".log")
 
         n_lines = session.config["stata_check_log_lines"]
 

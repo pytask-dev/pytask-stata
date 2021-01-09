@@ -3,7 +3,6 @@ import copy
 import functools
 import subprocess
 import sys
-from pathlib import Path
 from typing import Iterable
 from typing import Optional
 from typing import Union
@@ -15,6 +14,7 @@ from _pytask.nodes import FilePathNode
 from _pytask.nodes import PythonFunctionTask
 from _pytask.parametrize import _copy_func
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
+from pytask_stata.shared import get_node_from_dictionary
 
 
 def stata(options: Optional[Union[str, Iterable[str]]] = None):
@@ -59,7 +59,7 @@ def pytask_collect_task(session, path, name, obj):
 def pytask_collect_task_teardown(session, task):
     """Perform some checks and prepare the task function."""
     if get_specific_markers_from_task(task, "stata"):
-        source = _get_node_from_dictionary(
+        source = get_node_from_dictionary(
             task.depends_on, session.config["stata_source_key"]
         )
         if not (isinstance(source, FilePathNode) and source.value.suffix == ".do"):
@@ -78,14 +78,6 @@ def pytask_collect_task_teardown(session, task):
         task.function = stata_function
 
 
-def _get_node_from_dictionary(obj, key, fallback=0):
-    if isinstance(obj, Path):
-        pass
-    elif isinstance(obj, dict):
-        obj = obj.get(key) or obj.get(fallback)
-    return obj
-
-
 def _merge_all_markers(task):
     """Combine all information from markers for the Stata function."""
     stata_marks = get_specific_markers_from_task(task, "stata")
@@ -102,7 +94,7 @@ def _prepare_cmd_options(session, task, args):
     is unique and does not cause any errors when parallelizing the execution.
 
     """
-    source = _get_node_from_dictionary(
+    source = get_node_from_dictionary(
         task.depends_on, session.config["stata_source_key"]
     )
 
