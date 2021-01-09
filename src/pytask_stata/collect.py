@@ -102,7 +102,7 @@ def _prepare_cmd_options(session, task, args):
         session.config["stata"],
         "-e",
         "do",
-        source.value.as_posix(),
+        source.path.as_posix(),
         *args,
     ]
     if sys.platform == "win32":

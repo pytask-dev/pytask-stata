@@ -1,3 +1,4 @@
+import sys
 from contextlib import ExitStack as does_not_raise  # noqa: N813
 from pathlib import Path
 
@@ -70,20 +71,24 @@ def test_prepare_cmd_options(args, stata_source_key):
     session.config = {"stata": "stata", "stata_source_key": stata_source_key}
 
     node = DummyClass()
-    node.value = Path("script.do")
+    node.path = Path("script.do")
     task = DummyClass()
     task.depends_on = {stata_source_key: node}
     task.name = "task"
 
     result = _prepare_cmd_options(session, task, args)
 
-    assert result == [
+    expected = [
         "stata",
         "-e",
         "do",
         "script.do",
         *args,
     ]
+    if sys.platform == "win32":
+        expected.append("-task")
+
+    assert result == expected
 
 
 @pytest.mark.unit

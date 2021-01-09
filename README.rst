@@ -10,6 +10,10 @@
 .. image:: https://codecov.io/gh/pytask-dev/pytask-stata/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/pytask-dev/pytask-stata
 
+.. image:: https://results.pre-commit.ci/badge/github/pytask-dev/pytask-stata/main.svg
+    :target: https://results.pre-commit.ci/latest/github/pytask-dev/pytask-stata/main
+    :alt: pre-commit.ci status
+
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
