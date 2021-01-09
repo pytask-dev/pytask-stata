@@ -35,10 +35,7 @@ def stata(options: Optional[Union[str, Iterable[str]]] = None):
 
 def run_stata_script(stata):
     """Run an R script."""
-    if sys.platform == "win32":
-        subprocess.run(stata, check=True)
-    else:
-        subprocess.run(stata[:-1], check=True)
+    subprocess.run(stata, check=True)
 
 
 @hookimpl
@@ -108,12 +105,16 @@ def _prepare_cmd_options(session, task, args):
     source = _get_node_from_dictionary(
         task.depends_on, session.config["stata_source_key"]
     )
-    log_name = convert_task_id_to_name_of_log_file(task.name)
-    return [
+
+    cmd_options = [
         session.config["stata"],
         "-e",
         "do",
         source.value.as_posix(),
         *args,
-        f"-{log_name}",
     ]
+    if sys.platform == "win32":
+        log_name = convert_task_id_to_name_of_log_file(task.name)
+        cmd_options.append(f"-{log_name}")
+
+    return cmd_options

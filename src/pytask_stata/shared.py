@@ -1,6 +1,7 @@
 """Shared functions and variables."""
 import sys
 
+
 if sys.platform == "darwin":
     STATA_COMMANDS = [
         "Stata64MP",
@@ -52,5 +53,10 @@ def convert_task_id_to_name_of_log_file(id_):
 
     """
     id_without_parent_directories = id_.rsplit("/")[-1]
-    converted_id = id_without_parent_directories.replace(".", "_").replace("::", "_")
+    if sys.platform == "win32":
+        converted_id = id_without_parent_directories.replace(".", "_").replace(
+            "::", "_"
+        )
+    else:
+        converted_id = id_without_parent_directories.split("::")[0]
     return converted_id
