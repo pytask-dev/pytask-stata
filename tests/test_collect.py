@@ -83,7 +83,6 @@ def test_prepare_cmd_options(args, stata_source_key):
         "do",
         "script.do",
         *args,
-        "-task",
     ]
 
 
