@@ -1,4 +1,3 @@
-import sys
 from contextlib import ExitStack as does_not_raise  # noqa: N813
 from pathlib import Path
 
@@ -66,9 +65,14 @@ def test_merge_all_markers(marks, expected):
     ],
 )
 @pytest.mark.parametrize("stata_source_key", ["source", "do"])
-def test_prepare_cmd_options(args, stata_source_key):
+@pytest.mark.parametrize("platform", ["win32", "linux", "darwin"])
+def test_prepare_cmd_options(args, stata_source_key, platform):
     session = DummyClass()
-    session.config = {"stata": "stata", "stata_source_key": stata_source_key}
+    session.config = {
+        "stata": "stata",
+        "stata_source_key": stata_source_key,
+        "platform": platform,
+    }
 
     node = DummyClass()
     node.path = Path("script.do")
@@ -85,7 +89,7 @@ def test_prepare_cmd_options(args, stata_source_key):
         "script.do",
         *args,
     ]
-    if sys.platform == "win32":
+    if platform == "win32":
         expected.append("-task")
 
     assert result == expected
@@ -119,9 +123,14 @@ def test_pytask_collect_task(name, expected):
         (["input.dta", "script.do"], ["any_out.dta"], pytest.raises(ValueError)),
     ],
 )
-def test_pytask_collect_task_teardown(depends_on, produces, expectation):
+@pytest.mark.parametrize("platform", ["win32", "darwin", "linux"])
+def test_pytask_collect_task_teardown(depends_on, produces, platform, expectation):
     session = DummyClass()
-    session.config = {"stata": "stata", "stata_source_key": "source"}
+    session.config = {
+        "stata": "stata",
+        "stata_source_key": "source",
+        "platform": platform,
+    }
 
     task = DummyClass()
     task.depends_on = {

@@ -1,5 +1,6 @@
 """Configure pytask."""
 import shutil
+import sys
 
 from _pytask.config import hookimpl
 from _pytask.shared import convert_truthy_or_falsy_to_bool
@@ -11,6 +12,7 @@ from pytask_stata.shared import STATA_COMMANDS
 def pytask_parse_config(config, config_from_cli, config_from_file):
     """Register the r marker."""
     config["markers"]["stata"] = "Tasks which are executed with Stata."
+    config["platform"] = sys.platform
 
     if config_from_file.get("stata"):
         config["stata"] = config_from_file["stata"]

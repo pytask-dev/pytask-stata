@@ -19,16 +19,43 @@ class DummyClass:
 @pytest.mark.parametrize(
     "stata, expectation",
     [(executable, does_not_raise()) for executable in STATA_COMMANDS]
-    + [(None, pytest.raises(RuntimeError))],
+    + [(None, pytest.raises(RuntimeError, match="Stata is needed"))],
 )
-def test_pytask_execute_task_setup(stata, expectation):
+@pytest.mark.parametrize("platform", ["win32", "linux", "darwin"])
+def test_pytask_execute_task_setup_raise_error(stata, platform, expectation):
     """Make sure that the task setup raises errors."""
     # Act like r is installed since we do not test this.
     task = DummyClass()
     task.markers = [Mark("stata", (), {})]
 
     session = DummyClass()
-    session.config = {"stata": stata}
+    session.config = {"stata": stata, "platform": platform}
+
+    with expectation:
+        pytask_execute_task_setup(session, task)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "platform, expectation",
+    [
+        (
+            platform,
+            does_not_raise()
+            if platform == "win32"
+            else pytest.warns(UserWarning, match="Parallelizing Stata"),
+        )
+        for platform in ["win32", "linux", "darwin"]
+    ],
+)
+def test_pytask_execute_task_setup_raise_warning(platform, expectation):
+    """Make sure that the task setup raises errors."""
+    # Act like r is installed since we do not test this.
+    task = DummyClass()
+    task.markers = [Mark("stata", (), {})]
+
+    session = DummyClass()
+    session.config = {"stata": STATA_COMMANDS[0], "platform": platform, "n_workers": 2}
 
     with expectation:
         pytask_execute_task_setup(session, task)
@@ -45,7 +72,6 @@ def test_run_do_file(tmp_path):
     @pytask.mark.produces("auto.dta")
     def task_run_do_file():
         pass
-
     """
     tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(task_source))
 
@@ -60,6 +86,7 @@ def test_run_do_file(tmp_path):
 
     assert session.exit_code == 0
     assert tmp_path.joinpath("auto.dta").exists()
+
     if sys.platform == "win32":
         assert tmp_path.joinpath("task_dummy_py_task_run_do_file.log").exists()
     else:

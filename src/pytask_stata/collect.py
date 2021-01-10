@@ -2,7 +2,6 @@
 import copy
 import functools
 import subprocess
-import sys
 from typing import Iterable
 from typing import Optional
 from typing import Union
@@ -105,7 +104,7 @@ def _prepare_cmd_options(session, task, args):
         source.path.as_posix(),
         *args,
     ]
-    if sys.platform == "win32":
+    if session.config["platform"] == "win32":
         log_name = convert_task_id_to_name_of_log_file(task.name)
         cmd_options.append(f"-{log_name}")
 

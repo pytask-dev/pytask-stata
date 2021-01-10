@@ -1,6 +1,6 @@
 """Execute tasks."""
 import re
-import sys
+import warnings
 
 from _pytask.config import hookimpl
 from _pytask.mark import get_specific_markers_from_task
@@ -25,12 +25,12 @@ def pytask_execute_task_setup(session, task):
 
     if (
         get_specific_markers_from_task(task, "stata")
-        and sys.platform != "win32"
+        and session.config["platform"] != "win32"
         and session.config.get("n_workers", 1) > 1
     ):
-        raise RuntimeError(
-            "Tasks using Stata cannot be run in parallel on UNIX systems. Please "
-            "resort to serial execution instead. For more information, visit "
+        warnings.warn(
+            "Parallelizing Stata task on Unix systems might fail. Please resort to "
+            "serial execution instead. For more information, visit "
             "https://github.com/pytask-dev/pytask-stata/issues/3."
         )
 
@@ -47,7 +47,7 @@ def pytask_execute_task_teardown(session, task):
 
     """
     if get_specific_markers_from_task(task, "stata"):
-        if sys.platform == "win32":
+        if session.config["platform"] == "win32":
             log_name = convert_task_id_to_name_of_log_file(task.name)
             path_to_log = task.path.with_name(log_name).with_suffix(".log")
         else:
