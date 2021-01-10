@@ -185,7 +185,7 @@ include the ``@pytask.mark.stata`` decorator in the parametrization just like wi
 Configuration
 -------------
 
-pytask-stata offers new some new configuration values.
+pytask-stata can be configured with the following options.
 
 stata_keep_log
     Use this option to keep the ``.log`` files which are produced for every task. This

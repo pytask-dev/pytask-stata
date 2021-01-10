@@ -119,7 +119,7 @@ def test_run_do_file_w_wrong_cmd_option(tmp_path):
 @needs_stata
 @pytest.mark.end_to_end
 def test_run_do_file_by_passing_path(tmp_path):
-    """Apparently, Stata simply discards wrong cmd options."""
+    """Replicates example under "Command Line Arguments" in Readme."""
     task_source = """
     import pytask
     from pathlib import Path
