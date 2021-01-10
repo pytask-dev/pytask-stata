@@ -1,7 +1,7 @@
 """Shared functions and variables."""
 import sys
 from pathlib import Path
-
+from typing import Sequence
 
 if sys.platform == "darwin":
     STATA_COMMANDS = [
@@ -64,3 +64,29 @@ def get_node_from_dictionary(obj, key, fallback=0):
     elif isinstance(obj, dict):
         obj = obj.get(key) or obj.get(fallback)
     return obj
+
+
+def to_list(scalar_or_iter):
+    """Convert scalars and iterables to list.
+
+    Parameters
+    ----------
+    scalar_or_iter : str or list
+
+    Returns
+    -------
+    list
+
+    Examples
+    --------
+    >>> to_list("a")
+    ['a']
+    >>> to_list(["b"])
+    ['b']
+
+    """
+    return (
+        [scalar_or_iter]
+        if isinstance(scalar_or_iter, str) or not isinstance(scalar_or_iter, Sequence)
+        else list(scalar_or_iter)
+    )

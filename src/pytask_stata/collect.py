@@ -14,6 +14,7 @@ from _pytask.nodes import PythonFunctionTask
 from _pytask.parametrize import _copy_func
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import get_node_from_dictionary
+from pytask_stata.shared import to_list
 
 
 def stata(options: Optional[Union[str, Iterable[str]]] = None):
@@ -25,16 +26,13 @@ def stata(options: Optional[Union[str, Iterable[str]]] = None):
         One or multiple command line options passed to Stata.
 
     """
-    if options is None:
-        options = []
-    elif isinstance(options, str):
-        options = [options]
+    options = to_list(options) if options is not None else []
     return options
 
 
-def run_stata_script(stata):
+def run_stata_script(stata, cwd):
     """Run an R script."""
-    subprocess.run(stata, check=True)
+    subprocess.run(stata, cwd=cwd, check=True)
 
 
 @hookimpl
@@ -72,7 +70,9 @@ def pytask_collect_task_teardown(session, task):
         merged_marks = _merge_all_markers(task)
         args = stata(*merged_marks.args, **merged_marks.kwargs)
         options = _prepare_cmd_options(session, task, args)
-        stata_function = functools.partial(stata_function, stata=options)
+        stata_function = functools.partial(
+            stata_function, stata=options, cwd=task.path.parent
+        )
 
         task.function = stata_function
 

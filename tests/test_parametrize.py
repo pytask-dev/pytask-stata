@@ -1,4 +1,3 @@
-import os
 import sys
 import textwrap
 
@@ -33,7 +32,6 @@ def test_parametrized_execution_of_do_file(tmp_path):
         """
         tmp_path.joinpath(name).write_text(textwrap.dedent(do_file))
 
-    os.chdir(tmp_path)
     session = main({"paths": tmp_path})
 
     assert session.exit_code == 0
@@ -61,7 +59,6 @@ def test_parametrize_command_line_options(tmp_path):
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(latex_source))
 
-    os.chdir(tmp_path)
     session = main({"paths": tmp_path, "stata_keep_log": True})
 
     assert session.exit_code == 0

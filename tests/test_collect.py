@@ -139,6 +139,7 @@ def test_pytask_collect_task_teardown(depends_on, produces, platform, expectatio
     task.produces = {i: FilePathNode.from_path(Path(n)) for i, n in enumerate(produces)}
     task.function = task_dummy
     task.name = "task_dummy"
+    task.path = Path()
 
     markers = [Mark("stata", (), {})]
     task.markers = markers

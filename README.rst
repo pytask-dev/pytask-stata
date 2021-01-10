@@ -61,6 +61,9 @@ Here is an example where you want to run ``script.do``.
     def task_run_do_file():
         pass
 
+When executing a do-file, the current working directory changes to the directory of the
+script which is executed.
+
 
 Multiple dependencies and products
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -128,10 +131,10 @@ And in your ``script.do``, you can intercept the value with
     sysuse auto, clear
     save "`produces'"
 
-Note that this solution only works if your current working directory is the same as the
-directory where the task file lives. It is because Stata does not swap directories. To
-make the task independent from the current working directory, pass the full path as an
-command line argument. Here is an example.
+The relative path inside the do-file works only because the current working directory
+switches to the directory of the do-file before the task is executed. To make the task
+independent from the current working directory, pass the full path as an command line
+argument. Here is an example.
 
 .. code-block:: python
 

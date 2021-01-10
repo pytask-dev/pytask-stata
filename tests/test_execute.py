@@ -1,4 +1,3 @@
-import os
 import sys
 import textwrap
 from contextlib import ExitStack as does_not_raise  # noqa: N813
@@ -55,7 +54,6 @@ def test_run_do_file(tmp_path):
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
 
-    os.chdir(tmp_path)
     session = main({"paths": tmp_path, "stata_keep_log": True})
 
     assert session.exit_code == 0
@@ -113,7 +111,34 @@ def test_run_do_file_w_wrong_cmd_option(tmp_path):
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
 
-    os.chdir(tmp_path)
+    session = main({"paths": tmp_path})
+
+    assert session.exit_code == 0
+
+
+@needs_stata
+@pytest.mark.end_to_end
+def test_run_do_file_by_passing_path(tmp_path):
+    """Apparently, Stata simply discards wrong cmd options."""
+    task_source = """
+    import pytask
+    from pathlib import Path
+
+    @pytask.mark.stata(Path(__file__).parent / "auto.dta")
+    @pytask.mark.depends_on("script.do")
+    @pytask.mark.produces("auto.dta")
+    def task_run_do_file():
+        pass
+    """
+    tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(task_source))
+
+    do_file = """
+    args produces
+    sysuse auto, clear
+    save "`produces'"
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
     session = main({"paths": tmp_path})
 
     assert session.exit_code == 0
