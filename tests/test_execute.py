@@ -35,32 +35,6 @@ def test_pytask_execute_task_setup_raise_error(stata, platform, expectation):
         pytask_execute_task_setup(session, task)
 
 
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "platform, expectation",
-    [
-        (
-            platform,
-            does_not_raise()
-            if platform == "win32"
-            else pytest.warns(UserWarning, match="Parallelizing Stata"),
-        )
-        for platform in ["win32", "linux", "darwin"]
-    ],
-)
-def test_pytask_execute_task_setup_raise_warning(platform, expectation):
-    """Make sure that the task setup raises errors."""
-    # Act like r is installed since we do not test this.
-    task = DummyClass()
-    task.markers = [Mark("stata", (), {})]
-
-    session = DummyClass()
-    session.config = {"stata": STATA_COMMANDS[0], "platform": platform, "n_workers": 2}
-
-    with expectation:
-        pytask_execute_task_setup(session, task)
-
-
 @needs_stata
 @pytest.mark.end_to_end
 def test_run_do_file(tmp_path):

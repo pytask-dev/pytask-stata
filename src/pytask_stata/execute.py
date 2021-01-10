@@ -1,6 +1,5 @@
 """Execute tasks."""
 import re
-import warnings
 
 from _pytask.config import hookimpl
 from _pytask.mark import get_specific_markers_from_task
@@ -21,17 +20,6 @@ def pytask_execute_task_setup(session, task):
             f"We are looking for one of {STATA_COMMANDS} on your PATH. If you have a"
             "different Stata executable, please, file an issue at "
             "https://github.com/pytask-dev/pytask-stata."
-        )
-
-    if (
-        get_specific_markers_from_task(task, "stata")
-        and session.config["platform"] != "win32"
-        and session.config.get("n_workers", 1) > 1
-    ):
-        warnings.warn(
-            "Parallelizing Stata task on Unix systems might fail. Please resort to "
-            "serial execution instead. For more information, visit "
-            "https://github.com/pytask-dev/pytask-stata/issues/3."
         )
 
 
