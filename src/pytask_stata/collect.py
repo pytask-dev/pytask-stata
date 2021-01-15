@@ -27,11 +27,13 @@ def stata(options: Optional[Union[str, Iterable[str]]] = None):
 
     """
     options = to_list(options) if options is not None else []
+    options = [str(i) for i in options]
     return options
 
 
 def run_stata_script(stata, cwd):
     """Run an R script."""
+    print("Executing " + " ".join(stata) + ".")  # noqa: T001
     subprocess.run(stata, cwd=cwd, check=True)
 
 
