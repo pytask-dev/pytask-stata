@@ -110,8 +110,8 @@ for a ``"source"`` key in the dictionary and, secondly, under the key ``0``.
 Command Line Arguments
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The decorator can be used to pass command line arguments to your Stata executable which
-is not done, by default, but you could pass the path of the product with
+The decorator can be used to pass command line arguments to your Stata executable. For
+example, pass the path of the product with
 
 .. code-block:: python
 
@@ -131,10 +131,12 @@ And in your ``script.do``, you can intercept the value with
     sysuse auto, clear
     save "`produces'"
 
-The relative path inside the do-file works only because the current working directory
-switches to the directory of the do-file before the task is executed. To make the task
-independent from the current working directory, pass the full path as an command line
-argument. Here is an example.
+The relative path inside the do-file works only because the pytask-stata switches the
+current working directory to the directory of the do-file before the task is executed.
+This is necessary precaution.
+
+To make the task independent from the current working directory, pass the full path as
+an command line argument. Here is an example.
 
 .. code-block:: python
 

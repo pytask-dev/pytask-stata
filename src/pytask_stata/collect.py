@@ -4,6 +4,7 @@ import functools
 import subprocess
 from typing import Iterable
 from typing import Optional
+from typing import Sequence
 from typing import Union
 
 from _pytask.config import hookimpl
@@ -14,7 +15,6 @@ from _pytask.nodes import PythonFunctionTask
 from _pytask.parametrize import _copy_func
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import get_node_from_dictionary
-from pytask_stata.shared import to_list
 
 
 def stata(options: Optional[Union[str, Iterable[str]]] = None):
@@ -26,7 +26,7 @@ def stata(options: Optional[Union[str, Iterable[str]]] = None):
         One or multiple command line options passed to Stata.
 
     """
-    options = to_list(options) if options is not None else []
+    options = _to_list(options) if options is not None else []
     options = [str(i) for i in options]
     return options
 
@@ -111,3 +111,29 @@ def _prepare_cmd_options(session, task, args):
         cmd_options.append(f"-{log_name}")
 
     return cmd_options
+
+
+def _to_list(scalar_or_iter):
+    """Convert scalars and iterables to list.
+
+    Parameters
+    ----------
+    scalar_or_iter : str or list
+
+    Returns
+    -------
+    list
+
+    Examples
+    --------
+    >>> _to_list("a")
+    ['a']
+    >>> _to_list(["b"])
+    ['b']
+
+    """
+    return (
+        [scalar_or_iter]
+        if isinstance(scalar_or_iter, str) or not isinstance(scalar_or_iter, Sequence)
+        else list(scalar_or_iter)
+    )
