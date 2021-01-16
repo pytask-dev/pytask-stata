@@ -1,4 +1,4 @@
-import os
+import sys
 import textwrap
 
 import pytest
@@ -32,7 +32,6 @@ def test_parametrized_execution_of_do_file(tmp_path):
         """
         tmp_path.joinpath(name).write_text(textwrap.dedent(do_file))
 
-    os.chdir(tmp_path)
     session = main({"paths": tmp_path})
 
     assert session.exit_code == 0
@@ -45,9 +44,14 @@ def test_parametrized_execution_of_do_file(tmp_path):
 def test_parametrize_command_line_options(tmp_path):
     task_source = """
     import pytask
+    from pathlib import Path
+
+    SRC = Path(__file__).parent
 
     @pytask.mark.depends_on("script.do")
-    @pytask.mark.parametrize("produces, stata", [("0.dta", "0"), ("1.dta", "1")])
+    @pytask.mark.parametrize("produces, stata", [
+        (SRC / "0.dta", SRC / "0.dta"), (SRC / "1.dta", SRC / "1.dta"),
+    ])
     def task_execute_do_file():
         pass
     """
@@ -60,7 +64,6 @@ def test_parametrize_command_line_options(tmp_path):
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(latex_source))
 
-    os.chdir(tmp_path)
     session = main({"paths": tmp_path, "stata_keep_log": True})
 
     assert session.exit_code == 0
@@ -68,5 +71,12 @@ def test_parametrize_command_line_options(tmp_path):
     assert tmp_path.joinpath("1.dta").exists()
 
     # Test that log files with different names are produced.
-    assert tmp_path.joinpath("task_dummy_py_task_execute_do_file[0_dta-0].log").exists()
-    assert tmp_path.joinpath("task_dummy_py_task_execute_do_file[1_dta-1].log").exists()
+    if sys.platform == "win32":
+        assert tmp_path.joinpath(
+            "task_dummy_py_task_execute_do_file[produces0-stata0].log"
+        ).exists()
+        assert tmp_path.joinpath(
+            "task_dummy_py_task_execute_do_file[produces1-stata1].log"
+        ).exists()
+    else:
+        assert tmp_path.joinpath("script.log").exists()

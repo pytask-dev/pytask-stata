@@ -8,4 +8,4 @@ def pytask_parametrize_kwarg_to_marker(obj, kwargs):
     """Attach parametrized stata arguments to the function with a marker."""
     if callable(obj):
         if "stata" in kwargs:
-            mark.stata(*kwargs.pop("stata"))(obj)
+            mark.stata(kwargs.pop("stata"))(obj)

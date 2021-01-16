@@ -1,4 +1,4 @@
-import os
+import sys
 import textwrap
 from contextlib import ExitStack as does_not_raise  # noqa: N813
 
@@ -18,16 +18,17 @@ class DummyClass:
 @pytest.mark.parametrize(
     "stata, expectation",
     [(executable, does_not_raise()) for executable in STATA_COMMANDS]
-    + [(None, pytest.raises(RuntimeError))],
+    + [(None, pytest.raises(RuntimeError, match="Stata is needed"))],
 )
-def test_pytask_execute_task_setup(stata, expectation):
+@pytest.mark.parametrize("platform", ["win32", "linux", "darwin"])
+def test_pytask_execute_task_setup_raise_error(stata, platform, expectation):
     """Make sure that the task setup raises errors."""
     # Act like r is installed since we do not test this.
     task = DummyClass()
     task.markers = [Mark("stata", (), {})]
 
     session = DummyClass()
-    session.config = {"stata": stata}
+    session.config = {"stata": stata, "platform": platform}
 
     with expectation:
         pytask_execute_task_setup(session, task)
@@ -44,7 +45,6 @@ def test_run_do_file(tmp_path):
     @pytask.mark.produces("auto.dta")
     def task_run_do_file():
         pass
-
     """
     tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(task_source))
 
@@ -54,12 +54,15 @@ def test_run_do_file(tmp_path):
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
 
-    os.chdir(tmp_path)
     session = main({"paths": tmp_path, "stata_keep_log": True})
 
     assert session.exit_code == 0
     assert tmp_path.joinpath("auto.dta").exists()
-    assert tmp_path.joinpath("task_dummy_py_task_run_do_file.log").exists()
+
+    if sys.platform == "win32":
+        assert tmp_path.joinpath("task_dummy_py_task_run_do_file.log").exists()
+    else:
+        assert tmp_path.joinpath("script.log").exists()
 
 
 @pytest.mark.end_to_end
@@ -108,7 +111,34 @@ def test_run_do_file_w_wrong_cmd_option(tmp_path):
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
 
-    os.chdir(tmp_path)
+    session = main({"paths": tmp_path})
+
+    assert session.exit_code == 0
+
+
+@needs_stata
+@pytest.mark.end_to_end
+def test_run_do_file_by_passing_path(tmp_path):
+    """Replicates example under "Command Line Arguments" in Readme."""
+    task_source = """
+    import pytask
+    from pathlib import Path
+
+    @pytask.mark.stata(Path(__file__).parent / "auto.dta")
+    @pytask.mark.depends_on("script.do")
+    @pytask.mark.produces("auto.dta")
+    def task_run_do_file():
+        pass
+    """
+    tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(task_source))
+
+    do_file = """
+    args produces
+    sysuse auto, clear
+    save "`produces'"
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
     session = main({"paths": tmp_path})
 
     assert session.exit_code == 0

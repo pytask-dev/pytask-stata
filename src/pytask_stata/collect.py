@@ -2,9 +2,9 @@
 import copy
 import functools
 import subprocess
-from pathlib import Path
 from typing import Iterable
 from typing import Optional
+from typing import Sequence
 from typing import Union
 
 from _pytask.config import hookimpl
@@ -14,6 +14,7 @@ from _pytask.nodes import FilePathNode
 from _pytask.nodes import PythonFunctionTask
 from _pytask.parametrize import _copy_func
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
+from pytask_stata.shared import get_node_from_dictionary
 
 
 def stata(options: Optional[Union[str, Iterable[str]]] = None):
@@ -25,16 +26,15 @@ def stata(options: Optional[Union[str, Iterable[str]]] = None):
         One or multiple command line options passed to Stata.
 
     """
-    if options is None:
-        options = []
-    elif isinstance(options, str):
-        options = [options]
+    options = _to_list(options) if options is not None else []
+    options = [str(i) for i in options]
     return options
 
 
-def run_stata_script(stata):
+def run_stata_script(stata, cwd):
     """Run an R script."""
-    subprocess.run(stata, check=True)
+    print("Executing " + " ".join(stata) + ".")  # noqa: T001
+    subprocess.run(stata, cwd=cwd, check=True)
 
 
 @hookimpl
@@ -58,7 +58,7 @@ def pytask_collect_task(session, path, name, obj):
 def pytask_collect_task_teardown(session, task):
     """Perform some checks and prepare the task function."""
     if get_specific_markers_from_task(task, "stata"):
-        source = _get_node_from_dictionary(
+        source = get_node_from_dictionary(
             task.depends_on, session.config["stata_source_key"]
         )
         if not (isinstance(source, FilePathNode) and source.value.suffix == ".do"):
@@ -72,17 +72,11 @@ def pytask_collect_task_teardown(session, task):
         merged_marks = _merge_all_markers(task)
         args = stata(*merged_marks.args, **merged_marks.kwargs)
         options = _prepare_cmd_options(session, task, args)
-        stata_function = functools.partial(stata_function, stata=options)
+        stata_function = functools.partial(
+            stata_function, stata=options, cwd=task.path.parent
+        )
 
         task.function = stata_function
-
-
-def _get_node_from_dictionary(obj, key, fallback=0):
-    if isinstance(obj, Path):
-        pass
-    elif isinstance(obj, dict):
-        obj = obj.get(key) or obj.get(fallback)
-    return obj
 
 
 def _merge_all_markers(task):
@@ -101,15 +95,45 @@ def _prepare_cmd_options(session, task, args):
     is unique and does not cause any errors when parallelizing the execution.
 
     """
-    source = _get_node_from_dictionary(
+    source = get_node_from_dictionary(
         task.depends_on, session.config["stata_source_key"]
     )
-    log_name = convert_task_id_to_name_of_log_file(task.name)
-    return [
+
+    cmd_options = [
         session.config["stata"],
         "-e",
         "do",
-        source.value.as_posix(),
+        source.path.as_posix(),
         *args,
-        f"-{log_name}",
     ]
+    if session.config["platform"] == "win32":
+        log_name = convert_task_id_to_name_of_log_file(task.name)
+        cmd_options.append(f"-{log_name}")
+
+    return cmd_options
+
+
+def _to_list(scalar_or_iter):
+    """Convert scalars and iterables to list.
+
+    Parameters
+    ----------
+    scalar_or_iter : str or list
+
+    Returns
+    -------
+    list
+
+    Examples
+    --------
+    >>> _to_list("a")
+    ['a']
+    >>> _to_list(["b"])
+    ['b']
+
+    """
+    return (
+        [scalar_or_iter]
+        if isinstance(scalar_or_iter, str) or not isinstance(scalar_or_iter, Sequence)
+        else list(scalar_or_iter)
+    )

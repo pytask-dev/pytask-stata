@@ -1,5 +1,4 @@
 """Contains test which ensure that the plugin works with pytask-parallel."""
-import os
 import textwrap
 import time
 
@@ -23,8 +22,6 @@ pytestmark = pytest.mark.skipif(
 @needs_stata
 @pytest.mark.end_to_end
 def test_parallel_parametrization_over_source_files(runner, tmp_path):
-    os.chdir(tmp_path)
-
     source = """
     import pytask
 
@@ -70,8 +67,6 @@ def test_parallel_parametrization_over_source_files(runner, tmp_path):
 @needs_stata
 @pytest.mark.end_to_end
 def test_parallel_parametrization_over_source_file(runner, tmp_path):
-    os.chdir(tmp_path)
-
     source = """
     import pytask
 

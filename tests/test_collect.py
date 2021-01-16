@@ -4,12 +4,12 @@ from pathlib import Path
 import pytest
 from _pytask.mark import Mark
 from _pytask.nodes import FilePathNode
-from pytask_stata.collect import _get_node_from_dictionary
 from pytask_stata.collect import _merge_all_markers
 from pytask_stata.collect import _prepare_cmd_options
 from pytask_stata.collect import pytask_collect_task
 from pytask_stata.collect import pytask_collect_task_teardown
 from pytask_stata.collect import stata
+from pytask_stata.shared import get_node_from_dictionary
 
 
 class DummyClass:
@@ -65,26 +65,34 @@ def test_merge_all_markers(marks, expected):
     ],
 )
 @pytest.mark.parametrize("stata_source_key", ["source", "do"])
-def test_prepare_cmd_options(args, stata_source_key):
+@pytest.mark.parametrize("platform", ["win32", "linux", "darwin"])
+def test_prepare_cmd_options(args, stata_source_key, platform):
     session = DummyClass()
-    session.config = {"stata": "stata", "stata_source_key": stata_source_key}
+    session.config = {
+        "stata": "stata",
+        "stata_source_key": stata_source_key,
+        "platform": platform,
+    }
 
     node = DummyClass()
-    node.value = Path("script.do")
+    node.path = Path("script.do")
     task = DummyClass()
     task.depends_on = {stata_source_key: node}
     task.name = "task"
 
     result = _prepare_cmd_options(session, task, args)
 
-    assert result == [
+    expected = [
         "stata",
         "-e",
         "do",
         "script.do",
         *args,
-        "-task",
     ]
+    if platform == "win32":
+        expected.append("-task")
+
+    assert result == expected
 
 
 @pytest.mark.unit
@@ -115,9 +123,14 @@ def test_pytask_collect_task(name, expected):
         (["input.dta", "script.do"], ["any_out.dta"], pytest.raises(ValueError)),
     ],
 )
-def test_pytask_collect_task_teardown(depends_on, produces, expectation):
+@pytest.mark.parametrize("platform", ["win32", "darwin", "linux"])
+def test_pytask_collect_task_teardown(depends_on, produces, platform, expectation):
     session = DummyClass()
-    session.config = {"stata": "stata", "stata_source_key": "source"}
+    session.config = {
+        "stata": "stata",
+        "stata_source_key": "source",
+        "platform": platform,
+    }
 
     task = DummyClass()
     task.depends_on = {
@@ -126,6 +139,7 @@ def test_pytask_collect_task_teardown(depends_on, produces, expectation):
     task.produces = {i: FilePathNode.from_path(Path(n)) for i, n in enumerate(produces)}
     task.function = task_dummy
     task.name = "task_dummy"
+    task.path = Path()
 
     markers = [Mark("stata", (), {})]
     task.markers = markers
@@ -146,5 +160,5 @@ def test_pytask_collect_task_teardown(depends_on, produces, expectation):
     ],
 )
 def test_get_node_from_dictionary(obj, key, expected):
-    result = _get_node_from_dictionary(obj, key)
+    result = get_node_from_dictionary(obj, key)
     assert result == expected

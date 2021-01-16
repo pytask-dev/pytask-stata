@@ -10,6 +10,10 @@
 .. image:: https://codecov.io/gh/pytask-dev/pytask-stata/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/pytask-dev/pytask-stata
 
+.. image:: https://results.pre-commit.ci/badge/github/pytask-dev/pytask-stata/main.svg
+    :target: https://results.pre-commit.ci/latest/github/pytask-dev/pytask-stata/main
+    :alt: pre-commit.ci status
+
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
@@ -57,6 +61,9 @@ Here is an example where you want to run ``script.do``.
     def task_run_do_file():
         pass
 
+When executing a do-file, the current working directory changes to the directory of the
+script which is executed.
+
 
 Multiple dependencies and products
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,8 +110,8 @@ for a ``"source"`` key in the dictionary and, secondly, under the key ``0``.
 Command Line Arguments
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The decorator can be used to pass command line arguments to your Stata executable which
-is not done, by default, but you could pass the path of the product with
+The decorator can be used to pass command line arguments to your Stata executable. For
+example, pass the path of the product with
 
 .. code-block:: python
 
@@ -124,10 +131,12 @@ And in your ``script.do``, you can intercept the value with
     sysuse auto, clear
     save "`produces'"
 
-Note that this solution only works if your current working directory is the same as the
-directory where the task file lives. It is because Stata does not swap directories. To
-make the task independent from the current working directory, pass the full path as an
-command line argument. Here is an example.
+The relative path inside the do-file works only because the pytask-stata switches the
+current working directory to the directory of the do-file before the task is executed.
+This is necessary precaution.
+
+To make the task independent from the current working directory, pass the full path as
+an command line argument. Here is an example.
 
 .. code-block:: python
 
@@ -178,7 +187,7 @@ include the ``@pytask.mark.stata`` decorator in the parametrization just like wi
 Configuration
 -------------
 
-pytask-stata offers new some new configuration values.
+pytask-stata can be configured with the following options.
 
 stata_keep_log
     Use this option to keep the ``.log`` files which are produced for every task. This
