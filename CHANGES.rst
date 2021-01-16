@@ -6,10 +6,10 @@ chronological order. Releases follow `semantic versioning <https://semver.org/>`
 all releases are available on `Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_.
 
 
-0.0.3 - 2021-xx-xx
+0.0.3 - 2021-01-16
 ------------------
 
-- :gh:`4` removes log file handling on UNIX and raises an error if run in   parallel.
+- :gh:`4` removes log file handling on UNIX and raises an error if run in parallel.
 
 0.0.2 - 2020-10-30
 ------------------
