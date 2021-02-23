@@ -6,6 +6,12 @@ chronological order. Releases follow `semantic versioning <https://semver.org/>`
 all releases are available on `Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_.
 
 
+0.0.4 - 2021-xx-xx
+------------------
+
+- :gh:`6` prepares pytask-stata to be published on PyPI, adds versioneer and more.
+
+
 0.0.3 - 2021-01-16
 ------------------
 
