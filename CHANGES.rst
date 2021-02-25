@@ -3,10 +3,11 @@ Changes
 
 This is a record of all past pytask-stata releases and what went into them in reverse
 chronological order. Releases follow `semantic versioning <https://semver.org/>`_ and
-all releases are available on `Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_.
+all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ and
+`Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_.
 
 
-0.0.4 - 2021-xx-xx
+0.0.4 - 2021-02-25
 ------------------
 
 - :gh:`6` prepares pytask-stata to be published on PyPI, adds versioneer and more.
