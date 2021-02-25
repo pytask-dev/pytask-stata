@@ -1,8 +1,19 @@
+.. image:: https://img.shields.io/pypi/v/pytask-stata?color=blue
+    :alt: PyPI
+    :target: https://pypi.org/project/pytask-stata
+
+.. image:: https://img.shields.io/pypi/pyversions/pytask-stata
+    :alt: PyPI - Python Version
+    :target: https://pypi.org/project/pytask-stata
+
 .. image:: https://anaconda.org/pytask/pytask-stata/badges/version.svg
     :target: https://anaconda.org/pytask/pytask-stata
 
 .. image:: https://anaconda.org/pytask/pytask-stata/badges/platforms.svg
     :target: https://anaconda.org/pytask/pytask-stata
+
+.. image:: https://img.shields.io/pypi/l/pytask-stata
+    :alt: PyPI - License
 
 .. image:: https://github.com/pytask-dev/pytask-stata/workflows/Continuous%20Integration%20Workflow/badge.svg?branch=main
     :target: https://github.com/pytask-dev/pytask-stata/actions?query=branch%3Amain
@@ -28,9 +39,14 @@ Run Stata's do-files with pytask.
 Installation
 ------------
 
-Install the plugin with
+pytask-stata is available on `PyPI <https://pypi.org/project/pytask-stata>`_ and
+`Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_. Install it with
 
 .. code-block:: console
+
+    $ pip install pytask-stata
+
+    # or
 
     $ conda config --add channels conda-forge --add channels pytask
     $ conda install pytask-stata
