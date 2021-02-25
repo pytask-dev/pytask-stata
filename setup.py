@@ -1,13 +1,28 @@
+from pathlib import Path
+
 from setuptools import find_packages
 from setuptools import setup
 
 import versioneer
+
+
+README = Path("README.rst").read_text()
+
+PROJECT_URLS = {
+    "Documentation": "https://github.com/pytask-dev/pytask-stata",
+    "Github": "https://github.com/pytask-dev/pytask-stata",
+    "Tracker": "https://github.com/pytask-dev/pytask-stata/issues",
+    "Changelog": "https://github.com/pytask-dev/pytask-stata/blob/main/CHANGES.rst",
+}
+
 
 setup(
     name="pytask-stata",
     version=versioneer.get_version(),
     cmd_class=versioneer.get_cmdclass(),
     description="Execute do-files with Stata and pytask.",
+    long_description=README,
+    long_description_content_type="text/x-rst",
     author="Tobias Raabe",
     author_email="raabe@posteo.de",
     python_requires=">=3.6",
@@ -26,5 +41,5 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     entry_points={"pytask": ["pytask_stata = pytask_stata.plugin"]},
-    zip_false=True,
+    zip_false=False,
 )
