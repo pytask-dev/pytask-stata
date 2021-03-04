@@ -1,7 +1,8 @@
 name: pytask-stata
+
 channels:
   - conda-forge
-  - pytask
+
 dependencies:
   - python
   - pip
@@ -24,4 +25,3 @@ dependencies:
   - pytest-cov
   - pytest-xdist
   - tox-conda
-  - versioneer
