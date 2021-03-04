@@ -19,7 +19,7 @@ PROJECT_URLS = {
 setup(
     name="pytask-stata",
     version=versioneer.get_version(),
-    cmd_class=versioneer.get_cmdclass(),
+    cmdclass=versioneer.get_cmdclass(),
     description="Execute do-files with Stata and pytask.",
     long_description=README,
     long_description_content_type="text/x-rst",
@@ -45,5 +45,5 @@ setup(
     package_dir={"": "src"},
     entry_points={"pytask": ["pytask_stata = pytask_stata.plugin"]},
     include_package_data=True,
-    zip_false=False,
+    zip_safe=False,
 )
