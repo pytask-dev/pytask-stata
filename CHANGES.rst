@@ -7,10 +7,11 @@ all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ an
 `Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_.
 
 
-0.0.5 - 2021-xx-xx
+0.0.5 - 2021-03-04
 ------------------
 
 - :gh:`7` fix some post-release issues.
+- :gh:`9` adds dependencies to ``setup.py``.
 
 
 0.0.4 - 2021-02-25
