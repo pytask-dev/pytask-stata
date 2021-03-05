@@ -6,17 +6,18 @@
     :alt: PyPI - Python Version
     :target: https://pypi.org/project/pytask-stata
 
-.. image:: https://anaconda.org/pytask/pytask-stata/badges/version.svg
-    :target: https://anaconda.org/pytask/pytask-stata
+.. image:: https://img.shields.io/conda/vn/conda-forge/pytask-stata.svg
+    :target: https://anaconda.org/conda-forge/pytask-stata
 
-.. image:: https://anaconda.org/pytask/pytask-stata/badges/platforms.svg
-    :target: https://anaconda.org/pytask/pytask-stata
+.. image:: https://img.shields.io/conda/pn/conda-forge/pytask-stata.svg
+    :target: https://anaconda.org/conda-forge/pytask-stata
 
 .. image:: https://img.shields.io/pypi/l/pytask-stata
     :alt: PyPI - License
+    :target: https://pypi.org/project/pytask-stata
 
-.. image:: https://github.com/pytask-dev/pytask-stata/workflows/Continuous%20Integration%20Workflow/badge.svg?branch=main
-    :target: https://github.com/pytask-dev/pytask-stata/actions?query=branch%3Amain
+.. image:: https://img.shields.io/github/workflow/status/pytask-dev/pytask-stata/Continuous%20Integration%20Workflow/main
+   :target: https://github.com/pytask-dev/pytask-stata/actions?query=branch%3Amain
 
 .. image:: https://codecov.io/gh/pytask-dev/pytask-stata/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/pytask-dev/pytask-stata
@@ -40,7 +41,7 @@ Installation
 ------------
 
 pytask-stata is available on `PyPI <https://pypi.org/project/pytask-stata>`_ and
-`Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_. Install it with
+`Anaconda.org <https://anaconda.org/conda-forge/pytask-stata>`_. Install it with
 
 .. code-block:: console
 
@@ -48,8 +49,7 @@ pytask-stata is available on `PyPI <https://pypi.org/project/pytask-stata>`_ and
 
     # or
 
-    $ conda config --add channels conda-forge --add channels pytask
-    $ conda install pytask-stata
+    $ conda install -c conda-forge pytask-stata
 
 You also need to have Stata installed on your system and have the executable on your
 system's PATH. If you do not know how to do it, `here <https://superuser.com/a/284351>`_
