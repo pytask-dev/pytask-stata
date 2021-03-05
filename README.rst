@@ -41,7 +41,7 @@ Installation
 ------------
 
 pytask-stata is available on `PyPI <https://pypi.org/project/pytask-stata>`_ and
-`Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_. Install it with
+`Anaconda.org <https://anaconda.org/conda-forge/pytask-stata>`_. Install it with
 
 .. code-block:: console
 

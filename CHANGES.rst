@@ -4,7 +4,13 @@ Changes
 This is a record of all past pytask-stata releases and what went into them in reverse
 chronological order. Releases follow `semantic versioning <https://semver.org/>`_ and
 all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ and
-`Anaconda.org <https://anaconda.org/pytask/pytask-stata>`_.
+`Anaconda.org <https://anaconda.org/conda-forge/pytask-stata>`_.
+
+
+0.0.7 - 2021-xx-xx
+------------------
+
+- :gh:`11` fixes the ``README.rst``.
 
 
 0.0.6 - 2021-03-05
