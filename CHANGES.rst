@@ -11,6 +11,7 @@ all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ an
 ------------------
 
 - :gh:`11` fixes the ``README.rst``.
+- :gh:`13` replaces versioneer with setuptools-scm.
 
 
 0.0.6 - 2021-03-05
