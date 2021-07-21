@@ -2,7 +2,7 @@
 import re
 
 from _pytask.config import hookimpl
-from _pytask.mark import get_specific_markers_from_task
+from _pytask.mark_utils import get_specific_markers_from_task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import get_node_from_dictionary
 from pytask_stata.shared import STATA_COMMANDS
