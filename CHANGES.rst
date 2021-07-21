@@ -7,11 +7,12 @@ all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ an
 `Anaconda.org <https://anaconda.org/conda-forge/pytask-stata>`_.
 
 
-0.0.7 - 2021-xx-xx
+0.1.0 - 2021-07-21
 ------------------
 
 - :gh:`11` fixes the ``README.rst``.
-- :gh:`14` fixes tests and aligns pytask-stata with pytask 0.1.0.
+- :gh:`13` replaces versioneer with setuptools-scm.
+- :gh:`14` fixes tests and aligns pytask-stata with pytask v0.1.0.
 
 
 0.0.6 - 2021-03-05

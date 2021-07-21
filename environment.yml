@@ -2,10 +2,13 @@ name: pytask-stata
 
 channels:
   - conda-forge
+  - nodefaults
 
 dependencies:
-  - python
+  - python >=3.6
   - pip
+  - setuptools_scm
+  - toml
 
   # Conda
   - anaconda-client
