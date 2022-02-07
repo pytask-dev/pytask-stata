@@ -1,11 +1,11 @@
 """Collect tasks."""
+from __future__ import annotations
+
 import copy
 import functools
 import subprocess
 from typing import Iterable
-from typing import Optional
 from typing import Sequence
-from typing import Union
 
 from _pytask.config import hookimpl
 from _pytask.mark_utils import get_specific_markers_from_task
@@ -17,7 +17,7 @@ from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import get_node_from_dictionary
 
 
-def stata(options: Optional[Union[str, Iterable[str]]] = None):
+def stata(options: str | Iterable[str] | None = None):
     """Specify command line options for Stata.
 
     Parameters
