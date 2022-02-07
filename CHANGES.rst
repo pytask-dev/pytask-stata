@@ -7,6 +7,12 @@ all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ an
 `Anaconda.org <https://anaconda.org/conda-forge/pytask-stata>`_.
 
 
+0.1.2 - 2022-02-08
+------------------
+
+- :gh:`19` fixes the minimum python and pytask version.
+
+
 0.1.1 - 2022-02-07
 ------------------
 
