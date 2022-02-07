@@ -81,7 +81,9 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
     tmp_path.joinpath("script.do").write_text(textwrap.dedent("1 + 1"))
 
     # Hide Stata if available.
-    monkeypatch.setattr("pytask_stata.config.shutil.which", lambda x: None)
+    monkeypatch.setattr(
+        "pytask_stata.config.shutil.which", lambda x: None  # noqa: U100
+    )
 
     session = main({"paths": tmp_path})
 
