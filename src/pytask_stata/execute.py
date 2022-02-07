@@ -5,13 +5,15 @@ import re
 
 from _pytask.config import hookimpl
 from _pytask.mark_utils import get_specific_markers_from_task
+from pytask import MetaTask
+from pytask import Session
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import get_node_from_dictionary
 from pytask_stata.shared import STATA_COMMANDS
 
 
 @hookimpl
-def pytask_execute_task_setup(session, task):
+def pytask_execute_task_setup(session: Session, task: MetaTask) -> None:
     """Check if Stata is found on the PATH."""
     if (
         get_specific_markers_from_task(task, "stata")
@@ -26,7 +28,7 @@ def pytask_execute_task_setup(session, task):
 
 
 @hookimpl
-def pytask_execute_task_teardown(session, task):
+def pytask_execute_task_teardown(session: Session, task: MetaTask) -> None:
     """Check if the log file contains no error code.
 
     Stata has the weird behavior of always returning an exit code of 0 even if an error

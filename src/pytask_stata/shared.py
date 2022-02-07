@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import sys
+from typing import Any
+
+from pytask import MetaNode
 
 
 if sys.platform == "darwin":
@@ -34,7 +37,7 @@ else:
     STATA_COMMANDS = []
 
 
-def convert_task_id_to_name_of_log_file(id_):
+def convert_task_id_to_name_of_log_file(id_: str) -> str:
     """Convert task to id to name of log file.
 
     If one passes the complete task id as the log file name, Stata would remove parent
@@ -59,7 +62,9 @@ def convert_task_id_to_name_of_log_file(id_):
     return converted_id
 
 
-def get_node_from_dictionary(obj, key, fallback=0):
+def get_node_from_dictionary(
+    obj: Any | dict[str | int, MetaNode], key: Any, fallback: int = 0
+) -> MetaNode:
     if isinstance(obj, dict):
         obj = obj.get(key) or obj.get(fallback)
     return obj

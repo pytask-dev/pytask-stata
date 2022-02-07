@@ -4,20 +4,25 @@ from __future__ import annotations
 import copy
 import functools
 import subprocess
+from pathlib import Path
+from typing import Any
 from typing import Iterable
 from typing import Sequence
 
 from _pytask.config import hookimpl
 from _pytask.mark_utils import get_specific_markers_from_task
 from _pytask.mark_utils import has_marker
-from _pytask.nodes import FilePathNode
-from _pytask.nodes import PythonFunctionTask
 from _pytask.parametrize import _copy_func
+from pytask import FilePathNode
+from pytask import Mark
+from pytask import MetaTask
+from pytask import PythonFunctionTask
+from pytask import Session
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import get_node_from_dictionary
 
 
-def stata(options: str | Iterable[str] | None = None):
+def stata(options: str | Iterable[str] | None = None) -> list[str]:
     """Specify command line options for Stata.
 
     Parameters
@@ -31,14 +36,16 @@ def stata(options: str | Iterable[str] | None = None):
     return options
 
 
-def run_stata_script(stata, cwd):
+def run_stata_script(stata: list[str], cwd: Path) -> None:
     """Run an R script."""
     print("Executing " + " ".join(stata) + ".")  # noqa: T001
     subprocess.run(stata, cwd=cwd, check=True)
 
 
 @hookimpl
-def pytask_collect_task(session, path, name, obj):
+def pytask_collect_task(
+    session: Session, path: Path, name: str, obj: Any
+) -> MetaTask | None:
     """Collect a task which is a function.
 
     There is some discussion on how to detect functions in this `thread
@@ -52,10 +59,11 @@ def pytask_collect_task(session, path, name, obj):
         )
 
         return task
+    return None
 
 
 @hookimpl
-def pytask_collect_task_teardown(session, task):
+def pytask_collect_task_teardown(session: Session, task: MetaTask) -> None:
     """Perform some checks and prepare the task function."""
     if get_specific_markers_from_task(task, "stata"):
         source = get_node_from_dictionary(
@@ -79,7 +87,7 @@ def pytask_collect_task_teardown(session, task):
         task.function = stata_function
 
 
-def _merge_all_markers(task):
+def _merge_all_markers(task: MetaTask) -> Mark:
     """Combine all information from markers for the Stata function."""
     stata_marks = get_specific_markers_from_task(task, "stata")
     mark = stata_marks[0]
@@ -88,7 +96,9 @@ def _merge_all_markers(task):
     return mark
 
 
-def _prepare_cmd_options(session, task, args):
+def _prepare_cmd_options(
+    session: Session, task: MetaTask, args: list[str]
+) -> list[str]:
     """Prepare the command line arguments to execute the do-file.
 
     The last entry changes the name of the log file. We take the task id as a name which
@@ -113,16 +123,17 @@ def _prepare_cmd_options(session, task, args):
     return cmd_options
 
 
-def _to_list(scalar_or_iter):
+def _to_list(scalar_or_iter: Any | Iterable[Any]) -> list[Any]:
     """Convert scalars and iterables to list.
 
     Parameters
     ----------
-    scalar_or_iter : str or list
+    scalar_or_iter : Any | Iterable[Any]
+        A scalar or an iterable which needs to be converted to a list.
 
     Returns
     -------
-    list
+    list[Any]
 
     Examples
     --------

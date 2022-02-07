@@ -5,8 +5,9 @@ import textwrap
 import time
 
 import pytest
-from conftest import needs_stata
 from pytask import cli
+
+from tests.conftest import needs_stata
 
 try:
     import pytask_parallel  # noqa: F401

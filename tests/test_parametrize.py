@@ -4,8 +4,9 @@ import sys
 import textwrap
 
 import pytest
-from conftest import needs_stata
 from pytask import main
+
+from tests.conftest import needs_stata
 
 
 @needs_stata

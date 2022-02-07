@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import shutil
 import sys
+from typing import Any
 
 from _pytask.config import hookimpl
 from _pytask.shared import convert_truthy_or_falsy_to_bool
@@ -11,7 +12,11 @@ from pytask_stata.shared import STATA_COMMANDS
 
 
 @hookimpl
-def pytask_parse_config(config, config_from_cli, config_from_file):
+def pytask_parse_config(
+    config: dict[str, Any],
+    config_from_cli: dict[str, Any],
+    config_from_file: dict[str, Any],
+) -> None:
     """Register the r marker."""
     config["markers"]["stata"] = "Tasks which are executed with Stata."
     config["platform"] = sys.platform
@@ -43,7 +48,7 @@ def pytask_parse_config(config, config_from_cli, config_from_file):
     config["stata_source_key"] = config_from_file.get("stata_source_key", "source")
 
 
-def _nonnegative_nonzero_integer(x):
+def _nonnegative_nonzero_integer(x: Any) -> int:
     """Check for nonnegative and nonzero integer."""
     if x is not None:
         try:
