@@ -5,8 +5,8 @@ import textwrap
 from contextlib import ExitStack as does_not_raise  # noqa: N813
 
 import pytest
-from _pytask.mark import Mark
 from pytask import main
+from pytask import Mark
 from pytask_stata.config import STATA_COMMANDS
 from pytask_stata.execute import pytask_execute_task_setup
 
