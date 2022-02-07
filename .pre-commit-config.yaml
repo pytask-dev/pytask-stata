@@ -8,7 +8,6 @@ repos:
     -   id: check-merge-conflict
     -   id: check-vcs-permalinks
     -   id: check-yaml
-        exclude: meta.yaml
     -   id: debug-statements
     -   id: end-of-file-fixer
     -   id: fix-byte-order-marker
