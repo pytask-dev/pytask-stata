@@ -7,6 +7,13 @@ all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ an
 `Anaconda.org <https://anaconda.org/conda-forge/pytask-stata>`_.
 
 
+0.1.1 - 2022-02-07
+------------------
+
+- :gh:`16` skips concurrent CI builds.
+- :gh:`17` deprecates Python 3.6 and adds support for Python 3.10.
+
+
 0.1.0 - 2021-07-21
 ------------------
 
