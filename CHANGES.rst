@@ -10,7 +10,7 @@ all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ an
 0.1.2 - 2022-02-08
 ------------------
 
-- :gh:`18` fixes the minimum python and pytask version.
+- :gh:`19` fixes the minimum python and pytask version.
 
 
 0.1.1 - 2022-02-07
