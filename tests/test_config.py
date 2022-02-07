@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pytest
 from pytask import main
 from pytask_stata.config import _nonnegative_nonzero_integer
