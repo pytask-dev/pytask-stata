@@ -7,6 +7,12 @@ all releases are available on `PyPI <https://pypi.org/project/pytask-stata>`_ an
 `Anaconda.org <https://anaconda.org/conda-forge/pytask-stata>`_.
 
 
+0.2.0 - 2022-xx-xx
+------------------
+
+- :gh`:`20` removes an unnecessary hook implementation.
+
+
 0.1.2 - 2022-02-08
 ------------------
 

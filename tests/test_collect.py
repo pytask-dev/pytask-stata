@@ -8,7 +8,6 @@ from _pytask.mark import Mark
 from _pytask.nodes import FilePathNode
 from pytask_stata.collect import _merge_all_markers
 from pytask_stata.collect import _prepare_cmd_options
-from pytask_stata.collect import pytask_collect_task
 from pytask_stata.collect import pytask_collect_task_teardown
 from pytask_stata.collect import stata
 from pytask_stata.shared import get_node_from_dictionary
@@ -95,25 +94,6 @@ def test_prepare_cmd_options(args, stata_source_key, platform):
         expected.append("-task")
 
     assert result == expected
-
-
-@pytest.mark.unit
-@pytest.mark.parametrize(
-    "name, expected",
-    [("task_dummy", True), ("invalid_name", None)],
-)
-def test_pytask_collect_task(name, expected):
-    session = DummyClass()
-    session.config = {"stata": "stata"}
-    path = Path("some_path")
-    task_dummy.pytaskmark = [Mark("stata", (), {})]
-
-    task = pytask_collect_task(session, path, name, task_dummy)
-
-    if expected:
-        assert task
-    else:
-        assert not task
 
 
 @pytest.mark.unit
