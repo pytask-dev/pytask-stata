@@ -37,14 +37,14 @@ def test_parallel_parametrization_over_source_files(runner, tmp_path):
     tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(source))
 
     do_file = """
-    sleep 2000
+    sleep 4000
     sysuse auto, clear
     save 1
     """
     tmp_path.joinpath("script_1.do").write_text(textwrap.dedent(do_file))
 
     do_file = """
-    sleep 2000
+    sleep 4000
     sysuse auto, clear
     save 2
     """
@@ -83,7 +83,7 @@ def test_parallel_parametrization_over_source_file(runner, tmp_path):
     tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(source))
 
     do_file = """
-    sleep 2000
+    sleep 4000
     sysuse auto, clear
     args produces
     save "`produces'"
