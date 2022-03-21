@@ -1,120 +1,137 @@
 """Collect tasks."""
 from __future__ import annotations
 
-import copy
 import functools
 import subprocess
-from typing import Iterable
-from typing import Sequence
+from pathlib import Path
+from types import FunctionType
 
-from _pytask.config import hookimpl
-from _pytask.mark_utils import get_specific_markers_from_task
-from _pytask.nodes import FilePathNode
-from _pytask.parametrize import _copy_func
+from pytask import depends_on
+from pytask import has_mark
+from pytask import hookimpl
+from pytask import Mark
+from pytask import parse_nodes
+from pytask import produces
+from pytask import remove_marks
+from pytask import Task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
-from pytask_stata.shared import get_node_from_dictionary
+from pytask_stata.shared import stata
 
 
-def stata(options: str | Iterable[str] | None = None):
-    """Specify command line options for Stata.
-
-    Parameters
-    ----------
-    options : Optional[Union[str, Iterable[str]]]
-        One or multiple command line options passed to Stata.
-
-    """
-    options = _to_list(options) if options is not None else []
-    options = [str(i) for i in options]
-    return options
-
-
-def run_stata_script(stata, cwd):
+def run_stata_script(
+    executable: str, script: Path, options: list[str], log_name: list[str], cwd: Path
+) -> None:
     """Run an R script."""
-    print("Executing " + " ".join(stata) + ".")  # noqa: T001
-    subprocess.run(stata, cwd=cwd, check=True)
+    cmd = [executable, "-e", "do", script.as_posix(), *options, *log_name]
+    print("Executing " + " ".join(cmd) + ".")  # noqa: T001
+    subprocess.run(cmd, cwd=cwd, check=True)
 
 
 @hookimpl
-def pytask_collect_task_teardown(session, task):
+def pytask_collect_task(session, path, name, obj):
     """Perform some checks and prepare the task function."""
-    if get_specific_markers_from_task(task, "stata"):
-        source = get_node_from_dictionary(
-            task.depends_on, session.config["stata_source_key"]
-        )
-        if not (isinstance(source, FilePathNode) and source.value.suffix == ".do"):
+    __tracebackhide__ = True
+
+    if (
+        (name.startswith("task_") or has_mark(obj, "task"))
+        and callable(obj)
+        and has_mark(obj, "stata")
+    ):
+        obj, marks = remove_marks(obj, "stata")
+
+        if len(marks) > 1:
             raise ValueError(
-                "The first dependency of a Stata task must be the do-file."
+                f"Task {name!r} has multiple @pytask.mark.stata marks, but only one is "
+                "allowed."
             )
 
-        stata_function = _copy_func(run_stata_script)
-        stata_function.pytaskmark = copy.deepcopy(task.function.pytaskmark)
+        mark = _parse_stata_mark(
+            mark=marks[0], default_options=session.config["stata_options"]
+        )
+        script, options = stata(**marks[0].kwargs)
 
-        merged_marks = _merge_all_markers(task)
-        args = stata(*merged_marks.args, **merged_marks.kwargs)
-        options = _prepare_cmd_options(session, task, args)
+        obj.pytask_meta.markers.append(mark)
+
+        dependencies = parse_nodes(session, path, name, obj, depends_on)
+        products = parse_nodes(session, path, name, obj, produces)
+
+        markers = obj.pytask_meta.markers if hasattr(obj, "pytask_meta") else []
+        kwargs = obj.pytask_meta.kwargs if hasattr(obj, "pytask_meta") else {}
+
+        task = Task(
+            base_name=name,
+            path=path,
+            function=_copy_func(run_stata_script),
+            depends_on=dependencies,
+            produces=products,
+            markers=markers,
+            kwargs=kwargs,
+        )
+
+        script_node = session.hook.pytask_collect_node(
+            session=session, path=path, node=script
+        )
+
+        if isinstance(task.depends_on, dict):
+            task.depends_on["__script"] = script_node
+        else:
+            task.depends_on = {0: task.depends_on, "__script": script_node}
+
+        if session.config["platform"] == "win32":
+            log_name = convert_task_id_to_name_of_log_file(task.short_name)
+            log_name_arg = [f"-{log_name}"]
+        else:
+            log_name_arg = []
+
         stata_function = functools.partial(
-            stata_function, stata=options, cwd=task.path.parent
+            task.function,
+            executable=session.config["stata"],
+            script=task.depends_on["__script"].path,
+            options=options,
+            log_name=log_name_arg,
+            cwd=task.path.parent,
         )
 
         task.function = stata_function
 
+        return task
 
-def _merge_all_markers(task):
-    """Combine all information from markers for the Stata function."""
-    stata_marks = get_specific_markers_from_task(task, "stata")
-    mark = stata_marks[0]
-    for mark_ in stata_marks[1:]:
-        mark = mark.combined_with(mark_)
+
+def _parse_stata_mark(mark, default_options):
+    """Parse a Julia mark."""
+    script, options = stata(**mark.kwargs)
+
+    parsed_kwargs = {}
+    for arg_name, value, default in [
+        ("script", script, None),
+        ("options", options, default_options),
+    ]:
+        parsed_kwargs[arg_name] = value if value else default
+
+    mark = Mark("stata", (), parsed_kwargs)
     return mark
 
 
-def _prepare_cmd_options(session, task, args):
-    """Prepare the command line arguments to execute the do-file.
+def _copy_func(func: FunctionType) -> FunctionType:
+    """Create a copy of a function.
 
-    The last entry changes the name of the log file. We take the task id as a name which
-    is unique and does not cause any errors when parallelizing the execution.
+    Based on https://stackoverflow.com/a/13503277/7523785.
 
-    """
-    source = get_node_from_dictionary(
-        task.depends_on, session.config["stata_source_key"]
-    )
-
-    cmd_options = [
-        session.config["stata"],
-        "-e",
-        "do",
-        source.path.as_posix(),
-        *args,
-    ]
-    if session.config["platform"] == "win32":
-        log_name = convert_task_id_to_name_of_log_file(task.name)
-        cmd_options.append(f"-{log_name}")
-
-    return cmd_options
-
-
-def _to_list(scalar_or_iter):
-    """Convert scalars and iterables to list.
-
-    Parameters
-    ----------
-    scalar_or_iter : str or list
-
-    Returns
+    Example
     -------
-    list
-
-    Examples
-    --------
-    >>> _to_list("a")
-    ['a']
-    >>> _to_list(["b"])
-    ['b']
+    >>> def _func(): pass
+    >>> copied_func = _copy_func(_func)
+    >>> _func is copied_func
+    False
 
     """
-    return (
-        [scalar_or_iter]
-        if isinstance(scalar_or_iter, str) or not isinstance(scalar_or_iter, Sequence)
-        else list(scalar_or_iter)
+    new_func = FunctionType(
+        func.__code__,
+        func.__globals__,
+        name=func.__name__,
+        argdefs=func.__defaults__,
+        closure=func.__closure__,
     )
+    new_func = functools.update_wrapper(new_func, func)
+    new_func.__kwdefaults__ = func.__kwdefaults__
+    return new_func

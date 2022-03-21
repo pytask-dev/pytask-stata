@@ -3,20 +3,16 @@ from __future__ import annotations
 
 import re
 
-from _pytask.config import hookimpl
-from _pytask.mark_utils import get_specific_markers_from_task
+from pytask import has_mark
+from pytask import hookimpl
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
-from pytask_stata.shared import get_node_from_dictionary
 from pytask_stata.shared import STATA_COMMANDS
 
 
 @hookimpl
 def pytask_execute_task_setup(session, task):
     """Check if Stata is found on the PATH."""
-    if (
-        get_specific_markers_from_task(task, "stata")
-        and session.config["stata"] is None
-    ):
+    if has_mark(task, "stata") and session.config["stata"] is None:
         raise RuntimeError(
             "Stata is needed to run do-files, but it is not found on your PATH.\n\n"
             f"We are looking for one of {STATA_COMMANDS} on your PATH. If you have a"
@@ -36,15 +32,13 @@ def pytask_execute_task_teardown(session, task):
     or ``r(601)``.
 
     """
-    if get_specific_markers_from_task(task, "stata"):
+    if has_mark(task, "stata"):
         if session.config["platform"] == "win32":
-            log_name = convert_task_id_to_name_of_log_file(task.name)
+            log_name = convert_task_id_to_name_of_log_file(task.short_name)
             path_to_log = task.path.with_name(log_name).with_suffix(".log")
         else:
-            source = get_node_from_dictionary(
-                task.depends_on, session.config["stata_source_key"]
-            )
-            path_to_log = source.path.with_suffix(".log")
+            node = task.depends_on["__script"]
+            path_to_log = node.path.with_suffix(".log")
 
         n_lines = session.config["stata_check_log_lines"]
 

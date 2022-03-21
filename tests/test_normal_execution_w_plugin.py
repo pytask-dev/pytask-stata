@@ -22,7 +22,7 @@ def test_execution_w_varying_dependencies_products(
 
     @pytask.mark.depends_on({dependencies})
     @pytask.mark.produces({products})
-    def task_dummy(depends_on, produces):
+    def task_example(depends_on, produces):
         if isinstance(produces, dict):
             produces = produces.values()
         elif isinstance(produces, Path):
@@ -30,7 +30,7 @@ def test_execution_w_varying_dependencies_products(
         for product in produces:
             product.touch()
     """
-    tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(source))
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(source))
     for dependency in dependencies:
         tmp_path.joinpath(dependency).touch()
 

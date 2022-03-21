@@ -1,6 +1,6 @@
-prune .conda
 prune tests
 
+exclude .coveragerc
 exclude *.rst
 exclude *.yml
 exclude *.yaml
@@ -8,5 +8,3 @@ exclude tox.ini
 
 include README.rst
 include LICENSE
-include versioneer.py
-include src/pytask_stata/_version.py
