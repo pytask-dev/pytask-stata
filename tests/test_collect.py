@@ -47,23 +47,20 @@ def test_stata(args, kwargs, expectation, expected):
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "mark, default_options, expectation, expected",
+    "mark, expectation, expected",
     [
         (
             Mark("stata", (), {}),
-            [],
             pytest.raises(RuntimeError, match="The old syntax for @pytask.mark.stata"),
             Mark("stata", (), {"script": None, "options": []}),
         ),
         (
             Mark("stata", ("-o"), {}),
-            [],
             pytest.raises(RuntimeError, match="The old syntax for @pytask.mark.stata"),
             None,
         ),
         (
             Mark("stata", (), {"script": "script.do"}),
-            [],
             does_not_raise(),
             Mark("stata", (), {"script": "script.do", "options": []}),
         ),
@@ -71,10 +68,9 @@ def test_stata(args, kwargs, expectation, expected):
 )
 def test_parse_stata_mark(
     mark,
-    default_options,
     expectation,
     expected,
 ):
     with expectation:
-        out = _parse_stata_mark(mark, default_options)
+        out = _parse_stata_mark(mark)
         assert out == expected

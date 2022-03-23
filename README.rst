@@ -71,68 +71,34 @@ Here is an example where you want to run ``script.do``.
     import pytask
 
 
-    @pytask.mark.stata
-    @pytask.mark.depends_on("script.do")
+    @pytask.mark.stata(script="script.do")
     @pytask.mark.produces("auto.dta")
     def task_run_do_file():
         pass
 
-When executing a do-file, the current working directory changes to the directory of the
-script which is executed.
+When executing a do-file, the current working directory changes to the directory where
+the script is located. This allows you, for example, to reference every data set you
+want to read with a relative path from the script.
 
 
-Multiple dependencies and products
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Dependencies and Products
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-What happens if a task has more dependencies? Using a list, the do-file which should be
-executed must be found in the first position of the list.
-
-.. code-block:: python
-
-    @pytask.mark.stata
-    @pytask.mark.depends_on(["script.do", "input.dta"])
-    @pytask.mark.produces("output.dta")
-    def task_run_do_file():
-        pass
-
-If you use a dictionary to pass dependencies to the task, pytask-stata will, first, look
-for a ``"source"`` key in the dictionary and, secondly, under the key ``0``.
-
-.. code-block:: python
-
-    @pytask.mark.depends_on({"source": "script.do", "input": "input.dta"})
-    def task_run_do_file():
-        pass
+Dependencies and products can be added as with a normal pytask task using the
+``@pytask.mark.depends_on`` and ``@pytask.mark.produces`` decorators. which is explained
+in this `tutorial
+<https://pytask-dev.readthedocs.io/en/stable/tutorials/defining_dependencies_products.html>`_.
 
 
-    # or
-
-
-    @pytask.mark.depends_on({0: "script.do", "input": "input.dta"})
-    def task_run_do_file():
-        pass
-
-
-    # or two decorators for the function, if you do not assign a name to the input.
-
-
-    @pytask.mark.depends_on({"source": "script.do"})
-    @pytask.mark.depends_on("input.dta")
-    def task_run_do_file():
-        pass
-
-
-
-Command Line Arguments
-~~~~~~~~~~~~~~~~~~~~~~
+Accessing dependencies and products in the script
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The decorator can be used to pass command line arguments to your Stata executable. For
 example, pass the path of the product with
 
 .. code-block:: python
 
-    @pytask.mark.stata("auto.dta")
-    @pytask.mark.depends_on("script.do")
+    @pytask.mark.stata(script="script.do", options="auto.dta")
     @pytask.mark.produces("auto.dta")
     def task_run_do_file():
         pass
@@ -149,7 +115,6 @@ And in your ``script.do``, you can intercept the value with
 
 The relative path inside the do-file works only because the pytask-stata switches the
 current working directory to the directory of the do-file before the task is executed.
-This is necessary precaution.
 
 To make the task independent from the current working directory, pass the full path as
 an command line argument. Here is an example.
@@ -160,15 +125,14 @@ an command line argument. Here is an example.
     from src.config import BLD
 
 
-    @pytask.mark.stata(BLD / "auto.dta")
-    @pytask.mark.depends_on("script.do")
+    @pytask.mark.stata(script="script.do", options=BLD / "auto.dta")
     @pytask.mark.produces(BLD / "auto.dta")
     def task_run_do_file():
         pass
 
 
-Parametrization
-~~~~~~~~~~~~~~~
+Repeating tasks with different scripts or inputs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also parametrize the execution of scripts, meaning executing multiple do-files
 as well as passing different command line arguments to the same do-file.
@@ -177,27 +141,13 @@ The following task executes two do-files which produce different outputs.
 
 .. code-block:: python
 
-    @pytask.mark.stata
-    @pytask.mark.parametrize(
-        "depends_on, produces", [("script_1.do", "1.dta"), ("script_2.do", "2.dta")]
-    )
-    def task_execute_do_file():
-        pass
+    for i in range(2):
 
-
-If you want to pass different command line arguments to the same do-file, you have to
-include the ``@pytask.mark.stata`` decorator in the parametrization just like with
-``@pytask.mark.depends_on`` and ``@pytask.mark.produces``.
-
-.. code-block:: python
-
-    @pytask.mark.depends_on("script.do")
-    @pytask.mark.parametrize(
-        "produces, stata",
-        [("output_1.dta", ("1",)), ("output_2.dta", ("2",))],
-    )
-    def task_execute_do_file():
-        pass
+        @pytask.mark.task
+        @pytask.mark.stata(script=f"script_{i}.do", options=f"{i}.dta")
+        @pytask.mark.produces(f"{i}.dta")
+        def task_execute_do_file():
+            pass
 
 
 Configuration
@@ -231,14 +181,6 @@ stata_check_log_lines
     .. code-block:: console
 
         $ pytask build --stata-check-log-lines 10
-
-stata_source_key
-    If you want to change the name of the key which identifies the do file, change the
-    following default configuration in your pytask configuration file.
-
-    .. code-block:: ini
-
-        stata_source_key = source
 
 
 Changes

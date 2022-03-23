@@ -24,9 +24,6 @@ def pytask_parse_config(config, config_from_cli, config_from_file):
             None,
         )
 
-    options = config_from_file.get("stata_options")
-    config["stata_options"] = options.split(" ") if isinstance(options, str) else []
-
     config["stata_keep_log"] = _get_first_non_none_value(
         config_from_cli,
         config_from_file,

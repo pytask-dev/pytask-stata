@@ -45,9 +45,7 @@ def pytask_collect_task(session, path, name, obj):
                 "allowed."
             )
 
-        mark = _parse_stata_mark(
-            mark=marks[0], default_options=session.config["stata_options"]
-        )
+        mark = _parse_stata_mark(mark=marks[0])
         script, options = stata(**marks[0].kwargs)
 
         obj.pytask_meta.markers.append(mark)
@@ -97,14 +95,14 @@ def pytask_collect_task(session, path, name, obj):
         return task
 
 
-def _parse_stata_mark(mark, default_options):
+def _parse_stata_mark(mark):
     """Parse a Julia mark."""
     script, options = stata(**mark.kwargs)
 
     parsed_kwargs = {}
     for arg_name, value, default in [
         ("script", script, None),
-        ("options", options, default_options),
+        ("options", options, []),
     ]:
         parsed_kwargs[arg_name] = value if value else default
 
