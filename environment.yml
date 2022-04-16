@@ -5,25 +5,17 @@ channels:
   - nodefaults
 
 dependencies:
-  - python >=3.6
+  - python >3.7
   - pip
   - setuptools_scm
   - toml
 
-  # Conda
-  - anaconda-client
-  - conda-build
-  - conda-verify
-
   # Package dependencies
-  - pytask >=0.1.0
-  - pytask-parallel >=0.0.9
+  - pytask >=0.2
+  - pytask-parallel >=0.2
 
   # Misc
   - black
-  - bumpversion
-  - jupyterlab
-  - pdbpp
   - pre-commit
   - pytest-cov
   - pytest-xdist

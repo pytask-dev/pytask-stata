@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import Any
-
-from pytask import MetaNode
+from typing import Iterable
+from typing import Sequence
 
 
 if sys.platform == "darwin":
@@ -37,6 +38,59 @@ else:
     STATA_COMMANDS = []
 
 
+_ERROR_MSG = """The old syntax for @pytask.mark.stata was suddenly deprecated starting \
+with pytask-stata v0.2 to provide a better user experience. Thank you for your \
+understanding!
+
+It is recommended to upgrade to the new syntax, so you enjoy all the benefits of v0.2 \
+of pytask and pytask-stata.
+
+You can find a manual here: \
+https://github.com/pytask-dev/pytask-stata/blob/v0.2.0/README.md
+
+Upgrading can be as easy as rewriting your current task from
+
+    @pytask.mark.stata(["--option", "path_to_dependency.txt"])
+    @pytask.mark.depends_on("script.do")
+    @pytask.mark.produces("out.csv")
+    def task_r():
+        ...
+
+to
+
+    @pytask.mark.stata(script="script.do", options="--option")
+    @pytask.mark.depends_on("path_to_dependency.txt")
+    @pytask.mark.produces("out.csv")
+    def task_r():
+        ...
+
+You can also fix the version of pytask and pytask-stata to <0.2, so you do not have to \
+to upgrade. At the same time, you will not enjoy the improvements released with \
+version v0.2 of pytask and pytask-stata.
+
+"""
+
+
+def stata(
+    *args: Any,
+    script: str | Path | None = None,
+    options: str | Iterable[str] | None = None,
+) -> tuple[str | Path | None, str | Iterable[str] | None]:
+    """Specify command line options for Stata.
+
+    Parameters
+    ----------
+    options : str | Iterable[str] | None
+        One or multiple command line options passed to Stata.
+
+    """
+    if args or script is None:
+        raise RuntimeError(_ERROR_MSG)
+
+    options = [] if options is None else list(map(str, _to_list(options)))
+    return script, options
+
+
 def convert_task_id_to_name_of_log_file(id_: str) -> str:
     """Convert task to id to name of log file.
 
@@ -46,15 +100,15 @@ def convert_task_id_to_name_of_log_file(id_: str) -> str:
 
     .. code-block:: none
 
-        C:/task_dummy.py::task_dummy[arg1] -> task_dummy.log
+        C:/task_example.py::task_example[arg1] -> task_example.log
 
     This function creates a new id starting from the task module and by replacing dots
     and double colons with underscores.
 
     Example
     -------
-    >>> convert_task_id_to_name_of_log_file("C:/task_dummy.py::task_dummy[arg1]")
-    'task_dummy_py_task_dummy[arg1]'
+    >>> convert_task_id_to_name_of_log_file("C:/task_example.py::task_example[arg1]")
+    'task_example_py_task_example[arg1]'
 
     """
     id_without_parent_directories = id_.rsplit("/")[-1]
@@ -62,9 +116,27 @@ def convert_task_id_to_name_of_log_file(id_: str) -> str:
     return converted_id
 
 
-def get_node_from_dictionary(
-    obj: Any | dict[str | int, MetaNode], key: Any, fallback: int = 0
-) -> MetaNode:
-    if isinstance(obj, dict):
-        obj = obj.get(key) or obj.get(fallback)
-    return obj
+def _to_list(scalar_or_iter: Any) -> list[Any]:
+    """Convert scalars and iterables to list.
+
+    Parameters
+    ----------
+    scalar_or_iter
+
+    Returns
+    -------
+    list
+
+    Examples
+    --------
+    >>> _to_list("a")
+    ['a']
+    >>> _to_list(["b"])
+    ['b']
+
+    """
+    return (
+        [scalar_or_iter]
+        if isinstance(scalar_or_iter, str) or not isinstance(scalar_or_iter, Sequence)
+        else list(scalar_or_iter)
+    )

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import click
-from _pytask.config import hookimpl
+from pytask import hookimpl
 
 
 @hookimpl
