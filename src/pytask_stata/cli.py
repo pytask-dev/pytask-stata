@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import click
-from _pytask.config import hookimpl
+from pytask import hookimpl
 
 
 @hookimpl
-def pytask_extend_command_line_interface(cli):
+def pytask_extend_command_line_interface(cli: click.Group) -> None:
     """Add stata related options to the command line interface."""
     additional_parameters = [
         click.Option(

@@ -4,60 +4,89 @@ import sys
 import textwrap
 
 import pytest
-from conftest import needs_stata
-from pytask import main
+from pytask import cli
+from pytask import ExitCode
+
+from tests.conftest import needs_stata
 
 
 @needs_stata
 @pytest.mark.end_to_end
-def test_parametrized_execution_of_do_file(tmp_path):
+def test_parametrized_execution_of_do_file_w_parametrize(runner, tmp_path):
     task_source = """
     import pytask
 
-    @pytask.mark.stata
-    @pytask.mark.parametrize("depends_on, produces", [
-        ("script_1.do", "0.dta"),
-        ("script_2.do", "1.dta"),
-    ])
-    def task_run_do_file():
-        pass
-    """
-    tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(task_source))
-
-    for name, out in [
-        ("script_1.do", "0"),
-        ("script_2.do", "1"),
-    ]:
-        do_file = f"""
-        sysuse auto, clear
-        save {out}
-        """
-        tmp_path.joinpath(name).write_text(textwrap.dedent(do_file))
-
-    session = main({"paths": tmp_path})
-
-    assert session.exit_code == 0
-    assert tmp_path.joinpath("0.dta").exists()
-    assert tmp_path.joinpath("1.dta").exists()
-
-
-@needs_stata
-@pytest.mark.end_to_end
-def test_parametrize_command_line_options(tmp_path):
-    task_source = """
-    import pytask
-    from pathlib import Path
-
-    SRC = Path(__file__).parent
-
-    @pytask.mark.depends_on("script.do")
-    @pytask.mark.parametrize("produces, stata", [
-        (SRC / "0.dta", SRC / "0.dta"), (SRC / "1.dta", SRC / "1.dta"),
-    ])
+    @pytask.mark.parametrize(
+        "stata, produces", [(
+            {"script": "script_1.do"}, "1.dta"), ({"script": "script_2.do"}, "2.dta")
+        ]
+    )
     def task_execute_do_file():
         pass
     """
-    tmp_path.joinpath("task_dummy.py").write_text(textwrap.dedent(task_source))
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+
+    for i in range(1, 3):
+        do_file = f"""
+        sysuse auto, clear
+        save {i}
+        """
+        tmp_path.joinpath(f"script_{i}.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix()])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("1.dta").exists()
+    assert tmp_path.joinpath("2.dta").exists()
+
+
+@needs_stata
+@pytest.mark.end_to_end
+def test_parametrized_execution_of_do_file_w_loop(runner, tmp_path):
+    source = """
+    import pytask
+
+    for i in range (1, 3):
+
+        @pytask.mark.task
+        @pytask.mark.stata(script=f"script_{i}.do")
+        @pytask.mark.produces(f"{i}.dta")
+        def task_execute_do_file():
+            pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(source))
+
+    for i in range(1, 3):
+        do_file = f"""
+        sysuse auto, clear
+        save {i}
+        """
+        tmp_path.joinpath(f"script_{i}.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix()])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("1.dta").exists()
+    assert tmp_path.joinpath("2.dta").exists()
+
+
+@needs_stata
+@pytest.mark.end_to_end
+def test_parametrize_command_line_options_w_parametrize(runner, tmp_path):
+    task_source = """
+    import pytask
+
+    @pytask.mark.parametrize(
+        "produces, stata",
+        [
+            ("output_1.dta", {"script": "script.do", "options": ("output_1",)}),
+            ("output_2.dta", {"script": "script.do", "options": ("output_2",)})
+        ],
+    )
+    def task_execute_do_file():
+        pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
 
     latex_source = """
     sysuse auto, clear
@@ -66,19 +95,56 @@ def test_parametrize_command_line_options(tmp_path):
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(latex_source))
 
-    session = main({"paths": tmp_path, "stata_keep_log": True})
+    result = runner.invoke(cli, [tmp_path.as_posix(), "--stata-keep-log"])
 
-    assert session.exit_code == 0
-    assert tmp_path.joinpath("0.dta").exists()
-    assert tmp_path.joinpath("1.dta").exists()
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("output_1.dta").exists()
+    assert tmp_path.joinpath("output_2.dta").exists()
 
     # Test that log files with different names are produced.
     if sys.platform == "win32":
         assert tmp_path.joinpath(
-            "task_dummy_py_task_execute_do_file[produces0-stata0].log"
+            "task_example_py_task_execute_do_file[output_1_dta-stata0].log"
         ).exists()
         assert tmp_path.joinpath(
-            "task_dummy_py_task_execute_do_file[produces1-stata1].log"
+            "task_example_py_task_execute_do_file[output_2_dta-stata1].log"
         ).exists()
+    else:
+        assert tmp_path.joinpath("script.log").exists()
+
+
+@needs_stata
+@pytest.mark.end_to_end
+def test_parametrize_command_line_options_w_loop(runner, tmp_path):
+    task_source = """
+    import pytask
+
+    for i in range (1, 3):
+
+        @pytask.mark.task
+        @pytask.mark.stata(script="script.do", options=f"output_{i}")
+        @pytask.mark.produces(f"output_{i}.dta")
+        def task_execute_do_file():
+            pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+
+    latex_source = """
+    sysuse auto, clear
+    args produces
+    save "`produces'"
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(latex_source))
+
+    result = runner.invoke(cli, [tmp_path.as_posix(), "--stata-keep-log"])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("output_1.dta").exists()
+    assert tmp_path.joinpath("output_2.dta").exists()
+
+    # Test that log files with different names are produced.
+    if sys.platform == "win32":
+        assert tmp_path.joinpath("task_example_py_task_execute_do_file[0].log").exists()
+        assert tmp_path.joinpath("task_example_py_task_execute_do_file[1].log").exists()
     else:
         assert tmp_path.joinpath("script.log").exists()
