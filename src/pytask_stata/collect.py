@@ -5,6 +5,7 @@ import functools
 import subprocess
 from pathlib import Path
 from types import FunctionType
+from typing import Any
 
 from pytask import depends_on
 from pytask import has_mark
@@ -13,6 +14,7 @@ from pytask import Mark
 from pytask import parse_nodes
 from pytask import produces
 from pytask import remove_marks
+from pytask import Session
 from pytask import Task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
@@ -28,7 +30,9 @@ def run_stata_script(
 
 
 @hookimpl
-def pytask_collect_task(session, path, name, obj):
+def pytask_collect_task(
+    session: Session, path: Path, name: str, obj: Any
+) -> Task | None:
     """Perform some checks and prepare the task function."""
     __tracebackhide__ = True
 
@@ -59,7 +63,7 @@ def pytask_collect_task(session, path, name, obj):
         task = Task(
             base_name=name,
             path=path,
-            function=_copy_func(run_stata_script),
+            function=_copy_func(run_stata_script),  # type: ignore
             depends_on=dependencies,
             produces=products,
             markers=markers,
@@ -93,14 +97,16 @@ def pytask_collect_task(session, path, name, obj):
         task.function = stata_function
 
         return task
+    else:
+        return None
 
 
-def _parse_stata_mark(mark):
+def _parse_stata_mark(mark: Mark) -> Mark:
     """Parse a Julia mark."""
     script, options = stata(**mark.kwargs)
 
     parsed_kwargs = {}
-    for arg_name, value, default in [
+    for arg_name, value, default in [  # type: ignore
         ("script", script, None),
         ("options", options, []),
     ]:

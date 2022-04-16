@@ -11,7 +11,11 @@ from pytask_stata.shared import STATA_COMMANDS
 
 
 @hookimpl
-def pytask_parse_config(config, config_from_cli, config_from_file):
+def pytask_parse_config(
+    config: dict[str, Any],
+    config_from_cli: dict[str, Any],
+    config_from_file: dict[str, Any],
+) -> None:
     """Register the r marker."""
     config["markers"]["stata"] = "Tasks which are executed with Stata."
     config["platform"] = sys.platform
@@ -41,7 +45,7 @@ def pytask_parse_config(config, config_from_cli, config_from_file):
     )
 
 
-def _nonnegative_nonzero_integer(x):
+def _nonnegative_nonzero_integer(x: Any) -> int:
     """Check for nonnegative and nonzero integer."""
     if x is not None:
         try:

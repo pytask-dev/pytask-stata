@@ -5,12 +5,14 @@ import re
 
 from pytask import has_mark
 from pytask import hookimpl
+from pytask import Session
+from pytask import Task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import STATA_COMMANDS
 
 
 @hookimpl
-def pytask_execute_task_setup(session, task):
+def pytask_execute_task_setup(session: Session, task: Task) -> None:
     """Check if Stata is found on the PATH."""
     if has_mark(task, "stata") and session.config["stata"] is None:
         raise RuntimeError(
@@ -22,7 +24,7 @@ def pytask_execute_task_setup(session, task):
 
 
 @hookimpl
-def pytask_execute_task_teardown(session, task):
+def pytask_execute_task_teardown(session: Session, task: Task) -> None:
     """Check if the log file contains no error code.
 
     Stata has the weird behavior of always returning an exit code of 0 even if an error

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import Any
 from typing import Iterable
 from typing import Sequence
 
@@ -71,7 +72,7 @@ version v0.2 of pytask and pytask-stata.
 
 
 def stata(
-    *args,
+    *args: Any,
     script: str | Path | None = None,
     options: str | Iterable[str] | None = None,
 ) -> tuple[str | Path | None, str | Iterable[str] | None]:
@@ -90,7 +91,7 @@ def stata(
     return script, options
 
 
-def convert_task_id_to_name_of_log_file(id_):
+def convert_task_id_to_name_of_log_file(id_: str) -> str:
     """Convert task to id to name of log file.
 
     If one passes the complete task id as the log file name, Stata would remove parent
@@ -115,12 +116,12 @@ def convert_task_id_to_name_of_log_file(id_):
     return converted_id
 
 
-def _to_list(scalar_or_iter):
+def _to_list(scalar_or_iter: Any) -> list[Any]:
     """Convert scalars and iterables to list.
 
     Parameters
     ----------
-    scalar_or_iter : str or list
+    scalar_or_iter
 
     Returns
     -------

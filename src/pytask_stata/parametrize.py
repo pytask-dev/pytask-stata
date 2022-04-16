@@ -1,12 +1,15 @@
 """Parametrize tasks."""
 from __future__ import annotations
 
+from typing import Any
+from typing import Callable
+
 import pytask
-from pytask import hookimpl
+from _pytask.config import hookimpl
 
 
 @hookimpl
-def pytask_parametrize_kwarg_to_marker(obj, kwargs):
+def pytask_parametrize_kwarg_to_marker(obj: Callable[..., Any], kwargs: Any) -> None:
     """Attach parametrized stata arguments to the function with a marker."""
     if callable(obj):
         if "stata" in kwargs:
