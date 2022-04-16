@@ -1,3 +1,6 @@
+pytask-stata
+============
+
 .. image:: https://img.shields.io/pypi/v/pytask-stata?color=blue
     :alt: PyPI
     :target: https://pypi.org/project/pytask-stata
@@ -30,9 +33,6 @@
     :target: https://github.com/psf/black
 
 ------
-
-pytask-stata
-============
 
 Run Stata's do-files with pytask.
 
