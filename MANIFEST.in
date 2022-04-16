@@ -1,10 +1,10 @@
 prune tests
 
 exclude .coveragerc
-exclude *.rst
+exclude *.md
 exclude *.yml
 exclude *.yaml
 exclude tox.ini
 
-include README.rst
+include README.md
 include LICENSE
