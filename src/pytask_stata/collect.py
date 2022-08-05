@@ -25,7 +25,7 @@ def run_stata_script(
 ) -> None:
     """Run an R script."""
     cmd = [executable, "-e", "do", script.as_posix(), *options, *log_name]
-    print("Executing " + " ".join(cmd) + ".")  # noqa: T001
+    print("Executing " + " ".join(cmd) + ".")  # noqa: T201
     subprocess.run(cmd, cwd=cwd, check=True)
 
 
