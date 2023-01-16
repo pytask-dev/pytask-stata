@@ -1,6 +1,6 @@
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.4.0
     hooks:
     -   id: check-added-large-files
         args: ['--maxkb=25']
@@ -16,7 +16,7 @@ repos:
         args: [--branch, main]
     -   id: trailing-whitespace
 -   repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.9.0  # Use the ref you want to point at
+    rev: v1.10.0  # Use the ref you want to point at
     hooks:
     -   id: python-check-blanket-noqa
     -   id: python-check-mock-methods
@@ -25,30 +25,30 @@ repos:
     -   id: python-use-type-annotations
     -   id: text-unicode-replacement-char
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.0
+    rev: v3.3.1
     hooks:
     -   id: pyupgrade
         args: [--py37-plus]
 -   repo: https://github.com/asottile/reorder_python_imports
-    rev: v3.0.1
+    rev: v3.9.0
     hooks:
     -   id: reorder-python-imports
         args: [--py37-plus, --add-import, 'from __future__ import annotations']
 -   repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v1.20.1
+    rev: v2.2.0
     hooks:
     -   id: setup-cfg-fmt
--   repo: https://github.com/myint/docformatter
-    rev: v1.3.1
+-   repo: https://github.com/PyCQA/docformatter
+    rev: v1.5.1
     hooks:
     -   id: docformatter
         args: [--in-place, --wrap-summaries, "88", --wrap-descriptions, "88", --blank]
 -   repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.12.0
     hooks:
     -   id: black
 -   repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 6.0.0
     hooks:
     -   id: flake8
         types: [python]
@@ -74,7 +74,7 @@ repos:
     -   id: interrogate
         args: [-v, --fail-under=40, src, tests]
 -   repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.14
+    rev: 0.7.16
     hooks:
     -   id: mdformat
         additional_dependencies: [
@@ -83,11 +83,11 @@ repos:
         ]
         args: [--wrap, "88"]
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.1.0
+  rev: v2.2.2
   hooks:
     -   id: codespell
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.931'
+    rev: 'v0.991'
     hooks:
     -   id: mypy
         args: [
@@ -102,7 +102,7 @@ repos:
         pass_filenames: false
         language_version: "3.9"
 -   repo: https://github.com/mgedmin/check-manifest
-    rev: "0.48"
+    rev: "0.49"
     hooks:
     -   id: check-manifest
         args: [--no-build-isolation]
