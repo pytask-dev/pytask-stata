@@ -7,12 +7,15 @@ releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 
 ## 0.3.0 - 2023-xx-xx
 
-- {pull}`27` aligns the package with pytask v0.3.
+- {pull}`25` adds docformatter.
+- {pull}`26` adds Python 3.11 to CI.
+- {pull}`28` aligns the package with pytask v0.3.
 
-## 0.2.0 - 2022-xx-xx
+## 0.2.0 - 2022-04-16
 
 - {pull}`18` adds typing to the package.
 - {pull}`20` removes an unnecessary hook implementation.
+- {pull}`22` aligns the package with pytask v0.2.
 
 ## 0.1.2 - 2022-02-08
 
