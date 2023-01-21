@@ -8,9 +8,9 @@ from pytask_stata.collect import _parse_stata_mark
 from pytask_stata.collect import stata
 
 
-@pytest.mark.unit
+@pytest.mark.unit()
 @pytest.mark.parametrize(
-    "args, kwargs, expectation, expected",
+    ("args", "kwargs", "expectation", "expected"),
     [
         (
             (),
@@ -32,9 +32,9 @@ def test_stata(args, kwargs, expectation, expected):
         assert options == expected
 
 
-@pytest.mark.unit
+@pytest.mark.unit()
 @pytest.mark.parametrize(
-    "mark, expectation, expected",
+    ("mark", "expectation", "expected"),
     [
         (
             Mark("stata", (), {"script": "script.do"}),

@@ -24,7 +24,7 @@ pytestmark = pytest.mark.skipif(
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_parallel_parametrization_over_source_files_w_parametrize(runner, tmp_path):
     source = """
     import pytask
@@ -52,7 +52,7 @@ def test_parallel_parametrization_over_source_files_w_parametrize(runner, tmp_pa
     assert result.exit_code == ExitCode.OK
     duration_normal = time.time() - start
 
-    for name in ["1.dta", "2.dta"]:
+    for name in ("1.dta", "2.dta"):
         tmp_path.joinpath(name).unlink()
 
     start = time.time()
@@ -64,7 +64,7 @@ def test_parallel_parametrization_over_source_files_w_parametrize(runner, tmp_pa
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
     source = """
     import pytask
@@ -98,7 +98,7 @@ def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
     assert result.exit_code == ExitCode.OK
     duration_normal = time.time() - start
 
-    for name in ["1.dta", "2.dta"]:
+    for name in ("1.dta", "2.dta"):
         tmp_path.joinpath(name).unlink()
 
     start = time.time()
@@ -110,7 +110,7 @@ def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_parallel_parametrization_over_source_file_w_parametrize(runner, tmp_path):
     source = """
     import pytask
@@ -140,7 +140,7 @@ def test_parallel_parametrization_over_source_file_w_parametrize(runner, tmp_pat
     assert result.exit_code == ExitCode.OK
     duration_normal = time.time() - start
 
-    for name in ["output_1.dta", "output_2.dta"]:
+    for name in ("output_1.dta", "output_2.dta"):
         tmp_path.joinpath(name).unlink()
 
     start = time.time()
@@ -152,7 +152,7 @@ def test_parallel_parametrization_over_source_file_w_parametrize(runner, tmp_pat
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_parallel_parametrization_over_source_file_w_loop(runner, tmp_path):
     source = """
     import pytask
@@ -180,7 +180,7 @@ def test_parallel_parametrization_over_source_file_w_loop(runner, tmp_path):
     assert result.exit_code == ExitCode.OK
     duration_normal = time.time() - start
 
-    for name in ["output_1.dta", "output_2.dta"]:
+    for name in ("output_1.dta", "output_2.dta"):
         tmp_path.joinpath(name).unlink()
 
     start = time.time()
