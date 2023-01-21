@@ -7,6 +7,7 @@ releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 
 ## 0.3.0 - 2023-xx-xx
 
+- {pull}`24` adds ruff and refurb.
 - {pull}`25` adds docformatter.
 - {pull}`26` adds Python 3.11 to CI.
 - {pull}`28` aligns the package with pytask v0.3.
