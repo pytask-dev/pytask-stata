@@ -63,7 +63,7 @@ def pytask_collect_task(
         task = Task(
             base_name=name,
             path=path,
-            function=_copy_func(run_stata_script),  # type: ignore
+            function=_copy_func(run_stata_script),  # type: ignore[arg-type]
             depends_on=dependencies,
             produces=products,
             markers=markers,
@@ -97,20 +97,14 @@ def pytask_collect_task(
         task.function = stata_function
 
         return task
-    else:
-        return None
+    return None
 
 
 def _parse_stata_mark(mark: Mark) -> Mark:
     """Parse a Stata mark."""
     script, options = stata(**mark.kwargs)
 
-    parsed_kwargs = {}
-    for arg_name, value, default in [  # type: ignore
-        ("script", script, None),
-        ("options", options, []),
-    ]:
-        parsed_kwargs[arg_name] = value if value else default
+    parsed_kwargs = {"script": script or None, "options": options or []}
 
     mark = Mark("stata", (), parsed_kwargs)
     return mark

@@ -18,9 +18,9 @@ from pytask_stata.execute import pytask_execute_task_setup
 from tests.conftest import needs_stata
 
 
-@pytest.mark.unit
+@pytest.mark.unit()
 @pytest.mark.parametrize(
-    "stata, expectation",
+    ("stata", "expectation"),
     [(executable, does_not_raise()) for executable in STATA_COMMANDS]
     + [(None, pytest.raises(RuntimeError, match="Stata is needed"))],
 )
@@ -42,7 +42,7 @@ def test_pytask_execute_task_setup_raise_error(stata, platform, expectation):
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_run_do_file(runner, tmp_path):
     task_source = """
     import pytask
@@ -72,7 +72,7 @@ def test_run_do_file(runner, tmp_path):
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_run_do_file_w_task_decorator(runner, tmp_path):
     task_source = """
     import pytask
@@ -102,7 +102,7 @@ def test_run_do_file_w_task_decorator(runner, tmp_path):
         assert tmp_path.joinpath("script.log").exists()
 
 
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
     task_source = """
     import pytask
@@ -117,7 +117,7 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
 
     # Hide Stata if available.
     monkeypatch.setattr(
-        "pytask_stata.config.shutil.which", lambda x: None  # noqa: U100
+        "pytask_stata.config.shutil.which", lambda x: None  # noqa: ARG005
     )
 
     session = main({"paths": tmp_path})
@@ -127,7 +127,7 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_run_do_file_w_wrong_cmd_option(runner, tmp_path):
     """Apparently, Stata simply discards wrong cmd options."""
     task_source = """
@@ -152,7 +152,7 @@ def test_run_do_file_w_wrong_cmd_option(runner, tmp_path):
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_run_do_file_by_passing_path(runner, tmp_path):
     """Replicates example under "Command Line Arguments" in Readme."""
     task_source = """
@@ -178,7 +178,7 @@ def test_run_do_file_by_passing_path(runner, tmp_path):
 
 
 @needs_stata
-@pytest.mark.end_to_end
+@pytest.mark.end_to_end()
 def test_run_do_file_fails_with_multiple_marks(runner, tmp_path):
     task_source = """
     import pytask

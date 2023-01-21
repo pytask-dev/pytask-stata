@@ -3,7 +3,8 @@ repos:
     rev: v4.4.0
     hooks:
     -   id: check-added-large-files
-        args: ['--maxkb=25']
+        args:
+        - --maxkb=25
     -   id: check-case-conflict
     -   id: check-merge-conflict
     -   id: check-vcs-permalinks
@@ -13,7 +14,9 @@ repos:
     -   id: fix-byte-order-marker
     -   id: mixed-line-ending
     -   id: no-commit-to-branch
-        args: [--branch, main]
+        args:
+        - --branch
+        - main
     -   id: trailing-whitespace
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
@@ -24,90 +27,89 @@ repos:
     -   id: python-no-log-warn
     -   id: python-use-type-annotations
     -   id: text-unicode-replacement-char
--   repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-    -   id: pyupgrade
-        args: [--py37-plus]
 -   repo: https://github.com/asottile/reorder_python_imports
     rev: v3.9.0
     hooks:
     -   id: reorder-python-imports
-        args: [--py37-plus, --add-import, 'from __future__ import annotations']
+        args:
+        - --py37-plus
+        - --add-import
+        - from __future__ import annotations
 -   repo: https://github.com/asottile/setup-cfg-fmt
     rev: v2.2.0
     hooks:
     -   id: setup-cfg-fmt
 -   repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.1
+    rev: v1.6.0.rc1
     hooks:
     -   id: docformatter
-        args: [--in-place, --wrap-summaries, "88", --wrap-descriptions, "88", --blank]
+        args:
+        - --in-place
+        - --wrap-summaries
+        - '88'
+        - --wrap-descriptions
+        - '88'
+        - --blank
 -   repo: https://github.com/psf/black
     rev: 22.12.0
     hooks:
     -   id: black
--   repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.228
     hooks:
-    -   id: flake8
-        types: [python]
-        additional_dependencies: [
-            flake8-alfred,
-            flake8-bugbear,
-            flake8-builtins,
-            flake8-comprehensions,
-            flake8-docstrings,
-            flake8-eradicate,
-            flake8-print,
-            flake8-pytest-style,
-            flake8-todo,
-            flake8-typing-imports,
-            flake8-unused-arguments,
-            pep8-naming,
-            pydocstyle,
-            Pygments,
-        ]
+    -   id: ruff
+-   repo: https://github.com/dosisod/refurb
+    rev: v1.10.0
+    hooks:
+    -   id: refurb
+        args:
+        - --ignore
+        - FURB126
 -   repo: https://github.com/econchick/interrogate
     rev: 1.5.0
     hooks:
     -   id: interrogate
-        args: [-v, --fail-under=40, src, tests]
+        args:
+        - -v
+        - --fail-under=40
+        - src
+        - tests
 -   repo: https://github.com/executablebooks/mdformat
     rev: 0.7.16
     hooks:
     -   id: mdformat
-        additional_dependencies: [
-            mdformat-gfm,
-            mdformat-black,
-        ]
-        args: [--wrap, "88"]
-- repo: https://github.com/codespell-project/codespell
-  rev: v2.2.2
-  hooks:
+        additional_dependencies:
+        - mdformat-gfm
+        - mdformat-black
+        args:
+        - --wrap
+        - '88'
+-   repo: https://github.com/codespell-project/codespell
+    rev: v2.2.2
+    hooks:
     -   id: codespell
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: 'v0.991'
+    rev: v0.991
     hooks:
     -   id: mypy
-        args: [
-            --no-strict-optional,
-            --ignore-missing-imports,
-        ]
-        additional_dependencies: [
-            attrs,
-            click,
-            types-setuptools
-        ]
+        args:
+        - --no-strict-optional
+        - --ignore-missing-imports
+        additional_dependencies:
+        - attrs
+        - click
+        - types-setuptools
         pass_filenames: false
 -   repo: https://github.com/mgedmin/check-manifest
-    rev: "0.49"
+    rev: '0.49'
     hooks:
     -   id: check-manifest
-        args: [--no-build-isolation]
-        additional_dependencies: [setuptools-scm, toml]
+        args:
+        - --no-build-isolation
+        additional_dependencies:
+        - setuptools-scm
+        - toml
 -   repo: meta
     hooks:
     -   id: check-hooks-apply
     -   id: check-useless-excludes
-    # -   id: identity  # Prints all files passed to pre-commits. Debugging.
