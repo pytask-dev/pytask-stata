@@ -38,41 +38,8 @@ else:
     STATA_COMMANDS = []
 
 
-_ERROR_MSG = """The old syntax for @pytask.mark.stata was suddenly deprecated starting \
-with pytask-stata v0.2 to provide a better user experience. Thank you for your \
-understanding!
-
-It is recommended to upgrade to the new syntax, so you enjoy all the benefits of v0.2 \
-of pytask and pytask-stata.
-
-You can find a manual here: \
-https://github.com/pytask-dev/pytask-stata/blob/v0.2.0/README.md
-
-Upgrading can be as easy as rewriting your current task from
-
-    @pytask.mark.stata(["--option", "path_to_dependency.txt"])
-    @pytask.mark.depends_on("script.do")
-    @pytask.mark.produces("out.csv")
-    def task_r():
-        ...
-
-to
-
-    @pytask.mark.stata(script="script.do", options="--option")
-    @pytask.mark.depends_on("path_to_dependency.txt")
-    @pytask.mark.produces("out.csv")
-    def task_r():
-        ...
-
-You can also fix the version of pytask and pytask-stata to <0.2, so you do not have to \
-to upgrade. At the same time, you will not enjoy the improvements released with \
-version v0.2 of pytask and pytask-stata.
-
-"""
-
-
 def stata(
-    *args: Any,
+    *,
     script: str | Path | None = None,
     options: str | Iterable[str] | None = None,
 ) -> tuple[str | Path | None, str | Iterable[str] | None]:
@@ -84,9 +51,6 @@ def stata(
         One or multiple command line options passed to Stata.
 
     """
-    if args or script is None:
-        raise RuntimeError(_ERROR_MSG)
-
     options = [] if options is None else list(map(str, _to_list(options)))
     return script, options
 

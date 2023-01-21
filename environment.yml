@@ -5,14 +5,14 @@ channels:
   - nodefaults
 
 dependencies:
-  - python >3.7
+  - python >=3.7
   - pip
   - setuptools_scm
   - toml
 
   # Package dependencies
-  - pytask >=0.2
-  - pytask-parallel >=0.2
+  - pytask >=0.3
+  - pytask-parallel >=0.3
 
   # Misc
   - black
@@ -20,3 +20,6 @@ dependencies:
   - pytest-cov
   - pytest-xdist
   - tox-conda
+
+  - pip:
+    - -e .
