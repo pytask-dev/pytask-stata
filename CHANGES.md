@@ -5,6 +5,10 @@ chronological order. Releases follow [semantic versioning](https://semver.org/) 
 releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 [Anaconda.org](https://anaconda.org/conda-forge/pytask-stata).
 
+## 0.3.0 - 2023-xx-xx
+
+- {pull}`27` aligns the package with pytask v0.3.
+
 ## 0.2.0 - 2022-xx-xx
 
 - {pull}`18` adds typing to the package.

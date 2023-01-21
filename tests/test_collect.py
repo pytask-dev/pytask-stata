@@ -12,19 +12,6 @@ from pytask_stata.collect import stata
 @pytest.mark.parametrize(
     "args, kwargs, expectation, expected",
     [
-        ((), {}, pytest.raises(RuntimeError, match="The old syntax"), None),
-        (
-            ("-o"),
-            {"script": "script.do"},
-            pytest.raises(RuntimeError, match="The old syntax"),
-            None,
-        ),
-        (
-            (),
-            {"options": ("-o")},
-            pytest.raises(RuntimeError, match="The old syntax"),
-            None,
-        ),
         (
             (),
             {"script": "script.do", "options": "--option"},
@@ -49,16 +36,6 @@ def test_stata(args, kwargs, expectation, expected):
 @pytest.mark.parametrize(
     "mark, expectation, expected",
     [
-        (
-            Mark("stata", (), {}),
-            pytest.raises(RuntimeError, match="The old syntax for @pytask.mark.stata"),
-            Mark("stata", (), {"script": None, "options": []}),
-        ),
-        (
-            Mark("stata", ("-o"), {}),
-            pytest.raises(RuntimeError, match="The old syntax for @pytask.mark.stata"),
-            None,
-        ),
         (
             Mark("stata", (), {"script": "script.do"}),
             does_not_raise(),

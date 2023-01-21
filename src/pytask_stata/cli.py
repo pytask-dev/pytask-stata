@@ -11,21 +11,17 @@ def pytask_extend_command_line_interface(cli: click.Group) -> None:
     additional_parameters = [
         click.Option(
             ["--stata-keep-log"],
-            help=(
-                "Do not remove the log files produced while running do-files.  "
-                "[default: False]"
-            ),
+            help="Do not remove the log files produced while running do-files.",
             is_flag=True,
-            default=None,
         ),
         click.Option(
             ["--stata-check-log-lines"],
             help=(
                 "Number of lines of the log file to consider when searching for "
-                "non-zero exit codes.  [default: 10]"
+                "non-zero exit codes."
             ),
-            type=int,
-            default=None,
+            type=click.IntRange(min=1),
+            default=10,
         ),
     ]
     cli.commands["build"].params.extend(additional_parameters)

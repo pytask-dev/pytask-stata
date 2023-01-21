@@ -5,7 +5,7 @@
 [![image](https://img.shields.io/conda/vn/conda-forge/pytask-stata.svg)](https://anaconda.org/conda-forge/pytask-stata)
 [![image](https://img.shields.io/conda/pn/conda-forge/pytask-stata.svg)](https://anaconda.org/conda-forge/pytask-stata)
 [![PyPI - License](https://img.shields.io/pypi/l/pytask-stata)](https://pypi.org/project/pytask-stata)
-[![image](https://img.shields.io/github/workflow/status/pytask-dev/pytask-stata/main/main)](https://github.com/pytask-dev/pytask-stata/actions?query=branch%3Amain)
+[![image](https://img.shields.io/github/actions/workflow/status/pytask-dev/pytask-stata/main.yml?branch=main)](https://github.com/pytask-dev/pytask-stata/actions?query=branch%3Amain)
 [![image](https://codecov.io/gh/pytask-dev/pytask-stata/branch/main/graph/badge.svg)](https://codecov.io/gh/pytask-dev/pytask-stata)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pytask-dev/pytask-stata/main.svg)](https://results.pre-commit.ci/latest/github/pytask-dev/pytask-stata/main)
 [![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

@@ -102,7 +102,7 @@ def pytask_collect_task(
 
 
 def _parse_stata_mark(mark: Mark) -> Mark:
-    """Parse a Julia mark."""
+    """Parse a Stata mark."""
     script, options = stata(**mark.kwargs)
 
     parsed_kwargs = {}
