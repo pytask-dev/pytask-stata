@@ -3,9 +3,8 @@ from __future__ import annotations
 
 import functools
 import subprocess
-from pathlib import Path
 from types import FunctionType
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 from pytask import depends_on
 from pytask import has_mark
@@ -18,6 +17,9 @@ from pytask import Session
 from pytask import Task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def run_stata_script(
