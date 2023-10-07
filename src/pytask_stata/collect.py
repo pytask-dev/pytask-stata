@@ -4,7 +4,8 @@ from __future__ import annotations
 import functools
 import subprocess
 from types import FunctionType
-from typing import Any, TYPE_CHECKING
+from typing import Any
+from typing import TYPE_CHECKING
 
 from pytask import depends_on
 from pytask import has_mark
@@ -28,7 +29,7 @@ def run_stata_script(
     """Run an R script."""
     cmd = [executable, "-e", "do", script.as_posix(), *options, *log_name]
     print("Executing " + " ".join(cmd) + ".")  # noqa: T201
-    subprocess.run(cmd, cwd=cwd, check=True)
+    subprocess.run(cmd, cwd=cwd, check=True)  # noqa: S603
 
 
 @hookimpl
