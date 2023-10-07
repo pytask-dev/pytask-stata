@@ -4,7 +4,8 @@ from __future__ import annotations
 import functools
 import subprocess
 from types import FunctionType
-from typing import Any, TYPE_CHECKING
+from typing import Any
+from typing import TYPE_CHECKING
 
 from pytask import depends_on
 from pytask import has_mark
