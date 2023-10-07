@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import functools
 import subprocess
-from pathlib import Path
 from types import FunctionType
 from typing import Any
+from typing import TYPE_CHECKING
 
 from pytask import depends_on
 from pytask import has_mark
@@ -19,6 +19,9 @@ from pytask import Task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 def run_stata_script(
     executable: str, script: Path, options: list[str], log_name: list[str], cwd: Path
@@ -26,7 +29,7 @@ def run_stata_script(
     """Run an R script."""
     cmd = [executable, "-e", "do", script.as_posix(), *options, *log_name]
     print("Executing " + " ".join(cmd) + ".")  # noqa: T201
-    subprocess.run(cmd, cwd=cwd, check=True)
+    subprocess.run(cmd, cwd=cwd, check=True)  # noqa: S603
 
 
 @hookimpl

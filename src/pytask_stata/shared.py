@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 from typing import Any
 from typing import Iterable
 from typing import Sequence
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 if sys.platform == "darwin":
