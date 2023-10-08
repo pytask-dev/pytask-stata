@@ -1,35 +1,41 @@
 """Collect tasks."""
 from __future__ import annotations
 
-import functools
 import subprocess
-from types import FunctionType
+import warnings
 from typing import Any
-from typing import TYPE_CHECKING
 
-from pytask import depends_on
 from pytask import has_mark
 from pytask import hookimpl
+from pytask import is_task_function
 from pytask import Mark
-from pytask import parse_nodes
-from pytask import produces
+from pytask import NodeInfo
+from pytask import parse_dependencies_from_task_function
+from pytask import parse_products_from_task_function
+from pytask import PathNode
+from pytask import PTask
+from pytask import PythonNode
 from pytask import remove_marks
 from pytask import Session
 from pytask import Task
+from pytask import TaskWithoutPath
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
+from pathlib import Path
 
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def run_stata_script(
-    executable: str, script: Path, options: list[str], log_name: list[str], cwd: Path
+    _executable: str,
+    _script: Path,
+    _options: list[str],
+    _log_name: list[str],
+    _cwd: Path,
 ) -> None:
     """Run an R script."""
-    cmd = [executable, "-e", "do", script.as_posix(), *options, *log_name]
+    cmd = [_executable, "-e", "do", _script.as_posix(), *_options, *_log_name]
     print("Executing " + " ".join(cmd) + ".")  # noqa: T201
-    subprocess.run(cmd, cwd=cwd, check=True)  # noqa: S603
+    subprocess.run(cmd, cwd=_cwd, check=True)  # noqa: S603
 
 
 @hookimpl
@@ -41,11 +47,11 @@ def pytask_collect_task(
 
     if (
         (name.startswith("task_") or has_mark(obj, "task"))
-        and callable(obj)
+        and is_task_function(obj)
         and has_mark(obj, "stata")
     ):
+        # Parse the @pytask.mark.stata decorator.
         obj, marks = remove_marks(obj, "stata")
-
         if len(marks) > 1:
             raise ValueError(
                 f"Task {name!r} has multiple @pytask.mark.stata marks, but only one is "
@@ -57,47 +63,120 @@ def pytask_collect_task(
 
         obj.pytask_meta.markers.append(mark)
 
-        dependencies = parse_nodes(session, path, name, obj, depends_on)
-        products = parse_nodes(session, path, name, obj, produces)
+        # Collect the nodes in @pytask.mark.julia and validate them.
+        path_nodes = Path.cwd() if path is None else path.parent
 
-        markers = obj.pytask_meta.markers if hasattr(obj, "pytask_meta") else []
-        kwargs = obj.pytask_meta.kwargs if hasattr(obj, "pytask_meta") else {}
-
-        task = Task(
-            base_name=name,
-            path=path,
-            function=_copy_func(run_stata_script),  # type: ignore[arg-type]
-            depends_on=dependencies,
-            produces=products,
-            markers=markers,
-            kwargs=kwargs,
-        )
+        if isinstance(script, str):
+            warnings.warn(
+                "Passing a string to the @pytask.mark.stata parameter 'script' is "
+                "deprecated. Please, use a pathlib.Path instead.",
+                stacklevel=1,
+            )
+            script = Path(script)
 
         script_node = session.hook.pytask_collect_node(
-            session=session, path=path, node=script
+            session=session,
+            path=path_nodes,
+            node_info=NodeInfo(
+                arg_name="script", path=(), value=script, task_path=path, task_name=name
+            ),
         )
 
-        if isinstance(task.depends_on, dict):
-            task.depends_on["__script"] = script_node
-        else:
-            task.depends_on = {0: task.depends_on, "__script": script_node}
+        if not (isinstance(script_node, PathNode) and script_node.path.suffix == ".do"):
+            raise ValueError(
+                "The 'script' keyword of the @pytask.mark.stata decorator must point "
+                f"to a file with the .do suffix, but it is {script_node}."
+            )
 
+        options_node = session.hook.pytask_collect_node(
+            session=session,
+            path=path_nodes,
+            node_info=NodeInfo(
+                arg_name="_options",
+                path=(),
+                value=options,
+                task_path=path,
+                task_name=name,
+            ),
+        )
+
+        executable_node = session.hook.pytask_collect_node(
+            session=session,
+            path=path_nodes,
+            node_info=NodeInfo(
+                arg_name="_executable",
+                path=(),
+                value=session.config["stata"],
+                task_path=path,
+                task_name=name,
+            ),
+        )
+
+        cwd_node = session.hook.pytask_collect_node(
+            session=session,
+            path=path_nodes,
+            node_info=NodeInfo(
+                arg_name="_cwd",
+                path=(),
+                value=path.parent,
+                task_path=path,
+                task_name=name,
+            ),
+        )
+
+        dependencies = parse_dependencies_from_task_function(
+            session, path, name, path_nodes, obj
+        )
+        products = parse_products_from_task_function(
+            session, path, name, path_nodes, obj
+        )
+
+        # Add script
+        dependencies["_script"] = script_node
+        dependencies["_options"] = options_node
+        dependencies["_cwd"] = cwd_node
+        dependencies["_executable"] = executable_node
+
+        markers = obj.pytask_meta.markers if hasattr(obj, "pytask_meta") else []
+
+        task: PTask
+        if path is None:
+            task = TaskWithoutPath(
+                name=name,
+                function=run_stata_script,
+                depends_on=dependencies,
+                produces=products,
+                markers=markers,
+            )
+        else:
+            task = Task(
+                base_name=name,
+                path=path,
+                function=run_stata_script,
+                depends_on=dependencies,
+                produces=products,
+                markers=markers,
+            )
+
+        # Add log_name node that depends on the task id.
         if session.config["platform"] == "win32":
-            log_name = convert_task_id_to_name_of_log_file(task.short_name)
+            log_name = convert_task_id_to_name_of_log_file(task)
             log_name_arg = [f"-{log_name}"]
         else:
             log_name_arg = []
 
-        stata_function = functools.partial(
-            task.function,
-            executable=session.config["stata"],
-            script=task.depends_on["__script"].path,
-            options=options,
-            log_name=log_name_arg,
-            cwd=task.path.parent,
+        log_name_node = session.hook.pytask_collect_node(
+            session=session,
+            path=path_nodes,
+            node_info=NodeInfo(
+                arg_name="_log_name",
+                path=(),
+                value=PythonNode(value=log_name_arg),
+                task_path=path,
+                task_name=name,
+            ),
         )
-
-        task.function = stata_function
+        task.depends_on["_log_name"] = log_name_node
 
         return task
     return None
@@ -111,28 +190,3 @@ def _parse_stata_mark(mark: Mark) -> Mark:
 
     mark = Mark("stata", (), parsed_kwargs)
     return mark
-
-
-def _copy_func(func: FunctionType) -> FunctionType:
-    """Create a copy of a function.
-
-    Based on https://stackoverflow.com/a/13503277/7523785.
-
-    Example
-    -------
-    >>> def _func(): pass
-    >>> copied_func = _copy_func(_func)
-    >>> _func is copied_func
-    False
-
-    """
-    new_func = FunctionType(
-        func.__code__,
-        func.__globals__,
-        name=func.__name__,
-        argdefs=func.__defaults__,
-        closure=func.__closure__,
-    )
-    new_func = functools.update_wrapper(new_func, func)
-    new_func.__kwdefaults__ = func.__kwdefaults__
-    return new_func

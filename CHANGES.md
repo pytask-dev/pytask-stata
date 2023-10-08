@@ -5,7 +5,11 @@ chronological order. Releases follow [semantic versioning](https://semver.org/) 
 releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 [Anaconda.org](https://anaconda.org/conda-forge/pytask-stata).
 
-## 0.3.0 - 2023-xx-xx
+## 0.4.0 - 2023-10-08
+
+- {pull}`31` makes pytask-stata compatible with pytask v0.4.0.
+
+## 0.3.0 - 2023-01-23
 
 - {pull}`24` adds ruff and refurb.
 - {pull}`25` adds docformatter.

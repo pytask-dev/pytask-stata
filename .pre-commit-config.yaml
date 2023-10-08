@@ -3,8 +3,7 @@ repos:
     rev: v4.4.0
     hooks:
     -   id: check-added-large-files
-        args:
-        - --maxkb=25
+        args: [--maxkb=25]
     -   id: check-case-conflict
     -   id: check-merge-conflict
     -   id: check-vcs-permalinks
@@ -14,9 +13,7 @@ repos:
     -   id: fix-byte-order-marker
     -   id: mixed-line-ending
     -   id: no-commit-to-branch
-        args:
-        - --branch
-        - main
+        args: [--branch, main]
     -   id: trailing-whitespace
 -   repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
@@ -31,25 +28,11 @@ repos:
     rev: v3.12.0
     hooks:
     -   id: reorder-python-imports
-        args:
-        - --py38-plus
-        - --add-import
-        - from __future__ import annotations
+        args: [--py38-plus, --add-import, from __future__ import annotations]
 -   repo: https://github.com/asottile/setup-cfg-fmt
     rev: v2.5.0
     hooks:
     -   id: setup-cfg-fmt
--   repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
-    hooks:
-    -   id: docformatter
-        args:
-        - --in-place
-        - --wrap-summaries
-        - '88'
-        - --wrap-descriptions
-        - '88'
-        - --blank
 -   repo: https://github.com/psf/black
     rev: 23.9.1
     hooks:
@@ -62,18 +45,12 @@ repos:
     rev: v1.21.0
     hooks:
     -   id: refurb
-        args:
-        - --ignore
-        - FURB126
+        args: [--ignore, FURB126]
 -   repo: https://github.com/econchick/interrogate
     rev: 1.5.0
     hooks:
     -   id: interrogate
-        args:
-        - -v
-        - --fail-under=40
-        - src
-        - tests
+        args: [-v, --fail-under=40, src, tests]
 -   repo: https://github.com/executablebooks/mdformat
     rev: 0.7.17
     hooks:
@@ -81,9 +58,7 @@ repos:
         additional_dependencies:
         - mdformat-gfm
         - mdformat-black
-        args:
-        - --wrap
-        - '88'
+        args: [--wrap, '88']
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.2.6
     hooks:
@@ -92,23 +67,17 @@ repos:
     rev: v1.5.1
     hooks:
     -   id: mypy
-        args:
-        - --no-strict-optional
-        - --ignore-missing-imports
         additional_dependencies:
         - attrs
-        - click
+        - pytask
         - types-setuptools
         pass_filenames: false
 -   repo: https://github.com/mgedmin/check-manifest
     rev: '0.49'
     hooks:
     -   id: check-manifest
-        args:
-        - --no-build-isolation
-        additional_dependencies:
-        - setuptools-scm
-        - toml
+        args: [--no-build-isolation]
+        additional_dependencies: [setuptools-scm, toml]
 -   repo: meta
     hooks:
     -   id: check-hooks-apply

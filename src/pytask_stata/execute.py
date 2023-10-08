@@ -5,14 +5,14 @@ import re
 
 from pytask import has_mark
 from pytask import hookimpl
+from pytask import PTask
 from pytask import Session
-from pytask import Task
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import STATA_COMMANDS
 
 
 @hookimpl
-def pytask_execute_task_setup(session: Session, task: Task) -> None:
+def pytask_execute_task_setup(session: Session, task: PTask) -> None:
     """Check if Stata is found on the PATH."""
     if has_mark(task, "stata") and session.config["stata"] is None:
         raise RuntimeError(
@@ -24,7 +24,7 @@ def pytask_execute_task_setup(session: Session, task: Task) -> None:
 
 
 @hookimpl
-def pytask_execute_task_teardown(session: Session, task: Task) -> None:
+def pytask_execute_task_teardown(session: Session, task: PTask) -> None:
     """Check if the log file contains no error code.
 
     Stata has the weird behavior of always returning an exit code of 0 even if an error
@@ -36,10 +36,10 @@ def pytask_execute_task_teardown(session: Session, task: Task) -> None:
     """
     if has_mark(task, "stata"):
         if session.config["platform"] == "win32":
-            log_name = convert_task_id_to_name_of_log_file(task.short_name)
+            log_name = convert_task_id_to_name_of_log_file(task)
             path_to_log = task.path.with_name(log_name).with_suffix(".log")
         else:
-            node = task.depends_on["__script"]
+            node = task.depends_on["_script"]
             path_to_log = node.path.with_suffix(".log")
 
         n_lines = session.config["stata_check_log_lines"]

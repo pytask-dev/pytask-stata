@@ -7,7 +7,10 @@ from typing import Iterable
 from typing import Sequence
 from typing import TYPE_CHECKING
 
+
+
 if TYPE_CHECKING:
+    from pytask import PTask
     from pathlib import Path
 
 
@@ -58,7 +61,7 @@ def stata(
     return script, options
 
 
-def convert_task_id_to_name_of_log_file(id_: str) -> str:
+def convert_task_id_to_name_of_log_file(task: PTask) -> str:
     """Convert task to id to name of log file.
 
     If one passes the complete task id as the log file name, Stata would remove parent
@@ -78,6 +81,7 @@ def convert_task_id_to_name_of_log_file(id_: str) -> str:
     'task_example_py_task_example[arg1]'
 
     """
+    id_ = getattr(task, "short_name", task.name)
     id_without_parent_directories = id_.rsplit("/")[-1]
     converted_id = id_without_parent_directories.replace(".", "_").replace("::", "_")
     return converted_id

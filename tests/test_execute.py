@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from pytask import cli
 from pytask import ExitCode
-from pytask import main
+from pytask import build
 from pytask import Mark
 from pytask import Session
 from pytask import Task
@@ -120,7 +120,7 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
         "pytask_stata.config.shutil.which", lambda x: None  # noqa: ARG005
     )
 
-    session = main({"paths": tmp_path})
+    session = build(paths=tmp_path)
 
     assert session.exit_code == ExitCode.FAILED
     assert isinstance(session.execution_reports[0].exc_info[1], RuntimeError)
