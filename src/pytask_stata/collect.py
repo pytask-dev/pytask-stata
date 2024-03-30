@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import subprocess
 import warnings
+from pathlib import Path
 from typing import Any
 
 from pytask import has_mark
@@ -21,8 +22,6 @@ from pytask import Task
 from pytask import TaskWithoutPath
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
-from pathlib import Path
-
 
 
 def run_stata_script(

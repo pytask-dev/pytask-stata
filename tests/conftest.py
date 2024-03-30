@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import shutil
+import sys
+from contextlib import contextmanager
 from typing import Callable
 
 import pytest
 from click.testing import CliRunner
 from pytask_stata.config import STATA_COMMANDS
-import sys
-from contextlib import contextmanager
 
 
 needs_stata = pytest.mark.skipif(

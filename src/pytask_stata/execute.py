@@ -1,12 +1,13 @@
 """Execute tasks."""
 from __future__ import annotations
+from pathlib import Path
 
 import re
 
 from pytask import has_mark
 from pytask import hookimpl
 from pytask import PTask
-from pytask import Session
+from pytask import Session, PTaskWithPath
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import STATA_COMMANDS
 
@@ -37,7 +38,10 @@ def pytask_execute_task_teardown(session: Session, task: PTask) -> None:
     if has_mark(task, "stata"):
         if session.config["platform"] == "win32":
             log_name = convert_task_id_to_name_of_log_file(task)
-            path_to_log = task.path.with_name(log_name).with_suffix(".log")
+            if isinstance(task, PTaskWithPath):
+                path_to_log = task.path.with_name(log_name).with_suffix(".log")
+            else:
+                path_to_log = Path.cwd(log_name).with_name(log_name).with_suffix(".log")
         else:
             node = task.depends_on["_script"]
             path_to_log = node.path.with_suffix(".log")

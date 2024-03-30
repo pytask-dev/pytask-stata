@@ -8,7 +8,6 @@ from typing import Sequence
 from typing import TYPE_CHECKING
 
 
-
 if TYPE_CHECKING:
     from pytask import PTask
     from pathlib import Path
@@ -83,7 +82,12 @@ def convert_task_id_to_name_of_log_file(task: PTask) -> str:
     """
     id_ = getattr(task, "short_name", task.name)
     id_without_parent_directories = id_.rsplit("/")[-1]
-    converted_id = id_without_parent_directories.replace(".", "_").replace("::", "_")
+    converted_id = (
+        id_without_parent_directories.replace(".", "_")
+        .replace("::", "_")
+        .replace("<", "")
+        .replace(">", "")
+    )
     return converted_id
 
 

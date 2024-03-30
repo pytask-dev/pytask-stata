@@ -6,9 +6,9 @@ from contextlib import ExitStack as does_not_raise  # noqa: N813
 from pathlib import Path
 
 import pytest
+from pytask import build
 from pytask import cli
 from pytask import ExitCode
-from pytask import build
 from pytask import Mark
 from pytask import Session
 from pytask import Task
@@ -196,3 +196,33 @@ def test_run_do_file_fails_with_multiple_marks(runner, tmp_path):
 
     assert result.exit_code == ExitCode.COLLECTION_FAILED
     assert "has multiple @pytask.mark.stata marks" in result.output
+
+
+@needs_stata
+@pytest.mark.end_to_end()
+def test_with_task_without_path(runner, tmp_path):
+    task_source = """
+    import pytask
+    from pytask import task
+
+    task_example = pytask.mark.stata(script="script.do")(
+        pytask.mark.produces("auto.dta")(task()(lambda x: None))
+    )
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+
+    do_file = """
+    sysuse auto, clear
+    save auto
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix(), "--stata-keep-log"])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("auto.dta").exists()
+
+    if sys.platform == "win32":
+        assert tmp_path.joinpath("lambda.log").exists()
+    else:
+        assert tmp_path.joinpath("lambda.log").exists()
