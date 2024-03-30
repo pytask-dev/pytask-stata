@@ -1,13 +1,14 @@
 """Execute tasks."""
 from __future__ import annotations
-from pathlib import Path
 
 import re
+from pathlib import Path
 
 from pytask import has_mark
 from pytask import hookimpl
 from pytask import PTask
-from pytask import Session, PTaskWithPath
+from pytask import PTaskWithPath
+from pytask import Session
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import STATA_COMMANDS
 
