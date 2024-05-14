@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch_vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "pytask_stata"
@@ -35,6 +35,23 @@ Changelog = "https://github.com/pytask-dev/pytask-stata/blob/main/CHANGES.md"
 
 [project.entry-points]
 pytask = { pytask_stata = "pytask_stata.plugin" }
+
+[tool.rye]
+managed = true
+
+[tool.hatch.build.targets.sdist]
+exclude = ["tests"]
+only-packages = true
+
+[tool.hatch.build.targets.wheel]
+exclude = ["tests"]
+only-packages = true
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.setuptools]
 include-package-data = true
