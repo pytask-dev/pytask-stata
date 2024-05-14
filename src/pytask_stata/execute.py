@@ -1,28 +1,31 @@
 """Execute tasks."""
+
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
-from pytask import has_mark
-from pytask import hookimpl
 from pytask import PTask
 from pytask import PTaskWithPath
 from pytask import Session
-from pytask_stata.shared import convert_task_id_to_name_of_log_file
+from pytask import has_mark
+from pytask import hookimpl
+
 from pytask_stata.shared import STATA_COMMANDS
+from pytask_stata.shared import convert_task_id_to_name_of_log_file
 
 
 @hookimpl
 def pytask_execute_task_setup(session: Session, task: PTask) -> None:
     """Check if Stata is found on the PATH."""
     if has_mark(task, "stata") and session.config["stata"] is None:
-        raise RuntimeError(
+        msg = (
             "Stata is needed to run do-files, but it is not found on your PATH.\n\n"
             f"We are looking for one of {STATA_COMMANDS} on your PATH. If you have a"
             "different Stata executable, please, file an issue at "
             "https://github.com/pytask-dev/pytask-stata."
         )
+        raise RuntimeError(msg)
 
 
 @hookimpl

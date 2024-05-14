@@ -1,4 +1,5 @@
 """Collect tasks."""
+
 from __future__ import annotations
 
 import subprocess
@@ -6,20 +7,21 @@ import warnings
 from pathlib import Path
 from typing import Any
 
-from pytask import has_mark
-from pytask import hookimpl
-from pytask import is_task_function
 from pytask import Mark
 from pytask import NodeInfo
-from pytask import parse_dependencies_from_task_function
-from pytask import parse_products_from_task_function
 from pytask import PathNode
 from pytask import PTask
 from pytask import PythonNode
-from pytask import remove_marks
 from pytask import Session
 from pytask import Task
 from pytask import TaskWithoutPath
+from pytask import has_mark
+from pytask import hookimpl
+from pytask import is_task_function
+from pytask import parse_dependencies_from_task_function
+from pytask import parse_products_from_task_function
+from pytask import remove_marks
+
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
 
@@ -52,10 +54,11 @@ def pytask_collect_task(
         # Parse the @pytask.mark.stata decorator.
         obj, marks = remove_marks(obj, "stata")
         if len(marks) > 1:
-            raise ValueError(
+            msg = (
                 f"Task {name!r} has multiple @pytask.mark.stata marks, but only one is "
                 "allowed."
             )
+            raise ValueError(msg)
 
         mark = _parse_stata_mark(mark=marks[0])
         script, options = stata(**marks[0].kwargs)
@@ -82,10 +85,11 @@ def pytask_collect_task(
         )
 
         if not (isinstance(script_node, PathNode) and script_node.path.suffix == ".do"):
-            raise ValueError(
+            msg = (
                 "The 'script' keyword of the @pytask.mark.stata decorator must point "
                 f"to a file with the .do suffix, but it is {script_node}."
             )
+            raise ValueError(msg)
 
         options_node = session.hook.pytask_collect_node(
             session=session,
@@ -187,5 +191,4 @@ def _parse_stata_mark(mark: Mark) -> Mark:
 
     parsed_kwargs = {"script": script or None, "options": options or []}
 
-    mark = Mark("stata", (), parsed_kwargs)
-    return mark
+    return Mark("stata", (), parsed_kwargs)
