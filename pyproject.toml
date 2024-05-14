@@ -2,6 +2,51 @@
 requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "pytask_stata"
+description = "Execute do-files with Stata and pytask."
+authors = [{ name = "Tobias Raabe", email = "raabe@posteo.de" }]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+requires-python = ">=3.8"
+dependencies = ["click", "pytask>=0.3,<0.4"]
+dynamic = ["version"]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov", "pytest-xdist"]
+typing = ["mypy"]
+
+[project.urls]
+Homepage = "https://github.com/pytask-dev/pytask-stata"
+Documentation = "https://github.com/pytask-dev/pytask-stata"
+Github = "https://github.com/pytask-dev/pytask-stata"
+Tracker = "https://github.com/pytask-dev/pytask-stata/issues"
+Changelog = "https://github.com/pytask-dev/pytask-stata/blob/main/CHANGES.md"
+
+[project.entry-points]
+pytask = { pytask_stata = "pytask_stata.plugin" }
+
+[tool.setuptools]
+include-package-data = true
+package-dir = { "" = "src" }
+zip-safe = false
+platforms = ["any"]
+license-files = ["LICENSE"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
 [tool.setuptools_scm]
 write_to = "src/pytask_stata/_version.py"
 
