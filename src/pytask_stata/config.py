@@ -1,4 +1,5 @@
 """Configure pytask."""
+
 from __future__ import annotations
 
 import shutil
@@ -6,6 +7,7 @@ import sys
 from typing import Any
 
 from pytask import hookimpl
+
 from pytask_stata.shared import STATA_COMMANDS
 
 

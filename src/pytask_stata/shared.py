@@ -1,11 +1,12 @@
 """Shared functions and variables."""
+
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Iterable
 from typing import Sequence
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -78,9 +79,7 @@ def convert_task_id_to_name_of_log_file(id_: str) -> str:
     'task_example_py_task_example[arg1]'
 
     """
-    id_without_parent_directories = id_.rsplit("/")[-1]
-    converted_id = id_without_parent_directories.replace(".", "_").replace("::", "_")
-    return converted_id
+    return id_.rsplit("/")[-1].replace(".", "_").replace("::", "_")
 
 
 def _to_list(scalar_or_iter: Any) -> list[Any]:
