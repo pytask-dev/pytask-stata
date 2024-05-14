@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from _pytask.config import hookimpl
+
 from pytask_stata import cli
 from pytask_stata import collect
 from pytask_stata import config

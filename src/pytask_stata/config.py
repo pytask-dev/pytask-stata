@@ -7,6 +7,7 @@ import sys
 from typing import Any
 
 from pytask import hookimpl
+
 from pytask_stata.shared import STATA_COMMANDS
 
 

@@ -6,12 +6,12 @@ from contextlib import ExitStack as does_not_raise  # noqa: N813
 from pathlib import Path
 
 import pytest
-from pytask import cli
 from pytask import ExitCode
-from pytask import main
 from pytask import Mark
 from pytask import Session
 from pytask import Task
+from pytask import cli
+from pytask import main
 from pytask_stata.config import STATA_COMMANDS
 from pytask_stata.execute import pytask_execute_task_setup
 
@@ -117,7 +117,8 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
 
     # Hide Stata if available.
     monkeypatch.setattr(
-        "pytask_stata.config.shutil.which", lambda x: None  # noqa: ARG005
+        "pytask_stata.config.shutil.which",
+        lambda x: None,  # noqa: ARG005
     )
 
     session = main({"paths": tmp_path})

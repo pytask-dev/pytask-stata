@@ -6,8 +6,8 @@ import textwrap
 import time
 
 import pytest
-from pytask import cli
 from pytask import ExitCode
+from pytask import cli
 
 from tests.conftest import needs_stata
 

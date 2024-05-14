@@ -5,18 +5,19 @@ from __future__ import annotations
 import functools
 import subprocess
 from types import FunctionType
-from typing import Any
 from typing import TYPE_CHECKING
+from typing import Any
 
+from pytask import Mark
+from pytask import Session
+from pytask import Task
 from pytask import depends_on
 from pytask import has_mark
 from pytask import hookimpl
-from pytask import Mark
 from pytask import parse_nodes
 from pytask import produces
 from pytask import remove_marks
-from pytask import Session
-from pytask import Task
+
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
 
@@ -48,10 +49,11 @@ def pytask_collect_task(
         obj, marks = remove_marks(obj, "stata")
 
         if len(marks) > 1:
-            raise ValueError(
+            msg = (
                 f"Task {name!r} has multiple @pytask.mark.stata marks, but only one is "
                 "allowed."
             )
+            raise ValueError(msg)
 
         mark = _parse_stata_mark(mark=marks[0])
         script, options = stata(**marks[0].kwargs)
@@ -110,8 +112,7 @@ def _parse_stata_mark(mark: Mark) -> Mark:
 
     parsed_kwargs = {"script": script or None, "options": options or []}
 
-    mark = Mark("stata", (), parsed_kwargs)
-    return mark
+    return Mark("stata", (), parsed_kwargs)
 
 
 def _copy_func(func: FunctionType) -> FunctionType:
