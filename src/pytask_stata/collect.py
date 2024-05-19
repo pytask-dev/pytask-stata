@@ -63,7 +63,6 @@ def pytask_collect_task(
 
         mark = _parse_stata_mark(mark=marks[0])
         script, options = stata(**marks[0].kwargs)
-
         obj.pytask_meta.markers.append(mark)
 
         # Collect the nodes in @pytask.mark.julia and validate them.
@@ -190,7 +189,5 @@ def pytask_collect_task(
 def _parse_stata_mark(mark: Mark) -> Mark:
     """Parse a Stata mark."""
     script, options = stata(**mark.kwargs)
-
     parsed_kwargs = {"script": script or None, "options": options or []}
-
     return Mark("stata", (), parsed_kwargs)
