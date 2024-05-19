@@ -42,6 +42,9 @@ dev-dependencies = [
     "tox-uv>=1.8.2",
 ]
 
+[tool.hatch.build.hooks.vcs]
+version-file = "src/pytask_stata/_version.py"
+
 [tool.hatch.build.targets.sdist]
 exclude = ["tests"]
 only-packages = true
@@ -55,20 +58,6 @@ source = "vcs"
 
 [tool.hatch.metadata]
 allow-direct-references = true
-
-[tool.setuptools]
-include-package-data = true
-package-dir = { "" = "src" }
-zip-safe = false
-platforms = ["any"]
-license-files = ["LICENSE"]
-
-[tool.setuptools.packages.find]
-where = ["src"]
-namespaces = false
-
-[tool.setuptools_scm]
-write_to = "src/pytask_stata/_version.py"
 
 [tool.mypy]
 files = ["src", "tests"]
