@@ -10,8 +10,8 @@ from pytask import ExitCode
 from pytask import Mark
 from pytask import Session
 from pytask import Task
+from pytask import build
 from pytask import cli
-from pytask import main
 from pytask_stata.config import STATA_COMMANDS
 from pytask_stata.execute import pytask_execute_task_setup
 
@@ -105,10 +105,10 @@ def test_run_do_file_w_task_decorator(runner, tmp_path):
 @pytest.mark.end_to_end()
 def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
     task_source = """
-    import pytask
+    from pytask import mark, task
 
-    @pytask.mark.stata(script="script.do")
-    @pytask.mark.produces("out.dta")
+    @task(kwargs={"produces": "out.dta"})
+    @mark.stata(script="script.do")
     def task_run_do_file():
         pass
     """
@@ -121,7 +121,7 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
         lambda x: None,  # noqa: ARG005
     )
 
-    session = main({"paths": tmp_path})
+    session = build(paths=tmp_path)
 
     assert session.exit_code == ExitCode.FAILED
     assert isinstance(session.execution_reports[0].exc_info[1], RuntimeError)
@@ -150,6 +150,7 @@ def test_run_do_file_w_wrong_cmd_option(runner, tmp_path):
     result = runner.invoke(cli, [tmp_path.as_posix()])
 
     assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("out.dta").exists()
 
 
 @needs_stata
@@ -197,3 +198,33 @@ def test_run_do_file_fails_with_multiple_marks(runner, tmp_path):
 
     assert result.exit_code == ExitCode.COLLECTION_FAILED
     assert "has multiple @pytask.mark.stata marks" in result.output
+
+
+@needs_stata
+@pytest.mark.end_to_end()
+def test_with_task_without_path(runner, tmp_path):
+    task_source = """
+    import pytask
+    from pytask import task
+
+    task_example = pytask.mark.stata(script="script.do")(
+        pytask.mark.produces("auto.dta")(task()(lambda x: None))
+    )
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+
+    do_file = """
+    sysuse auto, clear
+    save auto
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix(), "--stata-keep-log"])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("auto.dta").exists()
+
+    if sys.platform == "win32":
+        assert tmp_path.joinpath("task_example_py_lambda.log").exists()
+    else:
+        assert not tmp_path.joinpath("task_example_py_lambda.log").exists()

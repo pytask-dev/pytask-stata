@@ -11,6 +11,8 @@ from typing import Sequence
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from pytask import PTask
+
 
 if sys.platform == "darwin":
     STATA_COMMANDS = [
@@ -44,7 +46,7 @@ else:
 
 def stata(
     *,
-    script: str | Path | None = None,
+    script: str | Path,
     options: str | Iterable[str] | None = None,
 ) -> tuple[str | Path | None, str | Iterable[str] | None]:
     """Specify command line options for Stata.
@@ -59,7 +61,7 @@ def stata(
     return script, options
 
 
-def convert_task_id_to_name_of_log_file(id_: str) -> str:
+def convert_task_id_to_name_of_log_file(task: PTask) -> str:
     """Convert task to id to name of log file.
 
     If one passes the complete task id as the log file name, Stata would remove parent
@@ -79,7 +81,14 @@ def convert_task_id_to_name_of_log_file(id_: str) -> str:
     'task_example_py_task_example[arg1]'
 
     """
-    return id_.rsplit("/")[-1].replace(".", "_").replace("::", "_")
+    id_ = getattr(task, "short_name", task.name)
+    return (
+        id_.rsplit("/")[-1]
+        .replace(".", "_")
+        .replace("::", "_")
+        .replace("<", "")
+        .replace(">", "")
+    )
 
 
 def _to_list(scalar_or_iter: Any) -> list[Any]:

@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch_vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "pytask_stata"
@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 requires-python = ">=3.8"
-dependencies = ["click", "pytask>=0.3,<0.4"]
+dependencies = ["click", "pytask>=0.4"]
 dynamic = ["version"]
 
 [project.readme]
@@ -36,19 +36,28 @@ Changelog = "https://github.com/pytask-dev/pytask-stata/blob/main/CHANGES.md"
 [project.entry-points]
 pytask = { pytask_stata = "pytask_stata.plugin" }
 
-[tool.setuptools]
-include-package-data = true
-package-dir = { "" = "src" }
-zip-safe = false
-platforms = ["any"]
-license-files = ["LICENSE"]
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "tox-uv>=1.8.2",
+]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-namespaces = false
+[tool.hatch.build.hooks.vcs]
+version-file = "src/pytask_stata/_version.py"
 
-[tool.setuptools_scm]
-write_to = "src/pytask_stata/_version.py"
+[tool.hatch.build.targets.sdist]
+exclude = ["tests"]
+only-packages = true
+
+[tool.hatch.build.targets.wheel]
+exclude = ["tests"]
+only-packages = true
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.mypy]
 files = ["src", "tests"]
