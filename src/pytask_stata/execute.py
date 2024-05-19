@@ -12,7 +12,6 @@ from pytask import has_mark
 from pytask import hookimpl
 
 from pytask_stata.shared import STATA_COMMANDS
-from pytask_stata.shared import convert_task_id_to_name_of_log_file
 
 
 @hookimpl
@@ -41,7 +40,7 @@ def pytask_execute_task_teardown(session: Session, task: PTask) -> None:
     """
     if has_mark(task, "stata"):
         if session.config["platform"] == "win32":
-            log_name = convert_task_id_to_name_of_log_file(task)
+            log_name = task.depends_on["_log_name"]
             if isinstance(task, PTaskWithPath):
                 path_to_log = task.path.with_name(log_name).with_suffix(".log")
             else:
