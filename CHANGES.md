@@ -7,7 +7,7 @@ releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 
 ## 0.4.0 - 2023-10-08
 
-- {pull}`31` makes pytask-stata compatible with pytask v0.4.0.
+- {pull}`36` makes pytask-stata compatible with pytask v0.4.0.
 
 ## 0.3.0 - 2023-01-23
 
