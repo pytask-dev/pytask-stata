@@ -225,6 +225,6 @@ def test_with_task_without_path(runner, tmp_path):
     assert tmp_path.joinpath("auto.dta").exists()
 
     if sys.platform == "win32":
-        assert tmp_path.joinpath("lambda.log").exists()
+        assert tmp_path.joinpath("task_example_py_lambda.log").exists()
     else:
-        assert tmp_path.joinpath("lambda.log").exists()
+        assert not tmp_path.joinpath("task_example_py_lambda.log").exists()

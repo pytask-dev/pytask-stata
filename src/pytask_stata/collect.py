@@ -35,7 +35,7 @@ def run_stata_script(
     _cwd: Path,
 ) -> None:
     """Run an R script."""
-    cmd = [_executable, "-e", "do", _script.as_posix(), *_options, _log_name]
+    cmd = [_executable, "-e", "do", _script.as_posix(), *_options, f"-{_log_name}"]
     print("Executing " + " ".join(cmd) + ".")  # noqa: T201
     subprocess.run(cmd, cwd=_cwd, check=True)  # noqa: S603
 
@@ -165,9 +165,8 @@ def pytask_collect_task(
         # Add log_name node that depends on the task id.
         if session.config["platform"] == "win32":
             log_name = convert_task_id_to_name_of_log_file(task)
-            log_name_arg = f"-{log_name}"
         else:
-            log_name_arg = ""
+            log_name = ""
 
         log_name_node = session.hook.pytask_collect_node(
             session=session,
@@ -175,7 +174,7 @@ def pytask_collect_task(
             node_info=NodeInfo(
                 arg_name="_log_name",
                 path=(),
-                value=PythonNode(value=log_name_arg),
+                value=PythonNode(value=log_name),
                 task_path=path,
                 task_name=name,
             ),

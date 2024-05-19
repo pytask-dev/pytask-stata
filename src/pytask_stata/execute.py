@@ -40,7 +40,7 @@ def pytask_execute_task_teardown(session: Session, task: PTask) -> None:
     """
     if has_mark(task, "stata"):
         if session.config["platform"] == "win32":
-            log_name = task.depends_on["_log_name"]
+            log_name = task.depends_on["_log_name"].load()
             if isinstance(task, PTaskWithPath):
                 path_to_log = task.path.with_name(log_name).with_suffix(".log")
             else:
