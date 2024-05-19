@@ -105,10 +105,10 @@ def test_run_do_file_w_task_decorator(runner, tmp_path):
 @pytest.mark.end_to_end()
 def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
     task_source = """
-    import pytask
+    from pytask import mark, task
 
-    @pytask.mark.stata(script="script.do")
-    @pytask.mark.produces("out.dta")
+    @task(kwargs={"produces": "out.dta"})
+    @mark.stata(script="script.do")
     def task_run_do_file():
         pass
     """
@@ -150,6 +150,7 @@ def test_run_do_file_w_wrong_cmd_option(runner, tmp_path):
     result = runner.invoke(cli, [tmp_path.as_posix()])
 
     assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("out.dta").exists()
 
 
 @needs_stata

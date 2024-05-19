@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import subprocess
 import warnings
 from pathlib import Path
@@ -121,7 +122,7 @@ def pytask_collect_task(
             node_info=NodeInfo(
                 arg_name="_cwd",
                 path=(),
-                value=path.parent,
+                value=path.parent.as_posix(),
                 task_path=path,
                 task_name=name,
             ),
@@ -140,13 +141,14 @@ def pytask_collect_task(
         dependencies["_cwd"] = cwd_node
         dependencies["_executable"] = executable_node
 
+        partialed = functools.partial(run_stata_script, _cwd=path.parent)
         markers = obj.pytask_meta.markers if hasattr(obj, "pytask_meta") else []
 
         task: PTask
         if path is None:
             task = TaskWithoutPath(
                 name=name,
-                function=run_stata_script,
+                function=partialed,
                 depends_on=dependencies,
                 produces=products,
                 markers=markers,
@@ -155,7 +157,7 @@ def pytask_collect_task(
             task = Task(
                 base_name=name,
                 path=path,
-                function=run_stata_script,
+                function=partialed,
                 depends_on=dependencies,
                 produces=products,
                 markers=markers,

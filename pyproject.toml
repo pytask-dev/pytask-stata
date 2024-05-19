@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 requires-python = ">=3.8"
-dependencies = ["click", "pytask>=0.3,<0.4"]
+dependencies = ["click", "pytask>=0.4"]
 dynamic = ["version"]
 
 [project.readme]
@@ -38,6 +38,9 @@ pytask = { pytask_stata = "pytask_stata.plugin" }
 
 [tool.rye]
 managed = true
+dev-dependencies = [
+    "tox-uv>=1.8.2",
+]
 
 [tool.hatch.build.targets.sdist]
 exclude = ["tests"]

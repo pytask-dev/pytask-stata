@@ -46,7 +46,7 @@ else:
 
 def stata(
     *,
-    script: str | Path | None = None,
+    script: str | Path,
     options: str | Iterable[str] | None = None,
 ) -> tuple[str | Path | None, str | Iterable[str] | None]:
     """Specify command line options for Stata.

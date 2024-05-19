@@ -5,6 +5,7 @@ from __future__ import annotations
 import textwrap
 
 import pytest
+from pytask import ExitCode
 from pytask import cli
 
 
@@ -36,4 +37,4 @@ def test_execution_w_varying_dependencies_products(
         tmp_path.joinpath(dependency).touch()
 
     result = runner.invoke(cli, [tmp_path.as_posix()])
-    assert result.exit_code == 0
+    assert result.exit_code == ExitCode.OK
