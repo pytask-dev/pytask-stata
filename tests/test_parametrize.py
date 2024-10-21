@@ -11,7 +11,7 @@ from tests.conftest import needs_stata
 
 
 @needs_stata
-@pytest.mark.end_to_end()
+@pytest.mark.end_to_end
 def test_parametrized_execution_of_do_file_w_loop(runner, tmp_path):
     source = """
     import pytask
@@ -41,7 +41,7 @@ def test_parametrized_execution_of_do_file_w_loop(runner, tmp_path):
 
 
 @needs_stata
-@pytest.mark.end_to_end()
+@pytest.mark.end_to_end
 def test_parametrize_command_line_options_w_loop(runner, tmp_path):
     task_source = """
     import pytask
