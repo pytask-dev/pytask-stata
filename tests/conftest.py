@@ -8,6 +8,7 @@ from typing import Callable
 import pytest
 from click.testing import CliRunner
 from pytask import storage
+
 from pytask_stata.config import STATA_COMMANDS
 
 needs_stata = pytest.mark.skipif(
@@ -78,6 +79,6 @@ class CustomCliRunner(CliRunner):
             return super().invoke(*args, **kwargs)
 
 
-@pytest.fixture()
+@pytest.fixture
 def runner():
     return CustomCliRunner()
