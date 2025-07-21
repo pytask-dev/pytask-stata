@@ -24,7 +24,7 @@ pytestmark = pytest.mark.skipif(
 
 
 @needs_stata
-@pytest.mark.end_to_end()
+@pytest.mark.end_to_end
 def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
     source = """
     import pytask
@@ -56,7 +56,7 @@ def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
 
 
 @needs_stata
-@pytest.mark.end_to_end()
+@pytest.mark.end_to_end
 def test_parallel_parametrization_over_source_file_w_loop(runner, tmp_path):
     source = """
     import pytask
