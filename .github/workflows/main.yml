@@ -26,7 +26,9 @@ jobs:
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
-      - run: uv run --group typing ty check
+      - name: Install just
+        uses: extractions/setup-just@v2
+      - run: just typing
 
   run-tests:
 
@@ -45,33 +47,22 @@ jobs:
         uses: astral-sh/setup-uv@v4
         with:
           enable-cache: true
+      - name: Install just
+        uses: extractions/setup-just@v2
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
-      # Unit, integration, and end-to-end tests.
-
-      - name: Run unit tests and doctests.
+      - name: Run tests
         shell: bash -l {0}
-        run: uv run --group test pytest -m "unit or (not integration and not end_to_end)" --cov=./ --cov-report=xml -n auto
+        run: just test
 
-      - name: Upload unit test coverage reports to Codecov with GitHub Action
+      - name: Upload test coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v4
-        with:
-          flags: unit
-
-      - name: Run end-to-end tests.
-        shell: bash -l {0}
-        run: uv run --group test pytest -m end_to_end --cov=./ --cov-report=xml -n auto
-
-      - name: Upload end_to_end test coverage reports to Codecov with GitHub Action
-        uses: codecov/codecov-action@v4
-        with:
-          flags: end_to_end
 
       - name: Run tests with lowest resolution
         if: matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest'
-        run: uv run --group test --resolution lowest-direct pytest -n auto
+        run: just test-lowest
 
       - name: Run tests with highest resolution
         if: matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest'
-        run: uv run --group test --resolution highest pytest -n auto
+        run: just test-highest

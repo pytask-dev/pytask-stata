@@ -4,23 +4,11 @@ install:
 
 # Run tests
 test:
-    uv run --group test pytest
-
-# Run tests with coverage
-test-cov:
     uv run --group test pytest --cov=src --cov=tests --cov-report=xml
-
-# Run unit tests only
-test-unit:
-    uv run --group test pytest -m "unit or (not integration and not end_to_end)"
-
-# Run end-to-end tests only
-test-e2e:
-    uv run --group test pytest -m end_to_end
 
 # Run type checking
 typing:
-    uv run --group typing ty check
+    uv run --group typing --group test ty check
 
 # Run linting and formatting
 lint:
@@ -36,7 +24,3 @@ test-lowest:
 # Run tests with highest dependency resolution
 test-highest:
     uv run --group test --resolution highest pytest
-
-# Build package
-build:
-    uv build
