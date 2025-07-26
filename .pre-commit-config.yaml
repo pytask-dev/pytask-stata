@@ -29,6 +29,11 @@ repos:
     hooks:
     -   id: ruff
     -   id: ruff-format
+-   repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.8.3
+    hooks:
+    -   id: uv-lock
 -   repo: https://github.com/dosisod/refurb
     rev: v2.1.0
     hooks:
