@@ -40,14 +40,14 @@ def pytask_execute_task_teardown(session: Session, task: PTask) -> None:
     """
     if has_mark(task, "stata"):
         if session.config["platform"] == "win32":
-            log_name = task.depends_on["_log_name"].load()
+            log_name = task.depends_on["_log_name"].load()  # ty: ignore[call-non-callable]
             if isinstance(task, PTaskWithPath):
                 path_to_log = task.path.with_name(log_name).with_suffix(".log")
             else:
-                path_to_log = Path.cwd(log_name).with_name(log_name).with_suffix(".log")
+                path_to_log = Path.cwd() / f"{log_name}.log"
         else:
             node = task.depends_on["_script"]
-            path_to_log = node.path.with_suffix(".log")
+            path_to_log = node.path.with_suffix(".log")  # ty: ignore[call-non-callable,possibly-unbound-attribute]
 
         n_lines = session.config["stata_check_log_lines"]
 

@@ -31,7 +31,7 @@ def test_pytask_execute_task_setup_raise_error(stata, platform, expectation):
     task = Task(
         base_name="task_example",
         path=Path(),
-        function=None,
+        function=lambda: None,  # ty: ignore[invalid-argument-type]
         markers=[Mark("stata", (), {})],
     )
 
@@ -124,7 +124,7 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
     session = build(paths=tmp_path)
 
     assert session.exit_code == ExitCode.FAILED
-    assert isinstance(session.execution_reports[0].exc_info[1], RuntimeError)
+    assert isinstance(session.execution_reports[0].exc_info[1], RuntimeError)  # ty: ignore[non-subscriptable]
 
 
 @needs_stata

@@ -61,6 +61,15 @@ wheels = [
 ]
 
 [[package]]
+name = "cloudpickle"
+version = "3.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/52/39/069100b84d7418bc358d81669d5748efb14b9cceacd2f9c75f550424132f/cloudpickle-3.1.1.tar.gz", hash = "sha256:b216fa8ae4019d5482a8ac3c95d8f6346115d8835911fd4aefd1a445e4242c64", size = 22113, upload-time = "2025-01-14T17:02:05.085Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7e/e8/64c37fadfc2816a7701fa8a6ed8d87327c7d54eacfbfb6edab14a2f2be75/cloudpickle-3.1.1-py3-none-any.whl", hash = "sha256:c8c5a44295039331ee9dad40ba100a9c7297b6f988e50e87ccdf3765a668350e", size = 20992, upload-time = "2025-01-14T17:02:02.417Z" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -174,7 +183,7 @@ name = "exceptiongroup"
 version = "1.3.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "python_full_version < '3.13'" },
+    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0b/9f/a65090624ecf468cdca03533906e7c69ed7588582240cfe7cc9e770b50eb/exceptiongroup-1.3.0.tar.gz", hash = "sha256:b241f5885f560bc56a59ee63ca4c6a8bfa46ae4ad651af316d4e81817bb9fd88", size = 29749, upload-time = "2025-05-10T17:42:51.123Z" }
 wheels = [
@@ -267,6 +276,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/f2/97/ebf4da567aa6827c909642694d71c9fcf53e5b504f2d96afea02718862f3/iniconfig-2.1.0.tar.gz", hash = "sha256:3abbd2e30b36733fee78f9c7f7308f2d0050e88f0087fd25c2645f63c773e1c7", size = 4793, upload-time = "2025-03-19T20:09:59.721Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2c/e1/e6716421ea10d38022b952c159d5161ca1193197fb744506875fbb87ea7b/iniconfig-2.1.0-py3-none-any.whl", hash = "sha256:9deba5723312380e77435581c6bf4935c94cbfab9b1ed33ef8d238ea168eb760", size = 6050, upload-time = "2025-03-19T20:10:01.071Z" },
+]
+
+[[package]]
+name = "loky"
+version = "3.5.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cloudpickle" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e4/b1/059b0b3e5d98cb5085cb8611bf6e89bc36999dc056d5470a784bfdc74e49/loky-3.5.5.tar.gz", hash = "sha256:0730c7180a35972532f22fe09be600db9d69fed3552aad0410c570acbb47cf41", size = 101789, upload-time = "2025-05-23T08:58:51.242Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/3e/4c14113f8b9f8109a437f7148cca584147a611e1b0fc5012b87c7db9876b/loky-3.5.5-py3-none-any.whl", hash = "sha256:0cd7655df3579c4d2f5cf9c6c6f222f44a3cffe6a27e29edc10a573c138995af", size = 56038, upload-time = "2025-05-23T08:58:49.335Z" },
 ]
 
 [[package]]
@@ -481,6 +502,25 @@ wheels = [
 ]
 
 [[package]]
+name = "pytask-parallel"
+version = "0.5.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "attrs" },
+    { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "click", version = "8.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "cloudpickle" },
+    { name = "loky" },
+    { name = "pluggy" },
+    { name = "pytask" },
+    { name = "rich" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1f/21/4ba97fe16541083fd51fe850518eef9dc8a4859fceadd1ad746af0db4755/pytask_parallel-0.5.1.tar.gz", hash = "sha256:cfc9e46cf9a27dcba3c34a03a65927fe209914c4b55580234791d6755da060af", size = 13498, upload-time = "2025-03-09T17:46:10.642Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c3/e4/638fefad4f187286666ccb89d385676108520731317dfb9732f94c9637c5/pytask_parallel-0.5.1-py3-none-any.whl", hash = "sha256:e2b7b0edaa7e18d330379f04234096a7d16867f7d9c2ccfe7ae1ef4d899c2ae0", size = 17783, upload-time = "2025-03-09T17:46:09.053Z" },
+]
+
+[[package]]
 name = "pytask-stata"
 source = { editable = "." }
 dependencies = [
@@ -496,6 +536,7 @@ test = [
     { name = "pytest-xdist" },
 ]
 typing = [
+    { name = "pytask-parallel" },
     { name = "ty" },
 ]
 
@@ -511,7 +552,10 @@ test = [
     { name = "pytest-cov" },
     { name = "pytest-xdist" },
 ]
-typing = [{ name = "ty" }]
+typing = [
+    { name = "pytask-parallel" },
+    { name = "ty" },
+]
 
 [[package]]
 name = "pytest"

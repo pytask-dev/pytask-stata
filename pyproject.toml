@@ -34,7 +34,7 @@ pytask = { pytask_stata = "pytask_stata.plugin" }
 
 [dependency-groups]
 test = ["pytest", "pytest-cov", "pytest-xdist"]
-typing = ["ty"]
+typing = ["pytask-parallel", "ty"]
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/pytask_stata/_version.py"
