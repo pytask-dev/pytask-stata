@@ -14,17 +14,13 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-requires-python = ">=3.8"
-dependencies = ["click", "pytask>=0.4"]
+requires-python = ">=3.9"
+dependencies = ["click>=8.1.8,!=8.2.0", "pytask>=0.5.2"]
 dynamic = ["version"]
 
 [project.readme]
 file = "README.md"
 content-type = "text/markdown"
-
-[project.optional-dependencies]
-test = ["pytest", "pytest-cov", "pytest-xdist"]
-typing = ["mypy"]
 
 [project.urls]
 Homepage = "https://github.com/pytask-dev/pytask-stata"
@@ -36,11 +32,13 @@ Changelog = "https://github.com/pytask-dev/pytask-stata/blob/main/CHANGES.md"
 [project.entry-points]
 pytask = { pytask_stata = "pytask_stata.plugin" }
 
-[tool.rye]
-managed = true
-dev-dependencies = [
-    "tox-uv>=1.8.2",
+[dependency-groups]
+test = [
+    "pytest>=8.4.0",
+    "pytest-cov>=5.0.0",
+    "pytest-xdist>=3.6.1",
 ]
+typing = ["pytask-parallel>=0.5.1", "ty"]
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/pytask_stata/_version.py"
@@ -59,31 +57,13 @@ source = "vcs"
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[tool.mypy]
-files = ["src", "tests"]
-check_untyped_defs = true
-disallow_any_generics = true
-disallow_incomplete_defs = true
-disallow_untyped_defs = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_untyped_defs = false
-ignore_errors = true
-
 [tool.ruff]
-target-version = "py38"
 fix = true
 unsafe-fixes = true
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN101",
-    "ANN102",
     "ANN401", # flake8-annotate typing.Any
     "COM812", # Comply with ruff-format.
     "ISC001", # Comply with ruff-format.
@@ -104,8 +84,5 @@ convention = "numpy"
 testpaths = ["tests"]
 markers = [
     "wip: Tests that are work-in-progress.",
-    "unit: Flag for unit tests which target mainly a single function.",
-    "integration: Flag for integration tests which may comprise of multiple unit tests.",
-    "end_to_end: Flag for tests that cover the whole program.",
 ]
 norecursedirs = [".idea", ".tox"]

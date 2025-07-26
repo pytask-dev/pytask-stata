@@ -5,10 +5,12 @@ chronological order. Releases follow [semantic versioning](https://semver.org/) 
 releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 [Anaconda.org](https://anaconda.org/conda-forge/pytask-stata).
 
-## 0.4.1 - 2024-xx-xx
+## 0.5.0 - 2025-07-26
 
 - {pull}`37` updates the CI.
-- {pull}`38` updates tests for pytask v0.5.
+- {pull}`38` updates tests for pytask v0.5.0.
+- {pull}`41` use uv, use ty, update tests and CI, raise minimum python version to 3.9
+  and support Python 3.13.
 
 ## 0.4.0 - 2024-03-19
 

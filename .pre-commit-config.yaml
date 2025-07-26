@@ -29,10 +29,10 @@ repos:
     hooks:
     -   id: ruff
     -   id: ruff-format
--   repo: https://github.com/dosisod/refurb
-    rev: v2.1.0
+-   repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.8.3
     hooks:
-    -   id: refurb
+    -   id: uv-lock
 -   repo: https://github.com/executablebooks/mdformat
     rev: 0.7.22
     hooks:

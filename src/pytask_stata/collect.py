@@ -62,8 +62,8 @@ def pytask_collect_task(
             raise ValueError(msg)
 
         mark = _parse_stata_mark(mark=marks[0])
-        script, options = stata(**marks[0].kwargs)
-        obj.pytask_meta.markers.append(mark)
+        script, options = stata(**marks[0].kwargs)  # ty: ignore[missing-argument]
+        obj.pytask_meta.markers.append(mark)  # ty: ignore[possibly-unbound-attribute]
 
         # Collect the nodes in @pytask.mark.julia and validate them.
         path_nodes = Path.cwd() if path is None else path.parent
@@ -141,7 +141,7 @@ def pytask_collect_task(
         dependencies["_executable"] = executable_node
 
         partialed = functools.partial(run_stata_script, _cwd=path.parent)
-        markers = obj.pytask_meta.markers if hasattr(obj, "pytask_meta") else []
+        markers = obj.pytask_meta.markers if hasattr(obj, "pytask_meta") else []  # ty: ignore[unresolved-attribute]
 
         task: PTask
         if path is None:
@@ -187,6 +187,6 @@ def pytask_collect_task(
 
 def _parse_stata_mark(mark: Mark) -> Mark:
     """Parse a Stata mark."""
-    script, options = stata(**mark.kwargs)
+    script, options = stata(**mark.kwargs)  # ty: ignore[missing-argument]
     parsed_kwargs = {"script": script or None, "options": options or []}
     return Mark("stata", (), parsed_kwargs)

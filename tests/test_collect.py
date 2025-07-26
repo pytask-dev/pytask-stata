@@ -9,7 +9,6 @@ from pytask_stata.collect import _parse_stata_mark
 from pytask_stata.collect import stata
 
 
-@pytest.mark.unit
 @pytest.mark.parametrize(
     ("args", "kwargs", "expectation", "expected"),
     [
@@ -29,11 +28,10 @@ from pytask_stata.collect import stata
 )
 def test_stata(args, kwargs, expectation, expected):
     with expectation:
-        options = stata(*args, **kwargs)
+        options = stata(*args, **kwargs)  # ty: ignore[missing-argument]
         assert options == expected
 
 
-@pytest.mark.unit
 @pytest.mark.parametrize(
     ("mark", "expectation", "expected"),
     [
