@@ -67,3 +67,11 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           flags: end_to_end
+
+      - name: Run tests with lowest resolution
+        if: matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest'
+        run: uv run --group test --resolution lowest-direct pytest -n auto
+
+      - name: Run tests with highest resolution
+        if: matrix.python-version == '3.13' && matrix.os == 'ubuntu-latest'
+        run: uv run --group test --resolution highest pytest -n auto
