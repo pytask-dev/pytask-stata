@@ -26,7 +26,7 @@ jobs:
         with:
           enable-cache: true
       - name: Install just
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v3
       - run: just typing
 
   run-tests:
@@ -47,7 +47,7 @@ jobs:
           enable-cache: true
           python-version: ${{ matrix.python-version }}
       - name: Install just
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v3
 
       - name: Run tests
         shell: bash -l {0}
