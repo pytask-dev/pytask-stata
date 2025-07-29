@@ -54,7 +54,7 @@ jobs:
         run: just test
 
       - name: Upload test coverage reports to Codecov with GitHub Action
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
 
       - name: Run tests with lowest resolution
         if: matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest'
