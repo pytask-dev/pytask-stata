@@ -3,7 +3,7 @@ ci:
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
     -   id: check-added-large-files
         args: [--maxkb=25]
@@ -28,16 +28,16 @@ repos:
     -   id: python-use-type-annotations
     -   id: text-unicode-replacement-char
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.4
+    rev: v0.14.10
     hooks:
     -   id: ruff
     -   id: ruff-format
 -   repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.3
+    rev: 0.9.18
     hooks:
     -   id: uv-lock
 -   repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.22
+    rev: 1.0.0
     hooks:
     -   id: mdformat
         additional_dependencies:
