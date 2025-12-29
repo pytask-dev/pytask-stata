@@ -3,13 +3,16 @@ from __future__ import annotations
 import shutil
 import sys
 from contextlib import contextmanager
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import pytest
 from click.testing import CliRunner
 from pytask import storage
 
 from pytask_stata.config import STATA_COMMANDS
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 needs_stata = pytest.mark.skipif(
     next(
