@@ -8,6 +8,7 @@ releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 ## Unreleased
 
 - {pull}`50` drops support for Python 3.8 and 3.9 and adds support for Python 3.14.
+- {pull}`51` updates pre-commit hooks.
 
 ## 0.5.0 - 2025-07-26
 
