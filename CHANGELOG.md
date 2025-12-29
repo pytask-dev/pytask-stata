@@ -5,6 +5,10 @@ chronological order. Releases follow [semantic versioning](https://semver.org/) 
 releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 [Anaconda.org](https://anaconda.org/conda-forge/pytask-stata).
 
+## Unreleased
+
+- {pull}`51` updates pre-commit hooks.
+
 ## 0.5.0 - 2025-07-26
 
 - {pull}`37` updates the CI.
