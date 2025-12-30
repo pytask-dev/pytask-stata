@@ -91,6 +91,12 @@ include = ["src/**/_version.py"]
 [tool.ty.overrides.rules]
 invalid-type-form = "ignore"
 
+[[tool.ty.overrides]]
+include = ["src/**/__init__.py"]
+
+[tool.ty.overrides.rules]
+unused-ignore-comment = "ignore"
+
 
 [tool.pytest.ini_options]
 # Do not add src since it messes with the loading of pytask-parallel as a plugin.
