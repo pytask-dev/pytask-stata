@@ -30,7 +30,7 @@ def test_pytask_execute_task_setup_raise_error(stata, platform, expectation):
     task = Task(
         base_name="task_example",
         path=Path(),
-        function=lambda: None,  # ty: ignore[invalid-argument-type]
+        function=lambda: None,
         markers=[Mark("stata", (), {})],
     )
 
