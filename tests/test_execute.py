@@ -120,7 +120,9 @@ def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
     session = build(paths=tmp_path)
 
     assert session.exit_code == ExitCode.FAILED
-    assert isinstance(session.execution_reports[0].exc_info[1], RuntimeError)  # ty: ignore[non-subscriptable]
+    exc_info = session.execution_reports[0].exc_info
+    assert exc_info is not None
+    assert isinstance(exc_info[1], RuntimeError)
 
 
 @needs_stata

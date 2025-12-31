@@ -8,11 +8,11 @@ test:
 
 # Run type checking
 typing:
-    uv run --group typing --group test ty check
+    uv run --group typing --group test --isolated ty check
 
 # Run linting and formatting
 lint:
-    uvx --with pre-commit-uv pre-commit run -a
+    uvx prek run -a
 
 # Run all checks (format, lint, typing, test)
 check: lint typing test

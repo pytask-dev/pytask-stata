@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import cast
 
+from pytask import PathNode
 from pytask import PTask
 from pytask import PTaskWithPath
+from pytask import PythonNode
 from pytask import Session
 from pytask import has_mark
 from pytask import hookimpl
@@ -40,14 +43,15 @@ def pytask_execute_task_teardown(session: Session, task: PTask) -> None:
     """
     if has_mark(task, "stata"):
         if session.config["platform"] == "win32":
-            log_name = task.depends_on["_log_name"].load()  # ty: ignore[call-non-callable]
+            log_name_node = task.depends_on["_log_name"]
+            log_name = cast("PythonNode", log_name_node).load()
             if isinstance(task, PTaskWithPath):
                 path_to_log = task.path.with_name(log_name).with_suffix(".log")
             else:
                 path_to_log = Path.cwd() / f"{log_name}.log"
         else:
             node = task.depends_on["_script"]
-            path_to_log = node.path.with_suffix(".log")  # ty: ignore[call-non-callable,possibly-unbound-attribute]
+            path_to_log = cast("PathNode", node).path.with_suffix(".log")
 
         n_lines = session.config["stata_check_log_lines"]
 
