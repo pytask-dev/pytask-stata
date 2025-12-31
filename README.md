@@ -20,11 +20,11 @@ pytask-stata is available on [PyPI](https://pypi.org/project/pytask-stata) and
 [Anaconda.org](https://anaconda.org/conda-forge/pytask-stata). Install it with
 
 ```console
-$ pip install pytask-stata
+$ uv add pytask-stata
 
 # or
 
-$ conda install -c conda-forge pytask-stata
+$ pixi add pytask-stata
 ```
 
 You also need to have Stata installed on your system and have the executable on your

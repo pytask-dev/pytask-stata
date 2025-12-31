@@ -28,7 +28,7 @@ from pytask_stata.collect import stata
 )
 def test_stata(args, kwargs, expectation, expected):
     with expectation:
-        options = stata(*args, **kwargs)  # ty: ignore[missing-argument]
+        options = stata(*args, **kwargs)
         assert options == expected
 
 
