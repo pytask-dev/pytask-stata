@@ -38,7 +38,7 @@ test = [
     "pytest-cov>=5.0.0",
     "pytest-xdist>=3.6.1",
 ]
-typing = ["pytask-parallel>=0.5.1", "ty"]
+typing = ["pytask-parallel>=0.5.1", "ty>=0.0.8"]
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/pytask_stata/_version.py"
