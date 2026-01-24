@@ -414,7 +414,7 @@ wheels = [
 
 [[package]]
 name = "pytask"
-version = "0.5.5"
+version = "0.5.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -431,9 +431,9 @@ dependencies = [
     { name = "typing-extensions", marker = "python_full_version < '3.11'" },
     { name = "universal-pathlib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/58/1b/b67d848f97f44736c1981c70237e65daf145777d8e368e3c853c82b56b84/pytask-0.5.5.tar.gz", hash = "sha256:5e84d11d18df001f5231d1ce80ff241fcf026a80dd9c30de203315465fce8d57", size = 100460, upload-time = "2025-07-25T15:32:12.583Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9c/5f/35b522c0bfda7e6288dee5b893830233c9e376474de027f4672ebda03968/pytask-0.5.8.tar.gz", hash = "sha256:93d4dd78a128fd3f3e563fa98dfb0f2307376e2441d134088fbd9170c50b3acd", size = 106332, upload-time = "2025-12-30T17:03:18.181Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b9/71/889e40d6677123d90afc5c0b76861bf8275a99a09c07fe84db41f1884814/pytask-0.5.5-py3-none-any.whl", hash = "sha256:f71a54db583df16e03fbc9b9732e6689eb43e16813d4f191cd63e61aede1ccf6", size = 130780, upload-time = "2025-07-25T15:32:10.84Z" },
+    { url = "https://files.pythonhosted.org/packages/80/b2/bba963dfce0fcbc5020a4f8b4361e132390c4bd78b46cfc7ae355e678b96/pytask-0.5.8-py3-none-any.whl", hash = "sha256:217ed6b3e12140c442afa5e333bbb91e98f8d4fd5c746d323fbbf9778985a92f", size = 137822, upload-time = "2025-12-30T17:03:16.715Z" },
 ]
 
 [[package]]
