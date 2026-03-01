@@ -28,12 +28,12 @@ repos:
     -   id: python-use-type-annotations
     -   id: text-unicode-replacement-char
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.10
+    rev: v0.15.2
     hooks:
     -   id: ruff-check
     -   id: ruff-format
 -   repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.9.18
+    rev: 0.10.4
     hooks:
     -   id: uv-lock
 -   repo: https://github.com/executablebooks/mdformat
@@ -45,7 +45,7 @@ repos:
         - mdformat-black
         args: [--wrap, "88"]
 -   repo: https://github.com/crate-ci/typos
-    rev: v1.40.1
+    rev: v1
     hooks:
     -   id: typos
 -   repo: meta
