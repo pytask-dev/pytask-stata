@@ -64,7 +64,7 @@ def pytask_collect_task(
 
         mark = _parse_stata_mark(mark=marks[0])
         script, options = stata(**marks[0].kwargs)
-        cast(Any, obj).pytask_meta.markers.append(mark)
+        cast("Any", obj).pytask_meta.markers.append(mark)
 
         # Collect the nodes in @pytask.mark.julia and validate them.
         path_nodes = Path.cwd() if path is None else path.parent
