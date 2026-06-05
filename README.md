@@ -125,7 +125,6 @@ from pathlib import Path
 from pytask import mark
 from pytask import task
 
-
 for i in range(2):
 
     @task
