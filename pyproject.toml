@@ -27,7 +27,7 @@ Homepage = "https://github.com/pytask-dev/pytask-stata"
 Documentation = "https://github.com/pytask-dev/pytask-stata"
 Github = "https://github.com/pytask-dev/pytask-stata"
 Tracker = "https://github.com/pytask-dev/pytask-stata/issues"
-Changelog = "https://github.com/pytask-dev/pytask-stata/blob/main/CHANGES.md"
+Changelog = "https://github.com/pytask-dev/pytask-stata/blob/main/CHANGELOG.md"
 
 [project.entry-points]
 pytask = { pytask_stata = "pytask_stata.plugin" }
