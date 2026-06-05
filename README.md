@@ -8,7 +8,7 @@
 [![image](https://img.shields.io/github/actions/workflow/status/pytask-dev/pytask-stata/main.yml?branch=main)](https://github.com/pytask-dev/pytask-stata/actions?query=branch%3Amain)
 [![image](https://codecov.io/gh/pytask-dev/pytask-stata/branch/main/graph/badge.svg)](https://codecov.io/gh/pytask-dev/pytask-stata)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pytask-dev/pytask-stata/main.svg)](https://results.pre-commit.ci/latest/github/pytask-dev/pytask-stata/main)
-[![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 ______________________________________________________________________
 
@@ -41,35 +41,43 @@ the task.
 Here is an example where you want to run `script.do`.
 
 ```python
-import pytask
+from pathlib import Path
+
+from pytask import mark
 
 
-@pytask.mark.stata(script="script.do")
-@pytask.mark.produces("auto.dta")
-def task_run_do_file():
+@mark.stata(script=Path("script.do"))
+def task_run_do_file(produces: Path = Path("auto.dta")):
     pass
 ```
 
 When executing a do-file, the current working directory changes to the directory where
-the script is located. This allows you, for example, to reference every data set you
-want to read with a relative path from the script.
+the task module is located. This allows you, for example, to reference data sets with a
+relative path from the task module.
 
 ### Dependencies and Products
 
-Dependencies and products can be added as with a normal pytask task using the
-`@pytask.mark.depends_on` and `@pytask.mark.produces` decorators. which is explained in
-this
+Dependencies and products can be added as with a normal pytask task using the task
+function signature as explained in this
 [tutorial](https://pytask-dev.readthedocs.io/en/stable/tutorials/defining_dependencies_products.html).
 
 ### Accessing dependencies and products in the script
 
-The decorator can be used to pass command line arguments to your Stata executable. For
-example, pass the path of the product with
+Dependencies and products registered in the task function signature are used by pytask
+to order tasks and track whether they are up-to-date. They are not automatically passed
+to the Stata script. Use the `options` argument of the decorator to pass paths or other
+values as command line arguments to your Stata executable.
+
+For example, pass the path of the product with
 
 ```python
-@pytask.mark.stata(script="script.do", options="auto.dta")
-@pytask.mark.produces("auto.dta")
-def task_run_do_file():
+from pathlib import Path
+
+from pytask import mark
+
+
+@mark.stata(script=Path("script.do"), options=Path("auto.dta"))
+def task_run_do_file(produces: Path = Path("auto.dta")):
     pass
 ```
 
@@ -83,20 +91,24 @@ sysuse auto, clear
 save "`produces'"
 ```
 
-The relative path inside the do-file works only because the pytask-stata switches the
-current working directory to the directory of the do-file before the task is executed.
+The relative path inside the do-file works only because pytask-stata switches the
+current working directory to the directory of the task module before the task is
+executed.
 
 To make the task independent from the current working directory, pass the full path as
 an command line argument. Here is an example.
 
 ```python
 # Absolute path to the build directory.
+from pathlib import Path
+
+from pytask import mark
+
 from src.config import BLD
 
 
-@pytask.mark.stata(script="script.do", options=BLD / "auto.dta")
-@pytask.mark.produces(BLD / "auto.dta")
-def task_run_do_file():
+@mark.stata(script=Path("script.do"), options=BLD / "auto.dta")
+def task_run_do_file(produces: Path = BLD / "auto.dta"):
     pass
 ```
 
@@ -108,12 +120,17 @@ as well as passing different command line arguments to the same do-file.
 The following task executes two do-files which produce different outputs.
 
 ```python
+from pathlib import Path
+
+from pytask import mark
+from pytask import task
+
+
 for i in range(2):
 
-    @pytask.mark.task
-    @pytask.mark.stata(script=f"script_{i}.do", options=f"{i}.dta")
-    @pytask.mark.produces(f"{i}.dta")
-    def task_execute_do_file():
+    @task
+    @mark.stata(script=Path(f"script_{i}.do"), options=f"{i}.dta")
+    def task_execute_do_file(produces: Path = Path(f"{i}.dta")):
         pass
 ```
 
@@ -153,4 +170,4 @@ $ pytask build --stata-check-log-lines 10
 
 ## Changes
 
-Consult the [release notes](CHANGES.md) to find out about what is new.
+Consult the [release notes](CHANGELOG.md) to find out about what is new.
