@@ -27,13 +27,14 @@ pytestmark = pytest.mark.skipif(
 def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
     source = """
     import pytask
+    from pathlib import Path
+    from pytask import task
 
     for i in range (1, 3):
 
-        @pytask.mark.task
+        @task(id=str(i))
         @pytask.mark.stata(script=f"script_{i}.do")
-        @pytask.mark.produces(f"{i}.dta")
-        def task_execute_do_file():
+        def task_execute_do_file(produces=Path(f"{i}.dta")):
             pass
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(source))
@@ -58,13 +59,14 @@ def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
 def test_parallel_parametrization_over_source_file_w_loop(runner, tmp_path):
     source = """
     import pytask
+    from pathlib import Path
+    from pytask import task
 
     for i in range (1, 3):
 
-        @pytask.mark.task
+        @task(id=str(i))
         @pytask.mark.stata(script="script.do", options=f"output_{i}")
-        @pytask.mark.produces(f"output_{i}.dta")
-        def task_execute_do_file():
+        def task_execute_do_file(produces=Path(f"output_{i}.dta")):
             pass
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(source))

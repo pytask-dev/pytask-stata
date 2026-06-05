@@ -42,11 +42,11 @@ Here is an example where you want to run `script.do`.
 
 ```python
 import pytask
+from pathlib import Path
 
 
 @pytask.mark.stata(script="script.do")
-@pytask.mark.produces("auto.dta")
-def task_run_do_file():
+def task_run_do_file(produces=Path("auto.dta")):
     pass
 ```
 
@@ -56,9 +56,8 @@ want to read with a relative path from the script.
 
 ### Dependencies and Products
 
-Dependencies and products can be added as with a normal pytask task using the
-`@pytask.mark.depends_on` and `@pytask.mark.produces` decorators. which is explained in
-this
+Dependencies and products can be added as with a normal pytask task using function
+arguments, which is explained in this
 [tutorial](https://pytask-dev.readthedocs.io/en/stable/tutorials/defining_dependencies_products.html).
 
 ### Accessing dependencies and products in the script
@@ -68,8 +67,7 @@ example, pass the path of the product with
 
 ```python
 @pytask.mark.stata(script="script.do", options="auto.dta")
-@pytask.mark.produces("auto.dta")
-def task_run_do_file():
+def task_run_do_file(produces=Path("auto.dta")):
     pass
 ```
 
@@ -95,8 +93,7 @@ from src.config import BLD
 
 
 @pytask.mark.stata(script="script.do", options=BLD / "auto.dta")
-@pytask.mark.produces(BLD / "auto.dta")
-def task_run_do_file():
+def task_run_do_file(produces=BLD / "auto.dta"):
     pass
 ```
 
@@ -108,12 +105,16 @@ as well as passing different command line arguments to the same do-file.
 The following task executes two do-files which produce different outputs.
 
 ```python
+import pytask
+from pathlib import Path
+from pytask import task
+
+
 for i in range(2):
 
-    @pytask.mark.task
+    @task(id=str(i))
     @pytask.mark.stata(script=f"script_{i}.do", options=f"{i}.dta")
-    @pytask.mark.produces(f"{i}.dta")
-    def task_execute_do_file():
+    def task_execute_do_file(produces=Path(f"{i}.dta")):
         pass
 ```
 
