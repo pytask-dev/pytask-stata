@@ -44,10 +44,10 @@ def test_pytask_execute_task_setup_raise_error(stata, platform, expectation):
 def test_run_do_file(runner, tmp_path):
     task_source = """
     import pytask
+    from pathlib import Path
 
     @pytask.mark.stata(script="script.do")
-    @pytask.mark.produces("auto.dta")
-    def task_run_do_file():
+    def task_run_do_file(produces=Path("auto.dta")):
         pass
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
@@ -73,11 +73,12 @@ def test_run_do_file(runner, tmp_path):
 def test_run_do_file_w_task_decorator(runner, tmp_path):
     task_source = """
     import pytask
+    from pathlib import Path
+    from pytask import task
 
-    @pytask.mark.task
+    @task
     @pytask.mark.stata(script="script.do")
-    @pytask.mark.produces("auto.dta")
-    def run_do_file():
+    def run_do_file(produces=Path("auto.dta")):
         pass
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
@@ -130,10 +131,10 @@ def test_run_do_file_w_wrong_cmd_option(runner, tmp_path):
     """Apparently, Stata simply discards wrong cmd options."""
     task_source = """
     import pytask
+    from pathlib import Path
 
     @pytask.mark.stata(script="script.do", options="--wrong-flag")
-    @pytask.mark.produces("out.dta")
-    def task_run_do_file():
+    def task_run_do_file(produces=Path("out.dta")):
         pass
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
@@ -158,8 +159,7 @@ def test_run_do_file_by_passing_path(runner, tmp_path):
     from pathlib import Path
 
     @pytask.mark.stata(script="script.do", options=Path(__file__).parent / "auto.dta")
-    @pytask.mark.produces("auto.dta")
-    def task_run_do_file():
+    def task_run_do_file(produces=Path("auto.dta")):
         pass
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
@@ -176,14 +176,37 @@ def test_run_do_file_by_passing_path(runner, tmp_path):
 
 
 @needs_stata
+def test_run_do_file_fails_with_stata_error(runner, tmp_path):
+    task_source = """
+    import pytask
+    from pathlib import Path
+
+    @pytask.mark.stata(script="script.do")
+    def task_run_do_file(produces=Path("out.dta")):
+        pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+
+    do_file = """
+    error 601
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix()])
+
+    assert result.exit_code == ExitCode.FAILED
+    assert "r(601)" in result.output
+
+
+@needs_stata
 def test_run_do_file_fails_with_multiple_marks(runner, tmp_path):
     task_source = """
     import pytask
+    from pathlib import Path
 
     @pytask.mark.stata(script="script.do")
     @pytask.mark.stata(script="script.do")
-    @pytask.mark.produces("auto.dta")
-    def task_run_do_file():
+    def task_run_do_file(produces=Path("auto.dta")):
         pass
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
@@ -199,10 +222,11 @@ def test_run_do_file_fails_with_multiple_marks(runner, tmp_path):
 def test_with_task_without_path(runner, tmp_path):
     task_source = """
     import pytask
+    from pathlib import Path
     from pytask import task
 
     task_example = pytask.mark.stata(script="script.do")(
-        pytask.mark.produces("auto.dta")(task()(lambda x: None))
+        task(kwargs={"produces": Path("auto.dta")})(lambda produces: None)
     )
     """
     tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))

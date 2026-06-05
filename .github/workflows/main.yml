@@ -66,15 +66,15 @@ jobs:
 
       - name: Run tests
         shell: bash -l {0}
-        run: just test
+        run: just test-ci
 
       - name: Upload test coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
 
       - name: Run tests with lowest resolution
         if: matrix.python-version == '3.10' && matrix.os == 'ubuntu-latest'
-        run: just test-lowest
+        run: just test-lowest-ci
 
       - name: Run tests with highest resolution
         if: matrix.python-version == '3.14' && matrix.os == 'ubuntu-latest'
-        run: just test-highest
+        run: just test-highest-ci

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import os
 import shutil
 import sys
+import warnings
 from contextlib import contextmanager
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -14,13 +17,51 @@ from pytask_stata.config import STATA_COMMANDS
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-needs_stata = pytest.mark.skipif(
-    next(
-        (executable for executable in STATA_COMMANDS if shutil.which(executable)), None
+needs_stata = pytest.mark.usefixtures("stata_runtime")
+
+
+@pytest.fixture(scope="session")
+def stata_runtime():
+    """Use mock Stata on CI and require a real Stata executable locally."""
+    executable_path = _find_stata_executable()
+    if os.environ.get("CI"):
+        if executable_path is None:
+            msg = (
+                "CI requires the stata-mock package to be installed so one of "
+                f"{STATA_COMMANDS} is available on PATH."
+            )
+            pytest.fail(msg)
+        warnings.warn(
+            f"Using mock Stata runtime because CI is set: {executable_path}.",
+            stacklevel=1,
+        )
+        yield
+        return
+
+    if executable_path is None or _is_mock_stata_executable(executable_path):
+        msg = (
+            "Stata-dependent tests require a real Stata executable on PATH when CI is "
+            "not set. Run the CI test recipe to use the stata-mock package."
+        )
+        pytest.fail(msg)
+
+    yield
+
+
+def _is_mock_stata_executable(executable_path: str) -> bool:
+    try:
+        Path(executable_path).resolve().relative_to(Path(sys.prefix).resolve())
+    except ValueError:
+        return False
+    else:
+        return True
+
+
+def _find_stata_executable() -> str | None:
+    return next(
+        (path for executable in STATA_COMMANDS if (path := shutil.which(executable))),
+        None,
     )
-    is None,
-    reason="Stata needs to be installed.",
-)
 
 
 class SysPathsSnapshot:

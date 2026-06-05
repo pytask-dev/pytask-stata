@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stata-mock"
+version = "0.0.0"
+description = "Mock Stata executable for pytask-stata tests."
+requires-python = ">=3.10"
+
+[project.scripts]
+Stata = "stata_mock.cli:main"
+Stata-64 = "stata_mock.cli:main"
+Stata-ia = "stata_mock.cli:main"
+Stata64 = "stata_mock.cli:main"
+Stata64MP = "stata_mock.cli:main"
+Stata64SE = "stata_mock.cli:main"
+StataMP = "stata_mock.cli:main"
+StataMP-64 = "stata_mock.cli:main"
+StataMP-ia = "stata_mock.cli:main"
+StataSE = "stata_mock.cli:main"
+StataSE-64 = "stata_mock.cli:main"
+StataSE-ia = "stata_mock.cli:main"
+WMPSTATA = "stata_mock.cli:main"
+WSESTATA = "stata_mock.cli:main"
+WSTATA = "stata_mock.cli:main"
+stata = "stata_mock.cli:main"
+stata-mp = "stata_mock.cli:main"
+stata-se = "stata_mock.cli:main"

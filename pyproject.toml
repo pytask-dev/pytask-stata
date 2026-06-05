@@ -38,7 +38,14 @@ test = [
     "pytest-cov>=5.0.0",
     "pytest-xdist>=3.6.1",
 ]
+test-mock-stata = ["stata-mock"]
 typing = ["pytask-parallel>=0.5.1", "ty>=0.0.8"]
+
+[tool.uv.sources]
+stata-mock = { workspace = true }
+
+[tool.uv.workspace]
+members = ["packages/stata_mock"]
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/pytask_stata/_version.py"
