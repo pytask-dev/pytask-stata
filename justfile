@@ -6,6 +6,10 @@ install:
 test:
     uv run --group test pytest --cov=src --cov=tests --cov-report=xml
 
+# Run tests in CI with the mock Stata executable installed.
+test-ci:
+    uv run --group test --group test-mock-stata pytest --cov=src --cov=tests --cov-report=xml
+
 # Run type checking
 typing:
     uv run --group typing --group test --isolated ty check
@@ -21,6 +25,14 @@ check: lint typing test
 test-lowest:
     uv run --group test --resolution lowest-direct pytest
 
+# Run tests with lowest dependency resolution in CI with the mock Stata executable installed.
+test-lowest-ci:
+    uv run --group test --group test-mock-stata --resolution lowest-direct pytest
+
 # Run tests with highest dependency resolution
 test-highest:
     uv run --group test --resolution highest pytest
+
+# Run tests with highest dependency resolution in CI with the mock Stata executable installed.
+test-highest-ci:
+    uv run --group test --group test-mock-stata --resolution highest pytest

@@ -1,3 +1,5 @@
+"""Command line interface for the mock Stata executable."""
+
 from __future__ import annotations
 
 import re
@@ -10,6 +12,7 @@ MINIMUM_ARGUMENTS = 4
 
 
 def main() -> int:
+    """Run a tiny subset of Stata syntax for pytask-stata tests."""
     parsed = _parse_invocation(sys.argv[1:])
     if parsed is None:
         return INVALID_SYNTAX
