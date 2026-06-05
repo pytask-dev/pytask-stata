@@ -32,7 +32,7 @@ def test_parallel_parametrization_over_source_files_w_loop(runner, tmp_path):
 
     for i in range (1, 3):
 
-        @task(id=str(i))
+        @task
         @pytask.mark.stata(script=f"script_{i}.do")
         def task_execute_do_file(produces=Path(f"{i}.dta")):
             pass
@@ -64,7 +64,7 @@ def test_parallel_parametrization_over_source_file_w_loop(runner, tmp_path):
 
     for i in range (1, 3):
 
-        @task(id=str(i))
+        @task
         @pytask.mark.stata(script="script.do", options=f"output_{i}")
         def task_execute_do_file(produces=Path(f"output_{i}.dta")):
             pass

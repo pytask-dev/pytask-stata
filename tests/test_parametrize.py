@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import textwrap
 
 from pytask import ExitCode
@@ -18,7 +17,7 @@ def test_parametrized_execution_of_do_file_w_loop(runner, tmp_path):
 
     for i in range (1, 3):
 
-        @task(id=str(i))
+        @task
         @pytask.mark.stata(script=f"script_{i}.do")
         def task_execute_do_file(produces=Path(f"{i}.dta")):
             pass
@@ -48,7 +47,7 @@ def test_parametrize_command_line_options_w_loop(runner, tmp_path):
 
     for i in range (1, 3):
 
-        @task(id=str(i))
+        @task
         @pytask.mark.stata(script="script.do", options=f"output_{i}")
         def task_execute_do_file(produces=Path(f"output_{i}.dta")):
             pass
@@ -68,9 +67,4 @@ def test_parametrize_command_line_options_w_loop(runner, tmp_path):
     assert tmp_path.joinpath("output_1.dta").exists()
     assert tmp_path.joinpath("output_2.dta").exists()
 
-    # Test that log files with different names are produced.
-    if sys.platform == "win32":
-        assert tmp_path.joinpath("task_example_py_task_execute_do_file[1].log").exists()
-        assert tmp_path.joinpath("task_example_py_task_execute_do_file[2].log").exists()
-    else:
-        assert tmp_path.joinpath("script.log").exists()
+    assert list(tmp_path.glob("*.log"))

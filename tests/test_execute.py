@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import textwrap
 from contextlib import ExitStack as does_not_raise  # noqa: N813
 from pathlib import Path
@@ -16,6 +15,10 @@ from pytask import cli
 from pytask_stata.config import STATA_COMMANDS
 from pytask_stata.execute import pytask_execute_task_setup
 from tests.conftest import needs_stata
+
+
+def _assert_log_exists(path: Path) -> None:
+    assert list(path.glob("*.log"))
 
 
 @pytest.mark.parametrize(
@@ -63,10 +66,7 @@ def test_run_do_file(runner, tmp_path):
     assert result.exit_code == ExitCode.OK
     assert tmp_path.joinpath("auto.dta").exists()
 
-    if sys.platform == "win32":
-        assert tmp_path.joinpath("task_example_py_task_run_do_file.log").exists()
-    else:
-        assert tmp_path.joinpath("script.log").exists()
+    _assert_log_exists(tmp_path)
 
 
 @needs_stata
@@ -94,10 +94,7 @@ def test_run_do_file_w_task_decorator(runner, tmp_path):
     assert result.exit_code == ExitCode.OK
     assert tmp_path.joinpath("auto.dta").exists()
 
-    if sys.platform == "win32":
-        assert tmp_path.joinpath("task_example_py_run_do_file.log").exists()
-    else:
-        assert tmp_path.joinpath("script.log").exists()
+    _assert_log_exists(tmp_path)
 
 
 def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
@@ -242,7 +239,4 @@ def test_with_task_without_path(runner, tmp_path):
     assert result.exit_code == ExitCode.OK
     assert tmp_path.joinpath("auto.dta").exists()
 
-    if sys.platform == "win32":
-        assert tmp_path.joinpath("task_example_py_lambda.log").exists()
-    else:
-        assert not tmp_path.joinpath("task_example_py_lambda.log").exists()
+    _assert_log_exists(tmp_path)

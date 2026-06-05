@@ -127,7 +127,7 @@ from pytask import task
 
 for i in range(2):
 
-    @task(id=str(i))
+    @task
     @mark.stata(script=Path(f"script_{i}.do"), options=f"{i}.dta")
     def task_execute_do_file(produces: Path = Path(f"{i}.dta")):
         pass
