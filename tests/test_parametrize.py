@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import textwrap
 
 from pytask import ExitCode
@@ -67,4 +68,12 @@ def test_parametrize_command_line_options_w_loop(runner, tmp_path):
     assert tmp_path.joinpath("output_1.dta").exists()
     assert tmp_path.joinpath("output_2.dta").exists()
 
-    assert list(tmp_path.glob("*.log"))
+    if sys.platform == "win32":
+        assert tmp_path.joinpath(
+            "task_example_py_task_execute_do_file[produces0].log"
+        ).exists()
+        assert tmp_path.joinpath(
+            "task_example_py_task_execute_do_file[produces1].log"
+        ).exists()
+    else:
+        assert tmp_path.joinpath("script.log").exists()
