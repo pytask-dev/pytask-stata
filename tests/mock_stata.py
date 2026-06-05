@@ -4,24 +4,44 @@ import re
 import sys
 from pathlib import Path
 
+INVALID_SYNTAX = 198
+UNKNOWN_COMMAND = 199
+MINIMUM_ARGUMENTS = 4
+
 
 def main() -> int:
-    args = sys.argv[1:]
-    if len(args) < 4 or args[:2] != ["-e", "do"]:
-        return 198
+    parsed = _parse_invocation(sys.argv[1:])
+    if parsed is None:
+        return INVALID_SYNTAX
+
+    script, options, log = parsed
+    lines, error_code = _run_script(script, options)
+
+    lines.append(
+        f"r({error_code})" if error_code is not None else "end of mock do-file"
+    )
+    log.write_text("\n".join(lines) + "\n")
+    return 0
+
+
+def _parse_invocation(args: list[str]) -> tuple[Path, list[str], Path] | None:
+    if len(args) < MINIMUM_ARGUMENTS or args[:2] != ["-e", "do"]:
+        return None
 
     script = Path(args[2]).resolve()
     options = args[3:-1]
     log_arg = args[-1]
+    log = (
+        script.with_suffix(".log")
+        if log_arg == "-"
+        else Path.cwd() / f"{log_arg.removeprefix('-')}.log"
+    )
+    return script, options, log
 
-    if log_arg == "-":
-        log = script.with_suffix(".log")
-    else:
-        log = Path.cwd() / f"{log_arg.removeprefix('-')}.log"
 
+def _run_script(script: Path, options: list[str]) -> tuple[list[str], int | None]:
     lines = [f"running mock Stata for {script.name}"]
     macros: dict[str, str] = {}
-    error_code = None
 
     for raw_line in script.read_text().splitlines():
         line = raw_line.strip()
@@ -30,42 +50,45 @@ def main() -> int:
 
         line = _expand_local_macros(line, macros)
         lines.append(f". {line}")
+        error_code = _execute_line(line, macros, options)
+        if error_code is not None:
+            return lines, error_code
 
-        command, _, rest = line.partition(" ")
-        command = command.lower()
-        rest = rest.strip()
+    return lines, None
 
-        if command == "args":
-            for name, value in zip(rest.split(), options, strict=False):
-                macros[name] = value
-        elif command == "sysuse":
-            continue
-        elif command == "save":
-            target = _parse_save_target(rest)
-            if not target:
-                error_code = 198
-                break
-            path = Path(target)
-            if path.suffix == "":
-                path = path.with_suffix(".dta")
-            if not path.is_absolute():
-                path = Path.cwd() / path
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text("mock Stata dataset\n")
-        elif command in {"error", "exit"}:
-            error_code = int(rest.split()[0])
-            break
-        else:
-            error_code = 199
-            break
 
-    if error_code is not None:
-        lines.append(f"r({error_code})")
+def _execute_line(line: str, macros: dict[str, str], options: list[str]) -> int | None:
+    command, _, rest = line.partition(" ")
+    command = command.lower()
+    rest = rest.strip()
+
+    if command == "args":
+        macros.update(dict(zip(rest.split(), options, strict=False)))
+    elif command == "sysuse":
+        return None
+    elif command == "save":
+        return _save_dataset(rest)
+    elif command in {"error", "exit"}:
+        return int(rest.split()[0])
     else:
-        lines.append("end of mock do-file")
+        return UNKNOWN_COMMAND
 
-    log.write_text("\n".join(lines) + "\n")
-    return 0
+    return None
+
+
+def _save_dataset(rest: str) -> int | None:
+    target = _parse_save_target(rest)
+    if not target:
+        return INVALID_SYNTAX
+
+    path = Path(target)
+    if path.suffix == "":
+        path = path.with_suffix(".dta")
+    if not path.is_absolute():
+        path = Path.cwd() / path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("mock Stata dataset\n")
+    return None
 
 
 def _expand_local_macros(line: str, macros: dict[str, str]) -> str:
