@@ -226,11 +226,7 @@ def _yaml_get(rest: str, state: RuntimeState) -> int | None:
         attributes = str(options.get("attributes", "")).split()
         allowed = set(attributes) if attributes else set(children)
         state.returns.update(
-            {
-                attr: value
-                for attr, value in children.items()
-                if attr in allowed
-            }
+            {attr: value for attr, value in children.items() if attr in allowed}
         )
     elif entry is not None:
         state.returns[result_name] = entry.value
