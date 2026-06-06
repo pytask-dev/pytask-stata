@@ -24,6 +24,8 @@ from pytask import parse_dependencies_from_task_function
 from pytask import parse_products_from_task_function
 from pytask import remove_marks
 
+from pytask_stata.serialization import SERIALIZERS
+from pytask_stata.serialization import create_path_to_serialized
 from pytask_stata.shared import convert_task_id_to_name_of_log_file
 from pytask_stata.shared import stata
 
@@ -32,11 +34,21 @@ def run_stata_script(
     _executable: str,
     _script: Path,
     _options: list[str],
+    _serialized: Path | None,
     _log_name: str,
     _cwd: Path,
 ) -> None:
-    """Run an R script."""
-    cmd = [_executable, "-e", "do", _script.as_posix(), *_options, f"-{_log_name}"]
+    """Run a Stata do-file."""
+    serialized_option = [] if _serialized is None else [_serialized.as_posix()]
+    cmd = [
+        _executable,
+        "-e",
+        "do",
+        _script.as_posix(),
+        *_options,
+        *serialized_option,
+        f"-{_log_name}",
+    ]
     print("Executing " + " ".join(cmd) + ".")  # noqa: T201
     subprocess.run(cmd, cwd=_cwd, check=True)  # noqa: S603
 
@@ -63,7 +75,8 @@ def pytask_collect_task(
             raise ValueError(msg)
 
         mark = _parse_stata_mark(mark=marks[0])
-        script, options = stata(**marks[0].kwargs)
+        script = mark.kwargs["script"]
+        options = mark.kwargs["options"] or []
         cast("Any", obj).pytask_meta.markers.append(mark)
 
         # Collect the nodes in @pytask.mark.julia and validate them.
@@ -182,12 +195,75 @@ def pytask_collect_task(
         )
         task.depends_on["_log_name"] = log_name_node
 
+        suffix = mark.kwargs["suffix"]
+        serialized = None if suffix is None else create_path_to_serialized(task, suffix)
+        task.depends_on["_serialized"] = _collect_serialized_node(
+            session=session,
+            path_nodes=path_nodes,
+            node_info=NodeInfo(
+                arg_name="_serialized",
+                path=(),
+                value=PythonNode(value=serialized),
+                task_path=path,
+                task_name=name,
+            ),
+        )
+
         return task
     return None
 
 
+def _collect_serialized_node(
+    *,
+    session: Session,
+    path_nodes: Path,
+    node_info: NodeInfo,
+) -> PythonNode:
+    """Collect the node for the serialized task configuration."""
+    serialized_node = session.hook.pytask_collect_node(
+        session=session,
+        path=path_nodes,
+        node_info=node_info,
+    )
+    return cast("PythonNode", serialized_node)
+
+
 def _parse_stata_mark(mark: Mark) -> Mark:
     """Parse a Stata mark."""
-    script, options = stata(**mark.kwargs)
-    parsed_kwargs = {"script": script or None, "options": options or []}
+    script, options, serializer, suffix = stata(**mark.kwargs)
+
+    if options is not None and (serializer is not None or suffix is not None):
+        msg = (
+            "The @pytask.mark.stata interfaces cannot be mixed. Use either "
+            "'options' for command line arguments or 'serializer'/'suffix' for "
+            "serialized task arguments."
+        )
+        raise ValueError(msg)
+
+    if options is None and serializer is None:
+        serializer = "yaml"
+
+    if isinstance(serializer, str) and serializer not in SERIALIZERS:
+        msg = (
+            f"Serializer {serializer!r} is not known. Available serializers are "
+            f"{sorted(SERIALIZERS)}."
+        )
+        raise ValueError(msg)
+
+    proposed_suffix = (
+        SERIALIZERS[serializer]["suffix"]
+        if isinstance(serializer, str)
+        and serializer in SERIALIZERS
+        and suffix is None
+        else suffix
+    )
+    if serializer is not None and proposed_suffix is None:
+        msg = "Missing suffix for serialized Stata task."
+        raise ValueError(msg)
+    parsed_kwargs = {
+        "script": script or None,
+        "options": options,
+        "serializer": serializer,
+        "suffix": proposed_suffix,
+    }
     return Mark("stata", (), parsed_kwargs)
