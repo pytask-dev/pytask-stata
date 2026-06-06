@@ -252,9 +252,7 @@ def _parse_stata_mark(mark: Mark) -> Mark:
 
     proposed_suffix = (
         SERIALIZERS[serializer]["suffix"]
-        if isinstance(serializer, str)
-        and serializer in SERIALIZERS
-        and suffix is None
+        if isinstance(serializer, str) and serializer in SERIALIZERS and suffix is None
         else suffix
     )
     if serializer is not None and proposed_suffix is None:

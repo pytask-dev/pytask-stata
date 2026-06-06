@@ -76,9 +76,7 @@ def stata(
 
     """
     parsed_options = (
-        None
-        if options is _DEFAULT_OPTIONS
-        else list(map(str, _to_list(options)))
+        None if options is _DEFAULT_OPTIONS else list(map(str, _to_list(options)))
     )
     return script, parsed_options, serializer, suffix
 

@@ -60,15 +60,15 @@ def _collect_stata_keyword_arguments(task: PTask) -> dict[str, Any]:
     """Collect keyword arguments passed to the Stata config file."""
     kwargs: dict[str, Any] = {
         **tree_map(
-            lambda node: node.path.as_posix()
-            if isinstance(node, PPathNode)
-            else node.value,
+            lambda node: (
+                node.path.as_posix() if isinstance(node, PPathNode) else node.value
+            ),
             task.depends_on,  # ty: ignore[invalid-argument-type]
         ),
         **tree_map(
-            lambda node: node.path.as_posix()
-            if isinstance(node, PPathNode)
-            else node.value,
+            lambda node: (
+                node.path.as_posix() if isinstance(node, PPathNode) else node.value
+            ),
             task.produces,  # ty: ignore[invalid-argument-type]
         ),
     }
