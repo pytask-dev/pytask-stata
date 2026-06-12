@@ -105,17 +105,37 @@ def _execute_line(line: str, state: RuntimeState, options: list[str]) -> int | N
 
     if command == "args":
         state.macros.update(dict(zip(rest.split(), options, strict=False)))
+        error_code = None
+    elif command == "local":
+        error_code = _set_local_macro(rest, state)
     elif command == "sysuse":
-        return None
+        error_code = None
     elif command == "save":
-        return _save_dataset(rest)
+        error_code = _save_dataset(rest)
     elif command == "yaml":
-        return _execute_yaml(rest, state)
+        error_code = _execute_yaml(rest, state)
     elif command in {"error", "exit"}:
-        return int(rest.split()[0])
+        error_code = int(rest.split()[0])
     else:
-        return UNKNOWN_COMMAND
+        error_code = UNKNOWN_COMMAND
 
+    return error_code
+
+
+def _set_local_macro(rest: str, state: RuntimeState) -> int | None:
+    name, separator, value = rest.partition("=")
+    name = name.strip()
+    if not name:
+        return INVALID_SYNTAX
+    if separator:
+        value = value.strip()
+        if match := re.fullmatch(r"r\(([^)]+)\)", value):
+            state.macros[name] = state.returns.get(match.group(1), "")
+        else:
+            state.macros[name] = value.strip("\"'")
+    else:
+        value_parts = rest.split(maxsplit=1)
+        state.macros[value_parts[0]] = value_parts[1] if len(value_parts) > 1 else ""
     return None
 
 

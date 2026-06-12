@@ -93,8 +93,9 @@ def test_run_do_file_with_yaml_config(runner, tmp_path):
     do_file = """
     args config
     yaml read using "`config'", locals replace
+    local produces = r(yaml_produces)
     sysuse auto, clear
-    save "`r(yaml_produces)'"
+    save "`produces'", replace
     """
     tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
 

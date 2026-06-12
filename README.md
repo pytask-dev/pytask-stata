@@ -139,9 +139,10 @@ def task_run_do_file(produces: Path = Path("auto.dta")):
 ```do
 args config
 yaml read using "`config'", locals replace
+local produces = r(yaml_produces)
 
 sysuse auto, clear
-save "`r(yaml_produces)'"
+save "`produces'", replace
 ```
 
 Do not combine both interfaces. If `options` is supplied, pytask-stata assumes the
