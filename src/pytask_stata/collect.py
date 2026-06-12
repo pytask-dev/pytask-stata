@@ -34,6 +34,7 @@ def run_stata_script(
     _options: list[str],
     _log_name: str,
     _cwd: Path,
+    **_kwargs: Any,
 ) -> None:
     """Run an R script."""
     cmd = [_executable, "-e", "do", _script.as_posix(), *_options, f"-{_log_name}"]
