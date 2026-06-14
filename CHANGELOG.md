@@ -5,7 +5,7 @@ chronological order. Releases follow [semantic versioning](https://semver.org/) 
 releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 [Anaconda.org](https://anaconda.org/conda-forge/pytask-stata).
 
-## Unreleased
+## 0.5.1 - 2026-06-14
 
 - {pull}`50` drops support for Python 3.8 and 3.9 and adds support for Python 3.14.
 - {pull}`51` updates pre-commit hooks.
