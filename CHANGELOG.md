@@ -9,6 +9,13 @@ releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 
 - {pull}`50` drops support for Python 3.8 and 3.9 and adds support for Python 3.14.
 - {pull}`51` updates pre-commit hooks.
+- {pull}`58` removes unnecessary pytest markers.
+- {pull}`59` updates installation documentation and typing.
+- {pull}`76` hardens GitHub Actions workflows with zizmor.
+- {pull}`77` uses uv in the PyPI publish workflow.
+- {pull}`104` updates the README for current pytask syntax.
+- {pull}`105` adds a mock Stata runtime for CI tests.
+- {pull}`110` fixes dependencies for Stata tasks.
 
 ## 0.5.0 - 2025-07-26
 
