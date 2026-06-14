@@ -106,6 +106,62 @@ def test_run_do_file_with_yaml_config(runner, tmp_path):
 
 
 @needs_stata
+def test_run_do_file_with_supported_yaml_values(runner, tmp_path):
+    task_source = """
+    from pathlib import Path
+
+    import pytask
+
+
+    @pytask.task(
+        kwargs={
+            "string_value": "hello",
+            "integer_value": 42,
+            "float_value": 3.14,
+            "bool_value": True,
+            "none_value": None,
+            "path_value": Path("input.txt"),
+            "list_numbers": [1, 2],
+            "tuple_strings": ("a", "b"),
+            "nested_mapping": {
+                "child_int": 1,
+                "child_bool": False,
+                "child_string": "value",
+            },
+        }
+    )
+    @pytask.mark.stata(script="script.do")
+    def task_run_do_file(produces=Path("supported.dta")):
+        pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+    tmp_path.joinpath("input.txt").write_text("input")
+
+    do_file = """
+    args config
+    yaml read using "`config'", locals replace
+    yaml validate, ///
+        required(string_value integer_value float_value bool_value none_value ///
+            path_value list_numbers list_numbers_1 list_numbers_2 ///
+            tuple_strings tuple_strings_1 tuple_strings_2 nested_mapping ///
+            nested_mapping_child_int nested_mapping_child_bool ///
+            nested_mapping_child_string produces) ///
+        types(integer_value:numeric float_value:numeric bool_value:boolean ///
+            none_value:null nested_mapping_child_bool:boolean)
+    yaml get nested_mapping, attributes(child_int child_bool child_string) quiet
+    local produces = r(yaml_produces)
+    sysuse auto, clear
+    save "`produces'", replace
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix()])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("supported.dta").exists()
+
+
+@needs_stata
 def test_run_do_file(runner, tmp_path):
     task_source = """
     import pytask

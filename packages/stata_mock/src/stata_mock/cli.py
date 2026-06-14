@@ -190,7 +190,7 @@ def _yaml_read(rest: str, state: RuntimeState) -> int | None:
         path = Path.cwd() / path
     try:
         data = _parse_yaml_subset(path.read_text())
-    except (OSError, ValueError):
+    except (OSError, TypeError, ValueError):
         return INVALID_SYNTAX
 
     entries = _flatten_yaml(data)
@@ -293,36 +293,93 @@ def _parse_yaml_subset(text: str) -> dict[str, Any]:
         raise ValueError(msg)
 
     root: dict[str, Any] = {}
-    stack: list[tuple[int, dict[str, Any]]] = [(-1, root)]
+    stack: list[tuple[int, dict[str, Any] | list[Any]]] = [(-1, root)]
 
-    for raw_line in text.splitlines():
-        if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+    lines = text.splitlines()
+    for line_number, raw_line in enumerate(lines):
+        parsed_line = _parse_yaml_line(raw_line)
+        if parsed_line is None:
             continue
-        indent = len(raw_line) - len(raw_line.lstrip(" "))
-        if indent % 2:
-            msg = "Only two-space indentation is supported."
-            raise ValueError(msg)
 
-        stripped = raw_line.strip()
+        indent, stripped = parsed_line
         if stripped.startswith("- "):
-            msg = "Top-level list items are not supported."
-            raise ValueError(msg)
-        key, separator, value = stripped.partition(":")
-        if not separator or not key or " " in key:
-            msg = "Invalid YAML mapping key."
-            raise ValueError(msg)
+            _parse_yaml_list_item(stripped, indent, stack)
+            continue
 
-        while stack and indent <= stack[-1][0]:
-            stack.pop()
-        parent = stack[-1][1]
-        if value.strip() == "":
-            child: dict[str, Any] = {}
-            parent[key] = child
-            stack.append((indent, child))
-        else:
-            parent[key] = _parse_yaml_scalar(value.strip())
+        _parse_yaml_mapping_item(stripped, indent, lines, line_number, stack)
 
     return root
+
+
+def _parse_yaml_line(raw_line: str) -> tuple[int, str] | None:
+    if not raw_line.strip() or raw_line.lstrip().startswith("#"):
+        return None
+
+    indent = len(raw_line) - len(raw_line.lstrip(" "))
+    if indent % 2:
+        msg = "Only two-space indentation is supported."
+        raise ValueError(msg)
+
+    return indent, raw_line.strip()
+
+
+def _parse_yaml_list_item(
+    stripped: str,
+    indent: int,
+    stack: list[tuple[int, dict[str, Any] | list[Any]]],
+) -> None:
+    while stack and indent < stack[-1][0]:
+        stack.pop()
+    parent = stack[-1][1]
+    if not isinstance(parent, list):
+        msg = "List item without list parent."
+        raise TypeError(msg)
+
+    item = stripped.removeprefix("- ").strip()
+    if ":" in item:
+        msg = "List items must be scalar values."
+        raise ValueError(msg)
+    parent.append(_parse_yaml_scalar(item))
+
+
+def _parse_yaml_mapping_item(
+    stripped: str,
+    indent: int,
+    lines: list[str],
+    line_number: int,
+    stack: list[tuple[int, dict[str, Any] | list[Any]]],
+) -> None:
+    key, separator, value = stripped.partition(":")
+    if not separator or not key or " " in key:
+        msg = "Invalid YAML mapping key."
+        raise ValueError(msg)
+
+    while stack and indent <= stack[-1][0]:
+        stack.pop()
+    parent = stack[-1][1]
+    if not isinstance(parent, dict):
+        msg = "Mapping key inside list is not supported."
+        raise TypeError(msg)
+
+    if value.strip():
+        parent[key] = _parse_yaml_scalar(value.strip())
+        return
+
+    next_line = _find_next_content_line(lines, line_number)
+    next_stripped = next_line.strip() if next_line is not None else ""
+    next_container: dict[str, Any] | list[Any] = (
+        [] if next_stripped.startswith("- ") else {}
+    )
+    parent[key] = next_container
+    stack.append((indent, next_container))
+
+
+def _find_next_content_line(lines: list[str], line_number: int) -> str | None:
+    """Return the next non-empty, non-comment line after ``current_line``."""
+    for line in lines[line_number + 1 :]:
+        if line.strip() and not line.lstrip().startswith("#"):
+            return line
+    return None
 
 
 def _parse_yaml_scalar(value: str) -> str | int | float | bool | None:
@@ -351,6 +408,19 @@ def _flatten_yaml(data: dict[str, Any]) -> list[YamlEntry]:
                 child_key = f"{prefix}_{key}" if prefix else key
                 recurse(child, child_key, level + 1, prefix)
             return
+        if isinstance(value, list):
+            entries.append(YamlEntry(prefix, "", level, parent, "parent"))
+            for index, item in enumerate(value, start=1):
+                entries.append(
+                    YamlEntry(
+                        key=f"{prefix}_{index}",
+                        value=_format_yaml_list_item(item),
+                        level=level,
+                        parent=prefix,
+                        type="list_item",
+                    )
+                )
+            return
 
         entries.append(
             YamlEntry(
@@ -368,9 +438,17 @@ def _flatten_yaml(data: dict[str, Any]) -> list[YamlEntry]:
 
 def _format_yaml_value(value: Any) -> str:
     if isinstance(value, bool):
-        return "true" if value else "false"
+        return "1" if value else "0"
     if value is None:
         return ""
+    return str(value)
+
+
+def _format_yaml_list_item(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if value is None:
+        return "null"
     return str(value)
 
 

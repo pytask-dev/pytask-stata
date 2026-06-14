@@ -3,7 +3,11 @@ from __future__ import annotations
 import sys
 import textwrap
 
+from stata_mock.cli import _flatten_yaml
+from stata_mock.cli import _parse_yaml_subset
 from stata_mock.cli import main
+
+NESTED_CHILD_LEVEL = 2
 
 
 def test_yaml_read_with_locals_exposes_r_macros_and_saves_product(
@@ -42,6 +46,65 @@ def test_yaml_read_with_locals_exposes_r_macros_and_saves_product(
     assert main() == 0
     assert (tmp_path / "out.dta").exists()
     assert "end of mock do-file" in (tmp_path / "mock.log").read_text()
+
+
+def test_yaml_subset_matches_stata_for_supported_scalar_and_nested_types():
+    config = textwrap.dedent(
+        """
+        string_value: hello
+        integer_value: 42
+        float_value: 3.14
+        bool_true: true
+        bool_false: false
+        none_value: null
+        path_value: build/output file.dta
+        list_numbers:
+        - 1
+        - 2
+        list_mixed:
+        - 1
+        - two
+        - true
+        - null
+        nested_mapping:
+          child_int: 1
+          child_bool: false
+          child_string: value
+        """
+    )
+
+    entries = {entry.key: entry for entry in _flatten_yaml(_parse_yaml_subset(config))}
+
+    assert entries["string_value"].value == "hello"
+    assert entries["string_value"].type == "string"
+    assert entries["integer_value"].value == "42"
+    assert entries["integer_value"].type == "numeric"
+    assert entries["float_value"].value == "3.14"
+    assert entries["float_value"].type == "numeric"
+    assert entries["bool_true"].value == "1"
+    assert entries["bool_true"].type == "boolean"
+    assert entries["bool_false"].value == "0"
+    assert entries["bool_false"].type == "boolean"
+    assert entries["none_value"].value == ""
+    assert entries["none_value"].type == "null"
+    assert entries["path_value"].value == "build/output file.dta"
+    assert entries["path_value"].type == "string"
+
+    assert entries["list_numbers"].type == "parent"
+    assert entries["list_numbers_1"].value == "1"
+    assert entries["list_numbers_1"].parent == "list_numbers"
+    assert entries["list_numbers_1"].type == "list_item"
+    assert entries["list_mixed_3"].value == "true"
+    assert entries["list_mixed_3"].type == "list_item"
+    assert entries["list_mixed_4"].value == "null"
+    assert entries["list_mixed_4"].type == "list_item"
+
+    assert entries["nested_mapping"].type == "parent"
+    assert entries["nested_mapping_child_int"].value == "1"
+    assert entries["nested_mapping_child_int"].level == NESTED_CHILD_LEVEL
+    assert entries["nested_mapping_child_int"].parent == "nested_mapping"
+    assert entries["nested_mapping_child_bool"].value == "0"
+    assert entries["nested_mapping_child_bool"].type == "boolean"
 
 
 def test_yaml_read_supports_custom_prefix_for_r_macros(tmp_path, monkeypatch):
