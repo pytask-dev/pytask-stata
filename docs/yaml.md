@@ -15,16 +15,16 @@ The `yaml` package stores parsed YAML in a Stata dataset with `key`, `value`, `l
 
 ## Supported Types
 
-| Python value | YAML shape | Stata representation | Access pattern |
-| --- | --- | --- | --- |
-| Non-empty `str` | `name: hello` | `type=string`, `value=hello` | `r(yaml_name)` |
-| `int` | `count: 42` | `type=numeric`, `value=42` | `r(yaml_count)` |
-| `float` | `ratio: 3.14` | `type=numeric`, `value=3.14` | `r(yaml_ratio)` |
-| `bool` | `enabled: true` | `type=boolean`, `value=1` or `0` | `r(yaml_enabled)` |
-| `None` | `missing: null` | `type=null`, empty value | validate as `null`; no useful macro value |
-| `pathlib.Path` | `path: build/out.dta` | `type=string`, POSIX-style path | `r(yaml_path)` |
-| Flat `list` / `tuple` of scalars | `items:` plus `- value` lines | parent row plus `items_1`, `items_2`, ... rows with `type=list_item` | use flattened keys such as `items_1` |
-| Nested `dict` with scalar leaves | nested mapping | flattened keys such as `config_child` | `yaml get config, attributes(child)` |
+| Python value                     | YAML shape                    | Stata representation                                                 | Access pattern                            |
+| -------------------------------- | ----------------------------- | -------------------------------------------------------------------- | ----------------------------------------- |
+| Non-empty `str`                  | `name: hello`                 | `type=string`, `value=hello`                                         | `r(yaml_name)`                            |
+| `int`                            | `count: 42`                   | `type=numeric`, `value=42`                                           | `r(yaml_count)`                           |
+| `float`                          | `ratio: 3.14`                 | `type=numeric`, `value=3.14`                                         | `r(yaml_ratio)`                           |
+| `bool`                           | `enabled: true`               | `type=boolean`, `value=1` or `0`                                     | `r(yaml_enabled)`                         |
+| `None`                           | `missing: null`               | `type=null`, empty value                                             | validate as `null`; no useful macro value |
+| `pathlib.Path`                   | `path: build/out.dta`         | `type=string`, POSIX-style path                                      | `r(yaml_path)`                            |
+| Flat `list` / `tuple` of scalars | `items:` plus `- value` lines | parent row plus `items_1`, `items_2`, ... rows with `type=list_item` | use flattened keys such as `items_1`      |
+| Nested `dict` with scalar leaves | nested mapping                | flattened keys such as `config_child`                                | `yaml get config, attributes(child)`      |
 
 ## Recommended Limits
 
