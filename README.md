@@ -195,8 +195,8 @@ The relative path inside the do-file works only because pytask-stata switches th
 current working directory to the directory of the task module before the task is
 executed.
 
-To make the task independent from the current working directory, pass the full path as
-a command line argument. Here is an example.
+To make the task independent from the current working directory, pass the full path as a
+command line argument. Here is an example.
 
 ```python
 # Absolute path to the build directory.
