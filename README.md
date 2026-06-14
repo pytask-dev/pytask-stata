@@ -61,14 +61,7 @@ Dependencies and products can be added as with a normal pytask task using the ta
 function signature as explained in this
 [tutorial](https://pytask-dev.readthedocs.io/en/stable/tutorials/defining_dependencies_products.html).
 
-### Accessing dependencies and products in the script
-
-Dependencies and products registered in the task function signature are used by pytask
-to order tasks and track whether they are up-to-date. They are not automatically passed
-to the Stata script. Use the `options` argument of the decorator to pass paths or other
-values as command line arguments to your Stata executable.
-
-For example, pass the path of the product with
+Here is a task with one dependency and one product.
 
 ```python
 from pathlib import Path
@@ -76,16 +69,61 @@ from pathlib import Path
 from pytask import mark
 
 
-@mark.stata(script=Path("script.do"), options=Path("auto.dta"))
+@mark.stata(script=Path("script.do"))
+def task_run_do_file(
+    depends_on: Path = Path("input.dta"),
+    produces: Path = Path("auto.dta"),
+):
+    pass
+```
+
+pytask uses `input.dta` and `auto.dta` to decide whether the task needs to run. If
+`input.dta` changes or `auto.dta` is missing, the Stata task is executed again.
+
+You can also use `@task(kwargs=...)` to define dependencies which are not part of the
+function signature.
+
+```python
+from pathlib import Path
+
+from pytask import mark
+from pytask import task
+
+
+@task(kwargs={"depends_on": Path("input.dta")})
+@mark.stata(script=Path("script.do"))
 def task_run_do_file(produces: Path = Path("auto.dta")):
+    pass
+```
+
+### Accessing dependencies and products in the script
+
+Dependencies and products registered in the task function signature are used by pytask
+to order tasks and track whether they are up-to-date. They are not automatically passed
+to the Stata script. Use the `options` argument of the decorator to pass paths or other
+values as command line arguments to your Stata executable.
+
+For example, pass paths for the dependency and product with
+
+```python
+from pathlib import Path
+
+from pytask import mark
+
+
+@mark.stata(script=Path("script.do"), options=[Path("input.dta"), Path("auto.dta")])
+def task_run_do_file(
+    depends_on: Path = Path("input.dta"),
+    produces: Path = Path("auto.dta"),
+):
     pass
 ```
 
 And in your `script.do`, you can intercept the value with
 
 ```do
-* Intercept command line argument and save to macro named 'produces'.
-args produces
+* Intercept command line arguments and save them to macros.
+args depends_on produces
 
 sysuse auto, clear
 save "`produces'"
