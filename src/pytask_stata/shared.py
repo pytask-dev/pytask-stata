@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Sequence
 from typing import TYPE_CHECKING
@@ -44,21 +45,40 @@ else:
     STATA_COMMANDS = []
 
 
+_DEFAULT_OPTIONS = object()
+
+
 def stata(
     *,
     script: str | Path,
-    options: str | Iterable[str] | None = None,
-) -> tuple[str | Path | None, str | Iterable[str] | None]:
+    options: str | Iterable[str] | None | object = _DEFAULT_OPTIONS,
+    serializer: str | Callable[..., str] | None = None,
+    suffix: str | None = None,
+) -> tuple[
+    str | Path | None,
+    list[str] | None,
+    str | Callable[..., str] | None,
+    str | None,
+]:
     """Specify command line options for Stata.
 
     Parameters
     ----------
+    script : str | Path
+        The path to the Stata do-file which is executed.
     options : str | Iterable[str] | None
         One or multiple command line options passed to Stata.
+    serializer : str | Callable[..., str] | None
+        A function to serialize data for the task. If ``None``, task data is not
+        serialized.
+    suffix : str | None
+        A suffix for the serialized file. If ``None``, infer it from known serializers.
 
     """
-    options = [] if options is None else list(map(str, _to_list(options)))
-    return script, options
+    parsed_options = (
+        None if options is _DEFAULT_OPTIONS else list(map(str, _to_list(options)))
+    )
+    return script, parsed_options, serializer, suffix
 
 
 def convert_task_id_to_name_of_log_file(task: PTask) -> str:

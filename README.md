@@ -99,9 +99,15 @@ def task_run_do_file(produces: Path = Path("auto.dta")):
 ### Accessing dependencies and products in the script
 
 Dependencies and products registered in the task function signature are used by pytask
-to order tasks and track whether they are up-to-date. They are not automatically passed
-to the Stata script. Use the `options` argument of the decorator to pass paths or other
-values as command line arguments to your Stata executable.
+to order tasks and track whether they are up-to-date. If `options` is not used,
+pytask-stata writes all dependencies and products from the task function signature to a
+YAML file and passes the path to this file as the first command line argument to the
+do-file.
+
+#### Command Line Arguments
+
+Use the `options` argument of the decorator to keep the legacy interface and pass paths
+or other values as command line arguments to your Stata executable.
 
 For example, pass paths for the dependency and product with
 
@@ -149,6 +155,37 @@ from src.config import BLD
 def task_run_do_file(produces: Path = BLD / "auto.dta"):
     pass
 ```
+
+#### YAML Configuration Files
+
+By default, pytask-stata serializes all task keyword arguments and passes the path to
+the generated YAML file as the first argument to the do-file. To read the file inside
+Stata, install the user-written `yaml` package.
+
+```stata
+ssc install yaml
+```
+
+Then read the configuration file in the Stata task.
+
+```python
+@mark.stata(script=Path("script.do"))
+def task_run_do_file(produces: Path = Path("auto.dta")):
+    pass
+```
+
+```do
+args config
+yaml read using "`config'", locals replace
+local produces = r(yaml_produces)
+
+sysuse auto, clear
+save "`produces'", replace
+```
+
+Do not combine both interfaces. If `options` is supplied, pytask-stata assumes the
+do-file receives all required values through command line arguments and does not create
+a YAML configuration file.
 
 ### Repeating tasks with different scripts or inputs
 
