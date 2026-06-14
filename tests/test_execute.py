@@ -165,6 +165,58 @@ def test_run_do_file_w_task_decorator(runner, tmp_path):
         assert tmp_path.joinpath("script.log").exists()
 
 
+@needs_stata
+def test_run_do_file_with_dependency(runner, tmp_path):
+    task_source = """
+    import pytask
+    from pathlib import Path
+
+    @pytask.mark.stata(script="script.do")
+    def task_run_do_file(depends_on=Path("input.dta"), produces=Path("auto.dta")):
+        pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+    tmp_path.joinpath("input.dta").write_text("content")
+
+    do_file = """
+    sysuse auto, clear
+    save auto
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix(), "--stata-keep-log"])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("auto.dta").exists()
+
+
+@needs_stata
+def test_run_do_file_with_dependency_from_task_kwargs(runner, tmp_path):
+    task_source = """
+    import pytask
+    from pathlib import Path
+    from pytask import task
+
+    @task(kwargs={"depends_on": Path("input.dta")})
+    @pytask.mark.stata(script="script.do")
+    def task_run_do_file(produces=Path("auto.dta")):
+        pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+    tmp_path.joinpath("input.dta").write_text("content")
+
+    do_file = """
+    sysuse auto, clear
+    save auto
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix(), "--stata-keep-log"])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("auto.dta").exists()
+
+
 def test_raise_error_if_stata_is_not_found(tmp_path, monkeypatch):
     task_source = """
     from pytask import mark, task

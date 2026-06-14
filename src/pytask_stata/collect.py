@@ -37,6 +37,7 @@ def run_stata_script(
     _serialized: Path | None,
     _log_name: str,
     _cwd: Path,
+    **_kwargs: Any,
 ) -> None:
     """Run a Stata do-file."""
     serialized_option = [] if _serialized is None else [_serialized.as_posix()]
