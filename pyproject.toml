@@ -3,7 +3,7 @@ requires = ["hatchling", "hatch_vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pytask_stata"
+name = "pytask-stata"
 description = "Execute do-files with Stata and pytask."
 authors = [{ name = "Tobias Raabe", email = "raabe@posteo.de" }]
 license = { text = "MIT" }
