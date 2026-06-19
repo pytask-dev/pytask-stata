@@ -115,7 +115,8 @@ to order tasks and track whether they are up-to-date. pytask-stata offers two mo
 pass these paths and other task data to the Stata script.
 
 1. Use the default YAML configuration file. This is the recommended mode if your Stata
-   installation can use the user-written `yaml` package.
+   installation can use the user-written [`yaml`](https://github.com/jpazvd/yaml)
+   package, which is compatible with Stata 14+.
 1. Use the `options` argument of the decorator to pass command line arguments. This is
    the compatibility mode for Stata installations where `yaml.ado` is not available or
    not supported.
@@ -128,7 +129,11 @@ a YAML configuration file.
 
 By default, pytask-stata serializes all task keyword arguments and passes the path to
 the generated YAML file as the first argument to the do-file. To read the file inside
-Stata, install the user-written `yaml` package.
+Stata, install the user-written [`yaml`](https://github.com/jpazvd/yaml) package, which
+is compatible with Stata 14+.
+
+See [YAML Data Passed to Stata](docs/yaml.md) for the supported data types and how they
+are represented in Stata.
 
 ```stata
 ssc install yaml
@@ -215,7 +220,7 @@ def task_run_do_file(produces: Path = BLD / "auto.dta"):
 ### Repeating tasks with different scripts or inputs
 
 You can also parametrize the execution of scripts, meaning executing multiple do-files
-as well as passing different command line arguments to the same do-file.
+as well as passing different inputs or task data to the same do-file.
 
 The following task executes two do-files which produce different outputs.
 
