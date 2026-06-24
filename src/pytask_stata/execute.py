@@ -4,16 +4,20 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from typing import Any
 from typing import cast
 
 from pytask import PathNode
+from pytask import PPathNode
 from pytask import PTask
 from pytask import PTaskWithPath
 from pytask import PythonNode
 from pytask import Session
 from pytask import has_mark
 from pytask import hookimpl
+from pytask.tree_util import tree_map
 
+from pytask_stata.serialization import serialize_keyword_arguments
 from pytask_stata.shared import STATA_COMMANDS
 
 
@@ -28,6 +32,47 @@ def pytask_execute_task_setup(session: Session, task: PTask) -> None:
             "https://github.com/pytask-dev/pytask-stata."
         )
         raise RuntimeError(msg)
+
+    marks = list(task.markers)
+    stata_marks = [mark for mark in marks if mark.name == "stata"]
+    if stata_marks:
+        serializer = stata_marks[0].kwargs.get("serializer")
+        if serializer is None:
+            return
+
+        serialized_node = task.depends_on["_serialized"]
+        if not isinstance(serialized_node, PythonNode) or not isinstance(
+            serialized_node.value, Path
+        ):
+            msg = (
+                "Expected '_serialized' dependency to be a PythonNode "
+                "with a pathlib.Path value."
+            )
+            raise TypeError(msg)
+
+        path_to_serialized = serialized_node.value
+        path_to_serialized.parent.mkdir(parents=True, exist_ok=True)
+        kwargs = _collect_stata_keyword_arguments(task)
+        serialize_keyword_arguments(serializer, path_to_serialized, kwargs)
+
+
+def _collect_stata_keyword_arguments(task: PTask) -> dict[str, Any]:
+    """Collect keyword arguments passed to the Stata config file."""
+    kwargs: dict[str, Any] = {
+        **tree_map(
+            lambda node: (
+                node.path.as_posix() if isinstance(node, PPathNode) else node.value
+            ),
+            task.depends_on,  # ty: ignore[invalid-argument-type]
+        ),
+        **tree_map(
+            lambda node: (
+                node.path.as_posix() if isinstance(node, PPathNode) else node.value
+            ),
+            task.produces,  # ty: ignore[invalid-argument-type]
+        ),
+    }
+    return {key: value for key, value in kwargs.items() if not key.startswith("_")}
 
 
 @hookimpl
