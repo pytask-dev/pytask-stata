@@ -51,7 +51,7 @@ _DEFAULT_OPTIONS = object()
 def stata(
     *,
     script: str | Path,
-    options: str | Iterable[str] | None | object = _DEFAULT_OPTIONS,
+    options: str | Iterable[str] | object | None = _DEFAULT_OPTIONS,
     serializer: str | Callable[..., str] | None = None,
     suffix: str | None = None,
 ) -> tuple[
