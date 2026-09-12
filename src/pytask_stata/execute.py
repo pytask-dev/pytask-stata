@@ -20,6 +20,15 @@ from pytask.tree_util import tree_map
 from pytask_stata.serialization import serialize_keyword_arguments
 from pytask_stata.shared import STATA_COMMANDS
 
+_INTERNAL_ARGUMENTS = {
+    "_script",
+    "_options",
+    "_cwd",
+    "_executable",
+    "_log_name",
+    "_serialized",
+}
+
 
 @hookimpl
 def pytask_execute_task_setup(session: Session, task: PTask) -> None:
@@ -72,7 +81,9 @@ def _collect_stata_keyword_arguments(task: PTask) -> dict[str, Any]:
             task.produces,  # ty: ignore[invalid-argument-type]
         ),
     }
-    return {key: value for key, value in kwargs.items() if not key.startswith("_")}
+    return {
+        key: value for key, value in kwargs.items() if key not in _INTERNAL_ARGUMENTS
+    }
 
 
 @hookimpl

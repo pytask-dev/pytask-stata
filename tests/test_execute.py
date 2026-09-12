@@ -46,7 +46,7 @@ def test_pytask_execute_task_setup_serializes_keyword_arguments(tmp_path):
     product = tmp_path / "out.dta"
 
     def serializer(kwargs):
-        return f"produces={kwargs['produces']}"
+        return f"produces={kwargs['produces']};_input={kwargs['_input']}"
 
     task = Task(
         base_name="task_example",
@@ -57,6 +57,7 @@ def test_pytask_execute_task_setup_serializes_keyword_arguments(tmp_path):
             "_script": PythonNode(value=tmp_path / "script.do"),
             "_options": PythonNode(value=[]),
             "_log_name": PythonNode(value=""),
+            "_input": PythonNode(value="input.dta"),
             "produces": PythonNode(value=product),
         },
         markers=[
@@ -75,7 +76,9 @@ def test_pytask_execute_task_setup_serializes_keyword_arguments(tmp_path):
 
     pytask_execute_task_setup(session, task)
 
-    assert path_to_serialized.read_text() == f"produces={product.as_posix()}"
+    assert path_to_serialized.read_text() == (
+        f"produces={product.as_posix()};_input=input.dta"
+    )
 
 
 @needs_stata
