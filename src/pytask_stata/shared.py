@@ -75,9 +75,12 @@ def stata(
         A suffix for the serialized file. If ``None``, infer it from known serializers.
 
     """
-    parsed_options = (
-        None if options is _DEFAULT_OPTIONS else list(map(str, _to_list(options)))
-    )
+    if options is _DEFAULT_OPTIONS:
+        parsed_options = None
+    elif options is None:
+        parsed_options = []
+    else:
+        parsed_options = list(map(str, _to_list(options)))
     return script, parsed_options, serializer, suffix
 
 

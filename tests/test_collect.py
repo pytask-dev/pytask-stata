@@ -26,6 +26,12 @@ from pytask_stata.collect import stata
         ),
         (
             (),
+            {"script": "script.do", "options": None},
+            does_not_raise(),
+            ("script.do", [], None, None),
+        ),
+        (
+            (),
             {"script": "script.do"},
             does_not_raise(),
             ("script.do", None, None, None),
