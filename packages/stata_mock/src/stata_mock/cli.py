@@ -335,7 +335,8 @@ def _parse_yaml_list_item(
         raise TypeError(msg)
 
     item = stripped.removeprefix("- ").strip()
-    if ":" in item:
+    is_quoted = len(item) > 1 and item[0] == item[-1] and item[0] in "\"'"
+    if ":" in item and not is_quoted and re.search(r":(?:\s|$)", item):
         msg = "List items must be scalar values."
         raise ValueError(msg)
     parent.append(_parse_yaml_scalar(item))

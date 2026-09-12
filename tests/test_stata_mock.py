@@ -69,6 +69,9 @@ def test_yaml_subset_matches_stata_for_supported_scalar_and_nested_types():
         - two
         - true
         - null
+        list_colons:
+        - 'a: b'
+        - https://example.com
         nested_mapping:
           child_int: 1
           child_bool: false
@@ -107,6 +110,10 @@ def test_yaml_subset_matches_stata_for_supported_scalar_and_nested_types():
     assert entries["list_mixed_3"].type == "list_item"
     assert entries["list_mixed_4"].value == "null"
     assert entries["list_mixed_4"].type == "list_item"
+    assert entries["list_colons_1"].value == "a: b"
+    assert entries["list_colons_1"].type == "list_item"
+    assert entries["list_colons_2"].value == "https://example.com"
+    assert entries["list_colons_2"].type == "list_item"
 
     assert entries["nested_mapping"].type == "parent"
     assert entries["nested_mapping_child_int"].value == "1"
