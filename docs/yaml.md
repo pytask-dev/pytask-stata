@@ -31,6 +31,8 @@ The `yaml` package stores parsed YAML in a Stata dataset with `key`, `value`, `l
 Keep the YAML bridge to configuration-like data: scalar values, paths, flat scalar
 lists, and nested dictionaries with scalar leaves.
 
-Avoid empty strings, lists of dictionaries, sets, bytes, decimals, and arbitrary Python
-objects. PyYAML may emit YAML tags such as `!!set` or `!!binary`, or fail with a
-`RepresenterError`; those forms are not useful as a stable Stata interface.
+Avoid empty mappings and lists, empty strings, lists of dictionaries, sets, bytes,
+decimals, and arbitrary Python objects. Empty collections use YAML flow syntax, which is
+outside the Stata parser's supported subset. PyYAML may also emit YAML tags such as
+`!!set` or `!!binary`, or fail with a `RepresenterError`; those forms are not useful as
+a stable Stata interface.

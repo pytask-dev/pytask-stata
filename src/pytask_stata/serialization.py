@@ -28,7 +28,24 @@ class SerializerEntry(TypedDict):
 
 def _dump_yaml(kwargs: dict[str, Any]) -> str:
     """Serialize task keyword arguments as YAML."""
+    _validate_yaml_collections(kwargs)
     return yaml.safe_dump(kwargs, sort_keys=False, allow_unicode=True)
+
+
+def _validate_yaml_collections(value: Any, path: str = "<root>") -> None:
+    """Reject empty collections unsupported by the Stata YAML parser."""
+    if isinstance(value, dict):
+        if not value:
+            msg = f"Empty YAML mapping at {path} is not supported."
+            raise ValueError(msg)
+        for key, item in value.items():
+            _validate_yaml_collections(item, f"{path}.{key}")
+    elif isinstance(value, (list, tuple)):
+        if not value:
+            msg = f"Empty YAML list at {path} is not supported."
+            raise ValueError(msg)
+        for index, item in enumerate(value):
+            _validate_yaml_collections(item, f"{path}[{index}]")
 
 
 SERIALIZERS: dict[str, SerializerEntry] = {
