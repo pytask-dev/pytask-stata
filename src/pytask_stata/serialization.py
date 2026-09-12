@@ -28,7 +28,7 @@ class SerializerEntry(TypedDict):
 
 def _dump_yaml(kwargs: dict[str, Any]) -> str:
     """Serialize task keyword arguments as YAML."""
-    return yaml.safe_dump(kwargs, sort_keys=False)
+    return yaml.safe_dump(kwargs, sort_keys=False, allow_unicode=True)
 
 
 SERIALIZERS: dict[str, SerializerEntry] = {
@@ -64,7 +64,7 @@ def serialize_keyword_arguments(
         raise TypeError(msg)
 
     serialized = serializer_func(_normalize_for_stata(kwargs))
-    path_to_serialized.write_text(serialized)
+    path_to_serialized.write_text(serialized, encoding="utf-8")
 
 
 def _normalize_for_stata(value: Any) -> Any:
