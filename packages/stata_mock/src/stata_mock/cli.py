@@ -260,11 +260,10 @@ def _get_yaml_child_attributes(
     prefix = f"{search_key}_"
     attributes: dict[str, str] = {}
     for key, entry in state.yaml_entries.items():
-        if not key.startswith(prefix) or entry.type == "parent":
+        if entry.parent != search_key or entry.type == "parent":
             continue
         attribute = key.removeprefix(prefix)
-        if "_" not in attribute:
-            attributes[attribute] = entry.value
+        attributes[attribute] = entry.value
     return attributes
 
 

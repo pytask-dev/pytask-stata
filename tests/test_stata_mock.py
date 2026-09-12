@@ -185,7 +185,7 @@ def test_yaml_get_returns_child_attributes_for_parent_key(tmp_path, monkeypatch)
               CME_MRY0T4:
                 label: mortality
                 unit: deaths
-                dataflow: CME
+                data_flow: CME
             """
         )
     )
@@ -195,8 +195,8 @@ def test_yaml_get_returns_child_attributes_for_parent_key(tmp_path, monkeypatch)
             """
             args config
             yaml read using "`config'", replace
-            yaml get indicators:CME_MRY0T4, attributes(label unit) quiet
-            save "`r(label)'"
+            yaml get indicators:CME_MRY0T4, attributes(label unit data_flow) quiet
+            save "`r(data_flow)'"
             """
         )
     )
@@ -208,7 +208,7 @@ def test_yaml_get_returns_child_attributes_for_parent_key(tmp_path, monkeypatch)
     )
 
     assert main() == 0
-    assert (tmp_path / "mortality.dta").exists()
+    assert (tmp_path / "CME.dta").exists()
 
 
 def test_yaml_validate_required_and_types_success(tmp_path, monkeypatch):
