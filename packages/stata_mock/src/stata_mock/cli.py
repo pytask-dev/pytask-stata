@@ -225,12 +225,7 @@ def _yaml_get(rest: str, state: RuntimeState) -> int | None:
         return INVALID_SYNTAX
 
     parent, _, key = query.partition(":")
-    if key:
-        search_key = f"{parent}_{key}"
-        result_name = key
-    else:
-        search_key = parent
-        result_name = parent.rsplit("_", maxsplit=1)[-1]
+    search_key = f"{parent}_{key}" if key else parent
 
     entry = state.yaml_entries.get(search_key)
     children = _get_yaml_child_attributes(search_key, state)
@@ -249,7 +244,7 @@ def _yaml_get(rest: str, state: RuntimeState) -> int | None:
             {attr: value for attr, value in children.items() if attr in allowed}
         )
     elif entry is not None:
-        state.returns[result_name] = entry.value
+        state.returns["value"] = entry.value
     return None
 
 

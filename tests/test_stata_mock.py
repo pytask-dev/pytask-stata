@@ -167,7 +167,7 @@ def test_yaml_get_returns_attributes_for_nested_mapping(tmp_path, monkeypatch):
             args config
             yaml read using "`config'", replace
             yaml get database:host, quiet
-            save "`r(host)'"
+            save "`r(value)'"
             """
         )
     )
