@@ -383,7 +383,9 @@ def _find_next_content_line(lines: list[str], line_number: int) -> str | None:
 
 
 def _parse_yaml_scalar(value: str) -> str | int | float | bool | None:
-    value = value.strip("\"'")
+    value = value.strip()
+    if len(value) > 1 and value[0] == value[-1] and value[0] in "\"'":
+        return value[1:-1]
     if value.lower() in {"true", "false"}:
         return value.lower() == "true"
     if value.lower() in {"null", "~"}:

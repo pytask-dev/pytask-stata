@@ -52,6 +52,9 @@ def test_yaml_subset_matches_stata_for_supported_scalar_and_nested_types():
     config = textwrap.dedent(
         """
         string_value: hello
+        quoted_number: "42"
+        quoted_bool: "true"
+        quoted_null: "null"
         integer_value: 42
         float_value: 3.14
         bool_true: true
@@ -77,6 +80,12 @@ def test_yaml_subset_matches_stata_for_supported_scalar_and_nested_types():
 
     assert entries["string_value"].value == "hello"
     assert entries["string_value"].type == "string"
+    assert entries["quoted_number"].value == "42"
+    assert entries["quoted_number"].type == "string"
+    assert entries["quoted_bool"].value == "true"
+    assert entries["quoted_bool"].type == "string"
+    assert entries["quoted_null"].value == "null"
+    assert entries["quoted_null"].type == "string"
     assert entries["integer_value"].value == "42"
     assert entries["integer_value"].type == "numeric"
     assert entries["float_value"].value == "3.14"
