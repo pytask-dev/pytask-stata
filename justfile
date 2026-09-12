@@ -12,7 +12,7 @@ test-ci:
 
 # Run type checking
 typing:
-    uv run --group typing --group test --isolated ty check
+    uv run --group typing --group test --group test-mock-stata --isolated ty check
 
 # Run linting and formatting
 lint:

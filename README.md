@@ -14,6 +14,18 @@ ______________________________________________________________________
 
 Run Stata's do-files with pytask.
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Dependencies and Products](#dependencies-and-products)
+  - [Accessing dependencies and products in the script](#accessing-dependencies-and-products-in-the-script)
+    - [YAML Configuration Files](#yaml-configuration-files)
+    - [Command Line Arguments](#command-line-arguments)
+  - [Repeating tasks with different scripts or inputs](#repeating-tasks-with-different-scripts-or-inputs)
+- [Configuration](#configuration)
+- [Changes](#changes)
+
 ## Installation
 
 pytask-stata is available on [PyPI](https://pypi.org/project/pytask-stata) and
@@ -99,9 +111,64 @@ def task_run_do_file(produces: Path = Path("auto.dta")):
 ### Accessing dependencies and products in the script
 
 Dependencies and products registered in the task function signature are used by pytask
-to order tasks and track whether they are up-to-date. They are not automatically passed
-to the Stata script. Use the `options` argument of the decorator to pass paths or other
-values as command line arguments to your Stata executable.
+to order tasks and track whether they are up-to-date. pytask-stata offers two modes to
+pass these paths and other task data to the Stata script.
+
+1. Use the default YAML configuration file. This is the recommended mode if your Stata
+   installation can use the user-written [`yaml`](https://github.com/jpazvd/yaml)
+   package, which is compatible with Stata 14+.
+1. Use the `options` argument of the decorator to pass command line arguments. This is
+   the compatibility mode for Stata installations where `yaml.ado` is not available or
+   not supported.
+
+Do not combine both interfaces. If `options` is supplied, pytask-stata assumes the
+do-file receives all required values through command line arguments and does not create
+a YAML configuration file.
+
+#### YAML Configuration Files
+
+By default, pytask-stata serializes all task keyword arguments and passes the path to
+the generated YAML file as the first argument to the do-file. To read the file inside
+Stata, install the user-written [`yaml`](https://github.com/jpazvd/yaml) package, which
+is compatible with Stata 14+.
+
+See [YAML Data Passed to Stata](docs/yaml.md) for the supported data types and how they
+are represented in Stata.
+
+```stata
+ssc install yaml
+```
+
+Then read the configuration file in the Stata task.
+
+```python
+from pathlib import Path
+
+from pytask import mark
+
+
+@mark.stata(script=Path("script.do"))
+def task_run_do_file(
+    depends_on: Path = Path("input.dta"),
+    produces: Path = Path("auto.dta"),
+):
+    pass
+```
+
+```do
+args config
+yaml read using "`config'", locals replace
+local depends_on = r(yaml_depends_on)
+local produces = r(yaml_produces)
+
+use "`depends_on'", clear
+save "`produces'"
+```
+
+#### Command Line Arguments
+
+Use the `options` argument of the decorator to pass paths or other values as command
+line arguments to your Stata executable. This mode does not require the `yaml` package.
 
 For example, pass paths for the dependency and product with
 
@@ -119,13 +186,13 @@ def task_run_do_file(
     pass
 ```
 
-And in your `script.do`, you can intercept the value with
+And in your `script.do`, you can intercept the values with
 
 ```do
 * Intercept command line arguments and save them to macros.
 args depends_on produces
 
-sysuse auto, clear
+use "`depends_on'", clear
 save "`produces'"
 ```
 
@@ -133,8 +200,8 @@ The relative path inside the do-file works only because pytask-stata switches th
 current working directory to the directory of the task module before the task is
 executed.
 
-To make the task independent from the current working directory, pass the full path as
-an command line argument. Here is an example.
+To make the task independent from the current working directory, pass the full path as a
+command line argument. Here is an example.
 
 ```python
 # Absolute path to the build directory.
@@ -153,7 +220,7 @@ def task_run_do_file(produces: Path = BLD / "auto.dta"):
 ### Repeating tasks with different scripts or inputs
 
 You can also parametrize the execution of scripts, meaning executing multiple do-files
-as well as passing different command line arguments to the same do-file.
+as well as passing different inputs or task data to the same do-file.
 
 The following task executes two do-files which produce different outputs.
 
