@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import textwrap
 
+import yaml
 from stata_mock.cli import _flatten_yaml
 from stata_mock.cli import _parse_yaml_subset
 from stata_mock.cli import main
@@ -146,6 +147,12 @@ def test_yaml_subset_matches_stata_for_supported_scalar_and_nested_types():
     assert entries["nested_mapping_child_int"].parent == "nested_mapping"
     assert entries["nested_mapping_child_bool"].value == "0"
     assert entries["nested_mapping_child_bool"].type == "boolean"
+
+
+def test_yaml_subset_unescapes_apostrophes_from_pyyaml():
+    config = yaml.safe_dump({"value": "a'b: c"}, sort_keys=False)
+
+    assert _parse_yaml_subset(config) == {"value": "a'b: c"}
 
 
 def test_yaml_read_supports_custom_prefix_for_r_macros(tmp_path, monkeypatch):
