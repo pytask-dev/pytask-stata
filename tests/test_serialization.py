@@ -1,10 +1,23 @@
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
 
 from pytask_stata.serialization import serialize_keyword_arguments
+
+
+def test_serialization_can_be_imported_directly():
+    result = subprocess.run(
+        [sys.executable, "-c", "import pytask_stata.serialization"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
 
 
 def test_yaml_serialization_preserves_unicode(tmp_path):

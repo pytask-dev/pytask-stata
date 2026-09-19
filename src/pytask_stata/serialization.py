@@ -5,12 +5,14 @@ from __future__ import annotations
 import uuid
 from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import TypedDict
 
 import yaml
-from pytask import PTask
-from pytask import PTaskWithPath
+
+if TYPE_CHECKING:
+    from pytask import PTask
 
 __all__ = ["SERIALIZERS", "create_path_to_serialized", "serialize_keyword_arguments"]
 
@@ -56,6 +58,8 @@ SERIALIZERS: dict[str, SerializerEntry] = {
 
 def create_path_to_serialized(task: PTask, suffix: str) -> Path:
     """Create path to serialized task data."""
+    from pytask import PTaskWithPath  # noqa: PLC0415
+
     return (
         (task.path.parent if isinstance(task, PTaskWithPath) else Path.cwd())
         .joinpath(_HIDDEN_FOLDER, str(uuid.uuid4()))
