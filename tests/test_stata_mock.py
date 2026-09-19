@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import textwrap
 
+import pytest
 import yaml
 from stata_mock.cli import _flatten_yaml
 from stata_mock.cli import _parse_yaml_subset
@@ -153,6 +154,33 @@ def test_yaml_subset_unescapes_apostrophes_from_pyyaml():
     config = yaml.safe_dump({"value": "a'b: c"}, sort_keys=False)
 
     assert _parse_yaml_subset(config) == {"value": "a'b: c"}
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "a [bracketed] value",
+        "https://example.com/path[1]/data",
+        "a {braced} value",
+    ],
+)
+def test_yaml_subset_preserves_brackets_and_braces_in_scalar_strings(value):
+    config = yaml.safe_dump({"value": value}, sort_keys=False)
+
+    assert _parse_yaml_subset(config) == {"value": value}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        "items: [1, 2]\n",
+        "mapping: {key: value}\n",
+        "items:\n- [1, 2]\n",
+    ],
+)
+def test_yaml_subset_rejects_flow_collections(config):
+    with pytest.raises(ValueError, match="Unsupported YAML syntax"):
+        _parse_yaml_subset(config)
 
 
 def test_yaml_read_supports_custom_prefix_for_r_macros(tmp_path, monkeypatch):

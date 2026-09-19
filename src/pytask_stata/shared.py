@@ -69,8 +69,9 @@ def stata(
     options : str | Iterable[str] | None
         One or multiple command line options passed to Stata.
     serializer : str | Callable[..., str] | None
-        A function to serialize data for the task. If ``None``, task data is not
-        serialized.
+        A function to serialize data for the task. If ``None`` and ``options`` is not
+        explicitly supplied, use the default YAML serializer. Supplying ``options``
+        selects the command-line interface and disables serialization.
     suffix : str | None
         A suffix for the serialized file. If ``None``, infer it from known serializers.
 

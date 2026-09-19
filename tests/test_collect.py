@@ -104,6 +104,23 @@ def test_parse_stata_mark_with_yaml():
     )
 
 
+def test_parse_stata_mark_with_explicit_none_uses_default_yaml():
+    mark = Mark("stata", (), {"script": "script.do", "serializer": None})
+
+    out = _parse_stata_mark(mark)
+
+    assert out == Mark(
+        "stata",
+        (),
+        {
+            "script": "script.do",
+            "options": None,
+            "serializer": "yaml",
+            "suffix": ".yaml",
+        },
+    )
+
+
 def test_parse_stata_mark_raises_for_json():
     mark = Mark("stata", (), {"script": "script.do", "serializer": "json"})
 

@@ -123,7 +123,8 @@ pass these paths and other task data to the Stata script.
 
 Do not combine both interfaces. If `options` is supplied, pytask-stata assumes the
 do-file receives all required values through command line arguments and does not create
-a YAML configuration file.
+a YAML configuration file. Pass `options=None` to select this mode without passing any
+command line arguments.
 
 #### YAML Configuration Files
 

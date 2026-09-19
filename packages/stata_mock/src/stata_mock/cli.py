@@ -282,7 +282,7 @@ def _yaml_validate(rest: str, state: RuntimeState) -> int | None:
 
 
 def _parse_yaml_subset(text: str) -> dict[str, Any]:
-    if re.search(r"(^|\s)(---|\{|\}|\[[^\]]*\]|&\w+|\*\w+)", text):
+    if _contains_unsupported_yaml_syntax(text):
         msg = "Unsupported YAML syntax."
         raise ValueError(msg)
 
@@ -303,6 +303,29 @@ def _parse_yaml_subset(text: str) -> dict[str, Any]:
         _parse_yaml_mapping_item(stripped, indent, lines, line_number, stack)
 
     return root
+
+
+def _contains_unsupported_yaml_syntax(text: str) -> bool:
+    """Detect unsupported structural YAML without inspecting scalar contents."""
+    for raw_line in text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped == "---" or stripped.startswith(("{", "[")):
+            return True
+
+        if stripped.startswith("- "):
+            value = stripped.removeprefix("- ").lstrip()
+        else:
+            _, separator, value = stripped.partition(":")
+            if not separator:
+                continue
+            value = value.lstrip()
+
+        if value.startswith(("{", "[", "&", "*")):
+            return True
+
+    return False
 
 
 def _parse_yaml_line(raw_line: str) -> tuple[int, str] | None:
