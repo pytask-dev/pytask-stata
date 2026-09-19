@@ -50,18 +50,21 @@ def pytask_execute_task_setup(session: Session, task: PTask) -> None:
             return
 
         serialized_node = task.depends_on["_serialized"]
-        if not isinstance(serialized_node, PythonNode) or not isinstance(
-            serialized_node.value, Path
-        ):
-            msg = (
-                "Expected '_serialized' dependency to be a PythonNode "
-                "with a pathlib.Path value."
-            )
+        if not isinstance(serialized_node, PythonNode):
+            msg = "Expected '_serialized' dependency to be a PythonNode."
+            raise TypeError(msg)
+
+        kwargs = _collect_stata_keyword_arguments(task)
+        if not kwargs:
+            serialized_node.value = None
+            return
+
+        if not isinstance(serialized_node.value, Path):
+            msg = "Expected '_serialized' dependency to contain a pathlib.Path."
             raise TypeError(msg)
 
         path_to_serialized = serialized_node.value
         path_to_serialized.parent.mkdir(parents=True, exist_ok=True)
-        kwargs = _collect_stata_keyword_arguments(task)
         serialize_keyword_arguments(serializer, path_to_serialized, kwargs)
 
 

@@ -109,6 +109,30 @@ def test_run_do_file_with_yaml_config(runner, tmp_path):
 
 
 @needs_stata
+def test_run_do_file_without_task_arguments(runner, tmp_path):
+    task_source = """
+    import pytask
+
+    @pytask.mark.stata(script="script.do")
+    def task_run_do_file():
+        pass
+    """
+    tmp_path.joinpath("task_example.py").write_text(textwrap.dedent(task_source))
+
+    do_file = """
+    sysuse auto, clear
+    save "auto.dta", replace
+    """
+    tmp_path.joinpath("script.do").write_text(textwrap.dedent(do_file))
+
+    result = runner.invoke(cli, [tmp_path.as_posix()])
+
+    assert result.exit_code == ExitCode.OK
+    assert tmp_path.joinpath("auto.dta").exists()
+    assert not tmp_path.joinpath(".pytask", "pytask-stata").exists()
+
+
+@needs_stata
 def test_run_do_file_with_supported_yaml_values(runner, tmp_path):
     task_source = """
     from pathlib import Path
