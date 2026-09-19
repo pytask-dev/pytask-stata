@@ -48,6 +48,31 @@ def test_yaml_read_with_locals_exposes_r_macros_and_saves_product(
     assert "end of mock do-file" in (tmp_path / "mock.log").read_text()
 
 
+def test_yaml_read_decodes_utf8(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    config = tmp_path / "config.yaml"
+    config.write_text("produces: Jörg.dta\n", encoding="utf-8")
+    script = tmp_path / "script.do"
+    script.write_text(
+        textwrap.dedent(
+            """
+            args config
+            yaml read using "`config'", locals replace
+            save "`r(yaml_produces)'"
+            """
+        )
+    )
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["Stata", "-e", "do", script.as_posix(), config.as_posix(), "-mock"],
+    )
+
+    assert main() == 0
+    assert (tmp_path / "Jörg.dta").exists()
+
+
 def test_yaml_subset_matches_stata_for_supported_scalar_and_nested_types():
     config = textwrap.dedent(
         """

@@ -189,7 +189,7 @@ def _yaml_read(rest: str, state: RuntimeState) -> int | None:
     if not path.is_absolute():
         path = Path.cwd() / path
     try:
-        data = _parse_yaml_subset(path.read_text())
+        data = _parse_yaml_subset(path.read_text(encoding="utf-8"))
     except (OSError, TypeError, ValueError):
         return INVALID_SYNTAX
 
