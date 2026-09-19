@@ -15,7 +15,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 requires-python = ">=3.10"
-dependencies = ["click>=8.1.8,!=8.2.0", "pytask>=0.5.2"]
+dependencies = ["click>=8.1.8,!=8.2.0", "pytask>=0.5.2", "pyyaml>=6.0.2"]
 dynamic = ["version"]
 
 [project.readme]

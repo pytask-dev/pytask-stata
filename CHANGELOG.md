@@ -5,6 +5,14 @@ chronological order. Releases follow [semantic versioning](https://semver.org/) 
 releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 [Anaconda.org](https://anaconda.org/conda-forge/pytask-stata).
 
+## 0.6.0 - 2026-09-19
+
+- {pull}`107` adds YAML configuration files for passing dependencies, products, and
+  other task arguments to Stata. YAML is now the default interface; explicitly supplying
+  `options` selects the command-line compatibility interface.
+- {pull}`107` expands the mock Stata runtime with YAML parsing and validation support.
+- {pull}`114` uses the canonical `pytask-stata` distribution name in package metadata.
+
 ## 0.5.1 - 2026-06-14
 
 - {pull}`50` drops support for Python 3.8 and 3.9 and adds support for Python 3.14.
