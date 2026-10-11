@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "stata-mock"
 version = "0.0.0"
 description = "Mock Stata executable for pytask-stata tests."
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 [project.scripts]
 Stata = "stata_mock.cli:main"
