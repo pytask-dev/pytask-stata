@@ -7,7 +7,7 @@ releases are available on [PyPI](https://pypi.org/project/pytask-stata) and
 
 ## Unreleased
 
-- Raise the minimum supported Python version to 3.11.
+- {pull}`159` raises the minimum supported Python version to 3.11.
 
 ## 0.6.0 - 2026-09-19
 
