@@ -16,33 +16,7 @@ permissions: {}
 jobs:
   zizmor:
     name: Scan GitHub Actions
-    runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: write
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with:
-          enable-cache: true
-          python-version: '3.13'
-
-      - name: Run zizmor
-        run: uvx --from zizmor zizmor --format=github .
-
-      - name: Generate SARIF report
-        if: always()
-        run: uvx --from zizmor zizmor --format=sarif --no-exit-codes . > zizmor.sarif
-
-      - name: Upload SARIF report
-        if: >
-          always() &&
-          (github.event_name != 'pull_request' ||
-          github.event.pull_request.head.repo.full_name == github.repository)
-        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
-        with:
-          sarif_file: zizmor.sarif
+    uses: pytask-dev/.github/.github/workflows/zizmor.yml@0089f8e41eda395995506b9fddb1843eda412048
