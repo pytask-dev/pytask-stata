@@ -20,12 +20,12 @@ repos:
         args: [--branch, main]
     -   id: trailing-whitespace
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.10
+    rev: v0.17.3
     hooks:
     -   id: ruff-check
     -   id: ruff-format
 -   repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.12.23
+    rev: 0.13.6
     hooks:
     -   id: uv-lock
 -   repo: https://github.com/executablebooks/mdformat
@@ -37,7 +37,7 @@ repos:
         - mdformat-black
         args: [--wrap, "88"]
 -   repo: https://github.com/crate-ci/typos
-    rev: typos-dict-v0.14.2
+    rev: v1.51.1
     hooks:
     -   id: typos
 -   repo: meta
